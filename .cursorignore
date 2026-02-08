@@ -1,0 +1,8 @@
+# Patterns excluded from Cursor AI indexing
+.env
+.env.*
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
