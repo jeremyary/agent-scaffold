@@ -57,7 +57,10 @@ project/
 ├── migrations/           # Database migrations (Alembic, etc.)
 ├── docs/
 │   ├── adr/              # Architecture Decision Records
-│   └── api/              # API documentation
+│   ├── api/              # API documentation
+│   ├── product/          # PRDs and product plans
+│   ├── project/          # Work breakdowns, Jira/Linear exports
+│   └── sre/              # SLOs, runbooks, incident reviews
 ├── infra/                # Infrastructure as code
 │   ├── docker/
 │   └── terraform/

@@ -130,9 +130,12 @@ Based on their stack:
 
 Based on the project description, **proactively suggest** agents to remove. For example:
 - No frontend mentioned → suggest removing Frontend Developer
-- PoC maturity → suggest removing Security Engineer, Performance Engineer, Technical Writer
-- Solo developer → suggest removing Requirements Analyst
+- PoC maturity → suggest removing Security Engineer, Performance Engineer, Technical Writer, SRE Engineer, Product Manager, Project Manager
+- Solo developer → suggest removing Requirements Analyst, Project Manager (no need for Jira/Linear exports)
 - No database → suggest removing Database Engineer
+- No production deployment yet → suggest removing SRE Engineer
+- Requirements already well-defined → suggest removing Product Manager
+- Small scope / no PM tooling needed → suggest removing Project Manager
 
 Include your suggestions in the confirmation message (Phase 4). If the user agrees or doesn't object, remove them.
 

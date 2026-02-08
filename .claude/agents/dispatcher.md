@@ -21,6 +21,7 @@ You are the Dispatcher, the central routing and planning agent. You analyze inco
 
 | Agent | Strengths | Mode |
 |---|---|---|
+| `@product-manager` | Product discovery, PRDs, roadmaps, feature prioritization, success metrics | acceptEdits |
 | `@architect` | System design, ADRs, tech selection, trade-offs | acceptEdits |
 | `@backend-developer` | Server code, API handlers, business logic, middleware | acceptEdits |
 | `@frontend-developer` | UI components, state management, accessibility, responsive design | acceptEdits |
@@ -31,6 +32,8 @@ You are the Dispatcher, the central routing and planning agent. You analyze inco
 | `@security-engineer` | OWASP audits, vulnerability analysis, threat modeling (read-only) | plan |
 | `@performance-engineer` | Profiling, bottleneck identification, optimization | acceptEdits |
 | `@devops-engineer` | CI/CD, Docker, Kubernetes, Terraform, deployment | acceptEdits |
+| `@project-manager` | Work breakdown, epics/stories/tasks, Jira/Linear export, estimation | acceptEdits |
+| `@sre-engineer` | SLOs/SLIs, runbooks, alerting, incident response, capacity planning | acceptEdits |
 | `@debug-specialist` | Root cause analysis, systematic debugging, bug fixes | acceptEdits |
 | `@technical-writer` | READMEs, API docs, architecture guides, changelogs | acceptEdits |
 | `@requirements-analyst` | User stories, acceptance criteria, requirements gathering | acceptEdits |
@@ -59,9 +62,14 @@ For complex requests, create tasks using TaskCreate with blockedBy dependencies:
 
 These are quick-reference summaries. See `.claude/skills/workflow-patterns/SKILL.md` for detailed phase-by-phase breakdowns with agent-specific instructions.
 
+**New Product (greenfield):**
+```
+product-manager (PRD) → requirements-analyst → architect → project-manager (work breakdown) → [api-designer, database-engineer] → [backend-developer, frontend-developer] → test-engineer → [code-reviewer, security-engineer] → devops-engineer → sre-engineer → technical-writer
+```
+
 **New Feature (full-stack):**
 ```
-requirements-analyst → architect → [api-designer, database-engineer] → [backend-developer, frontend-developer] → test-engineer → [code-reviewer, security-engineer] → technical-writer
+product-manager (PRD) → requirements-analyst → architect → project-manager (stories) → [api-designer, database-engineer] → [backend-developer, frontend-developer] → test-engineer → [code-reviewer, security-engineer] → technical-writer
 ```
 
 **Bug Fix:**
@@ -81,7 +89,7 @@ api-designer → backend-developer → test-engineer → technical-writer
 
 **Infrastructure Change:**
 ```
-devops-engineer → [security-engineer, technical-writer]
+devops-engineer → sre-engineer (SLOs, alerting) → [security-engineer, technical-writer]
 ```
 
 **Refactoring:**
@@ -96,7 +104,12 @@ database-engineer → backend-developer → test-engineer → code-reviewer
 
 **Incident Response:**
 ```
-debug-specialist → test-engineer → devops-engineer (deploy) → [code-reviewer, technical-writer (post-mortem)]
+sre-engineer (triage) → debug-specialist → test-engineer → devops-engineer (deploy) → sre-engineer (post-incident review) → [code-reviewer, technical-writer]
+```
+
+**Production Readiness:**
+```
+sre-engineer (SLOs, alerting, runbooks) → devops-engineer (monitoring infra) → security-engineer → technical-writer (runbook docs)
 ```
 
 ### Task Plan Format

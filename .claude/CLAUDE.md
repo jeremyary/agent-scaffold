@@ -6,6 +6,7 @@ When the user's request matches keywords below, route to the corresponding agent
 
 | Keywords / Signals | Primary Agent | Secondary |
 |---|---|---|
+| "product", "PRD", "vision", "roadmap", "feature priority", "discovery", "persona" | Product Manager | Requirements Analyst |
 | "design", "architecture", "ADR", "trade-off", "tech stack" | Architect | — |
 | "API", "endpoint", "handler", "middleware", "server" | Backend Developer | API Designer |
 | "component", "UI", "CSS", "accessibility", "responsive" | Frontend Developer | — |
@@ -16,9 +17,11 @@ When the user's request matches keywords below, route to the corresponding agent
 | "security", "vulnerability", "OWASP", "CVE", "auth" | Security Engineer | — |
 | "performance", "slow", "profiling", "optimize", "latency" | Performance Engineer | — |
 | "deploy", "CI/CD", "Docker", "Kubernetes", "Terraform" | DevOps Engineer | — |
+| "epic", "story", "sprint", "Jira", "backlog", "work breakdown", "estimate" | Project Manager | — |
+| "SLO", "SLI", "runbook", "incident", "on-call", "error budget", "capacity" | SRE Engineer | DevOps Engineer |
 | "bug", "error", "crash", "debug", "broken", "not working" | Debug Specialist | — |
 | "docs", "README", "changelog", "documentation" | Technical Writer | — |
-| "requirements", "user story", "acceptance criteria" | Requirements Analyst | — |
+| "requirements", "user story", "acceptance criteria" | Requirements Analyst | Product Manager |
 | Multi-step, cross-cutting, or ambiguous | **Dispatcher** | — |
 
 ## Agent Capabilities Matrix
@@ -28,6 +31,7 @@ Mode is determined by the agent's tool set: agents without Write/Edit tools are 
 | Agent | Model | Mode | Tools | Memory |
 |---|---|---|---|---|
 | Dispatcher | opus | plan | Read, Glob, Grep, Bash, WebSearch, WebFetch, TaskCreate, TaskUpdate, TaskList, TaskGet | project |
+| Product Manager | opus | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion | project |
 | Architect | opus | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch | project |
 | Backend Developer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | Frontend Developer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
@@ -38,6 +42,8 @@ Mode is determined by the agent's tool set: agents without Write/Edit tools are 
 | Security Engineer | sonnet | plan | Read, Glob, Grep, Bash, WebSearch | project |
 | Performance Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | DevOps Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
+| Project Manager | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch | project |
+| SRE Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | project |
 | Debug Specialist | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | Technical Writer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch | project |
 | Requirements Analyst | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch, AskUserQuestion | project |
@@ -76,19 +82,22 @@ Repeat if metrics not met.
 
 | Tier | Model | Agents | Use When |
 |---|---|---|---|
-| **High** | opus | Dispatcher, Architect | Routing decisions, architectural choices — errors here cascade |
-| **Standard** | sonnet | All others | Implementation, review, analysis — quality sufficient for task |
+| **High** | opus | Dispatcher, Product Manager, Architect | Routing decisions, product strategy, architectural choices — errors here cascade |
+| **Standard** | sonnet | All others | Implementation, review, analysis, project management — quality sufficient for task |
 
-Opus is reserved for decisions with high blast radius. All implementation and analysis work uses sonnet to optimize cost.
+Opus is reserved for decisions with high blast radius (product direction, architecture, routing). All implementation, analysis, and project management work uses sonnet to optimize cost.
 
 ## Agent Memory (`memory: project`)
 
-Six agents have `memory: project` enabled: Dispatcher, Architect, Code Reviewer, Security Engineer, Technical Writer, and Requirements Analyst. This means they retain context across sessions for the current project.
+Nine agents have `memory: project` enabled: Dispatcher, Product Manager, Architect, Code Reviewer, Security Engineer, Project Manager, SRE Engineer, Technical Writer, and Requirements Analyst. This means they retain context across sessions for the current project.
 
 **What agents should remember:**
+- Product vision, personas, success metrics, and feature priorities (Product Manager)
 - Architectural decisions and their rationale (Architect)
 - Recurring code quality patterns — both positive and negative (Code Reviewer)
 - Known vulnerabilities, accepted risks, and security exceptions (Security Engineer)
+- Estimation accuracy, velocity patterns, and dependency structures (Project Manager)
+- SLO targets, incident history, capacity baselines, and operational patterns (SRE Engineer)
 - Project terminology, documentation structure, and style preferences (Technical Writer)
 - Stakeholder preferences, domain rules, and requirements history (Requirements Analyst)
 - Routing patterns that worked well and agent selection rationale (Dispatcher)

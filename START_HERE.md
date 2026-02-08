@@ -36,7 +36,7 @@ If you're new to Claude Code's agent system, here's a quick reference:
 |---------|---------------|
 | **`@agent-name`** | Mention an agent in your prompt to invoke it (e.g., `@architect design a caching layer`) |
 | **`/skill-name`** | Invoke a user-invocable skill as a slash command (e.g., `/review`, `/setup`) |
-| **`allowedTools`** | YAML frontmatter field in agent files — restricts which tools the agent can use |
+| **`tools`** | Frontmatter field in agent files — comma-separated string restricting which tools the agent can use |
 | **`memory: project`** | Agent retains context across sessions for this project (learns over time) |
 | **`model: opus`** | Uses the most capable (and most expensive) Claude model — reserved for high-impact decisions |
 | **`model: sonnet`** | Uses the standard Claude model — good quality at lower cost, used for most implementation work |
@@ -54,8 +54,8 @@ The scaffold uses two model tiers. The cost difference is significant:
 
 | Tier | Model | Agents | Relative Cost | Use For |
 |------|-------|--------|---------------|---------|
-| **High** | Opus | Dispatcher, Architect | ~5x Sonnet | Routing decisions, architecture — errors here cascade through everything |
-| **Standard** | Sonnet | All 12 others | 1x (baseline) | Implementation, review, analysis — quality is sufficient for the task |
+| **High** | Opus | Dispatcher, Product Manager, Architect | ~5x Sonnet | Routing, product strategy, architecture — errors here cascade through everything |
+| **Standard** | Sonnet | All 14 others | 1x (baseline) | Implementation, review, analysis, project management — quality is sufficient for the task |
 
 For cost-conscious usage:
 - Use specialist agents directly (e.g., `@backend-developer`) instead of the dispatcher when you know which agent you need — this skips the Opus routing step
@@ -344,7 +344,7 @@ The defaults block dangerous operations. Add project-specific denials if needed:
 
 ## Step 5: Prune or Add Agents
 
-**Why this matters:** Not every project needs all 14 agents. Unused agents add noise to the dispatcher's routing decisions.
+**Why this matters:** Not every project needs all 17 agents. Unused agents add noise to the dispatcher's routing decisions.
 
 **Directory:** `.claude/agents/`
 
@@ -354,9 +354,12 @@ The defaults block dangerous operations. Add project-specific denials if needed:
 |--------------------|-------------------|
 | Has no frontend | `frontend-developer.md` |
 | Has no database | `database-engineer.md` |
-| Is a PoC (no infra yet) | `devops-engineer.md`, `security-engineer.md` |
+| Is a PoC (no infra yet) | `devops-engineer.md`, `security-engineer.md`, `sre-engineer.md` |
 | Is a library (no API) | `api-designer.md`, `frontend-developer.md` |
 | Is documentation-only | Keep only `technical-writer.md`, remove all others |
+| Solo developer (no PM tools) | `project-manager.md` (Jira/Linear export not needed) |
+| No product discovery phase | `product-manager.md` (if requirements are already defined) |
+| Not running production yet | `sre-engineer.md` (add back when you deploy) |
 
 ### 5b. Update the Dispatcher
 
@@ -372,16 +375,15 @@ If your project needs a specialist not in the scaffold, create a new file in `.c
 
 ```yaml
 ---
+name: my-agent
+description: One-line role summary for routing.
 model: sonnet
-allowedTools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
+tools: Read, Write, Edit, Glob, Grep, Bash
+permissionMode: acceptEdits
 ---
 ```
+
+Note: `name` must be kebab-case and match the filename. `tools` is a comma-separated string (not a YAML array). Optional fields: `memory: project` for cross-session persistence.
 
 Add the new agent to the dispatcher's table and the routing matrix in `.claude/CLAUDE.md`.
 
@@ -576,7 +578,7 @@ If you're starting a quick proof-of-concept, here's the minimal path:
 1. **CLAUDE.md** — Fill in project name, set maturity to `proof-of-concept`, list 2-3 goals, note key tech choices, fill in commands
 2. **project-conventions/SKILL.md** — Fill in tech stack table only (skip the rest)
 3. **Style rules** — Delete the style rule file you don't need (python-style.md or code-style.md) and remove its `@` import from CLAUDE.md
-4. **Delete agents:** Remove `security-engineer.md`, `devops-engineer.md`, `performance-engineer.md`, `technical-writer.md`, `requirements-analyst.md` — you won't need them yet
+4. **Delete agents:** Remove `product-manager.md`, `project-manager.md`, `sre-engineer.md`, `security-engineer.md`, `devops-engineer.md`, `performance-engineer.md`, `technical-writer.md`, `requirements-analyst.md` — you won't need them yet
 5. **Update dispatcher:** Remove deleted agents from the Available Agents table
 6. **Start building**
 

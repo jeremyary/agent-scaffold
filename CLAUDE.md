@@ -79,7 +79,10 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 | Need | Agent | Command |
 |------|-------|---------|
 | Plan a feature or large task | **Dispatcher** | Start here for any multi-step work |
+| Shape a product idea into a plan | **Product Manager** | `@product-manager` |
+| Gather requirements | **Requirements Analyst** | `@requirements-analyst` |
 | Design system architecture | **Architect** | `@architect` |
+| Break work into epics & stories | **Project Manager** | `@project-manager` |
 | Write backend/API code | **Backend Developer** | `@backend-developer` |
 | Build UI components | **Frontend Developer** | `@frontend-developer` |
 | Design database schema | **Database Engineer** | `@database-engineer` |
@@ -89,9 +92,9 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 | Audit security | **Security Engineer** | `@security-engineer` |
 | Optimize performance | **Performance Engineer** | `@performance-engineer` |
 | Set up CI/CD or infra | **DevOps Engineer** | `@devops-engineer` |
+| Define SLOs & incident response | **SRE Engineer** | `@sre-engineer` |
 | Debug a problem | **Debug Specialist** | `@debug-specialist` |
 | Write documentation | **Technical Writer** | `@technical-writer` |
-| Gather requirements | **Requirements Analyst** | `@requirements-analyst` |
 
 ### How It Works
 

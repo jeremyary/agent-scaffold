@@ -1,8 +1,0 @@
-# Patterns excluded from ripgrep and similar search tools
-.env
-.env.*
-node_modules/
-dist/
-build/
-__pycache__/
-*.pyc
