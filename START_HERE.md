@@ -14,9 +14,9 @@ Instead of following this guide manually, open Claude Code in your new project a
 /setup
 ```
 
-The setup wizard will walk you through each step interactively — asking questions, gathering your answers, and making all the file edits for you. It covers everything in this guide (the wizard's 13 interactive steps correspond to the 9 steps below, broken into a more granular sequence).
+The setup wizard will walk you through each step interactively — asking questions, gathering your answers, and making all the file edits for you. It covers everything in this guide (the wizard's 13 interactive steps correspond to the 11 steps below, broken into a more granular sequence).
 
-**This document serves as a detailed reference** if you want to understand what each step does, make manual edits later, or customize beyond what the wizard covers.
+**This document serves as a detailed reference** if you want to understand what each step does, make manual edits later, or customize beyond what the wizard covers. The manual guide has 11 steps covering project identity, tech stack, code style, permissions, agents, domain rules, other rules, personal settings, secrets, AI compliance, and AI-native workflow practices.
 
 ---
 
@@ -433,6 +433,8 @@ Review the remaining rules files and adjust if they don't fit your project:
 | `.claude/rules/error-handling.md` | Different error format (not RFC 7807), different status code conventions |
 | `.claude/rules/observability.md` | Different logging format, different metrics system, custom health check paths |
 | `.claude/rules/api-conventions.md` | GraphQL-only (no REST), different pagination strategy, different naming convention |
+| `.claude/rules/agent-workflow.md` | Different chunking limits (file count, step count), different context budget |
+| `.claude/rules/review-governance.md` | Different PR size limits, different plan-review thresholds, PoC projects may want to remove this |
 
 For most projects, the defaults are reasonable and don't need changes.
 
@@ -607,6 +609,42 @@ A developer quick-reference checklist covering pre-work, during development, at 
 
 ---
 
+## Step 11: AI-Native Workflow Practices
+
+**Why this matters:** Traditional Agile breaks down when AI generates code faster than humans can review it. These rules operationalize practices that keep AI-generated code from becoming unreviewed tech debt.
+
+### 11a. Agent Workflow Rule
+
+**File:** `.claude/rules/agent-workflow.md`
+
+This rule enforces two disciplines across all agents:
+
+- **Task Chunking** — Keeps autonomous work small enough to succeed (3–5 files per task, 5–7 steps per chain, machine-verifiable exit conditions). Based on the error propagation model: at 95% per-step reliability, long chains compound errors.
+- **Context Engineering** — Teaches agents to load only what's relevant and stop when the codebase diverges from the spec.
+
+**When to adjust:** If your tasks consistently need more than 5 files (e.g., cross-cutting refactors), increase the limit in the rule file. The 3–5 file limit is a default for typical feature work.
+
+### 11b. Review Governance Rule
+
+**File:** `.claude/rules/review-governance.md`
+
+This rule enforces review discipline:
+
+- **Plan-Review-First** — For features with 3+ tasks, the Tech Lead's Technical Design must be reviewed before implementation begins.
+- **Anti-Rubber-Stamping** — Reviews must produce at least one finding. Zero-finding APPROVE is flagged as suspicious.
+- **PR Size Limits** — AI-generated PRs target ~400 changed lines (excluding tests/generated files). Beyond this, meaningful review is impractical.
+- **Two-Agent Review** — Auth, crypto, and data deletion code requires both `@code-reviewer` and `@security-engineer`.
+
+**Note for PoC maturity:** At proof-of-concept maturity, you may want to relax plan-review-first (skip the Tech Lead step for rapid iteration). You can remove the `@.claude/rules/review-governance.md` import from `CLAUDE.md` and re-add it when the project matures to MVP.
+
+### 11c. Team Playbook
+
+**File:** `docs/ai-native-team-playbook.md`
+
+A human-facing reference covering bolt methodology (scope-boxed iterations), new team rituals, metrics to track (and stop tracking), role evolution, and common anti-patterns. Recommended reading for the whole team — it doesn't affect agent behavior, but it provides context for why the agent rules exist.
+
+---
+
 ## Quick-Start Checklist
 
 Copy this checklist and check off items as you go:
@@ -622,6 +660,7 @@ Copy this checklist and check off items as you go:
 [ ] Step 8: Copy settings.local.json.template → settings.local.json, replace org-specific domains
 [ ] Step 9: Verify secrets protection — IDE ignore files, .env.example, .dockerignore if applicable
 [ ] Step 10: AI compliance — review ai-compliance.md, set up prepare-commit-msg hook, optionally enable sensitive data check
+[ ] Step 11: AI-native workflow — review agent-workflow.md and review-governance.md rules, share team playbook
 ```
 
 ---
@@ -660,5 +699,7 @@ If you're starting a quick proof-of-concept, here's the minimal path:
 4. **Delete agents:** Remove `product-manager.md`, `project-manager.md`, `sre-engineer.md`, `security-engineer.md`, `devops-engineer.md`, `performance-engineer.md`, `technical-writer.md`, `requirements-analyst.md` — you won't need them yet
 5. **Update dispatcher:** Remove deleted agents from the Available Agents table
 6. **Start building**
+
+For PoC, also consider removing the `@.claude/rules/review-governance.md` import from `CLAUDE.md` — the plan-review-first and anti-rubber-stamping rules add overhead that may not be needed during rapid prototyping. Re-add it when the project matures to MVP.
 
 You can always re-add agents and flesh out conventions as the project matures from PoC to MVP to production.

@@ -112,8 +112,14 @@ Example: "Implements the REST endpoint only. GraphQL support is Phase 2 (out of 
 Example: "Unit tests for the validation logic. Integration test for the full endpoint covered by T-NNN."]
 
 ### Done When
-- [ ] [Specific, verifiable completion criteria]
-- [ ] [Relevant acceptance criteria from parent story restated as checkable items]
+Each item must include a **verification command** — a concrete command that returns pass/fail:
+
+- [ ] Unit tests pass: `pytest tests/unit/test_<module>.py`
+- [ ] Type check clean: `npx tsc --noEmit`
+- [ ] Endpoint responds correctly: `curl -s localhost:3000/<path> | jq .data`
+- [ ] Lint passes: `ruff check src/<path>`
+
+**Not acceptable:** "Implementation is complete", "Code follows conventions", "Endpoint works correctly". These are not verifiable — they require subjective human judgment and leave "done" ambiguous.
 ```
 
 ## Estimation Guidelines
@@ -130,6 +136,19 @@ Use **story points** (Fibonacci: 1, 2, 3, 5, 8, 13) based on complexity, not tim
 | 13 | Extremely complex | Very high | New subsystem or major refactor — consider splitting |
 
 If an estimate exceeds 8, the story should probably be split.
+
+## Task Sizing Constraints
+
+Every task must satisfy these constraints. If a task violates any constraint, split it before assigning it to an implementer.
+
+| Dimension | Limit | Rationale |
+|-----------|-------|-----------|
+| **Files per task** | 3–5 max | More than 5 files signals over-scoping; see `.claude/rules/agent-workflow.md` |
+| **Exit condition** | Machine-verifiable required | A command that returns pass/fail — not a subjective assessment |
+| **Autonomy duration** | ~1 hour max | If an agent can't complete in roughly 1 hour, the task needs splitting |
+| **Scope** | Single concern | One endpoint, one migration, one component — not a feature |
+
+Tasks that violate these constraints are the primary cause of failed autonomous execution. The error propagation model (95% per-step reliability, compounding over steps) means oversized tasks fail more often than they succeed.
 
 ## Export Formats
 
@@ -275,6 +294,7 @@ The most common failure in work breakdown is producing tasks that reference upst
 - **Scope boundaries flow down.** If the PRD says "Phase 1: email only, no OAuth", that boundary must appear on every story and task it affects.
 - **Architecture decisions flow down.** If the Architect chose PostgreSQL with JSONB columns for flexible metadata, the relevant database tasks must state this, not assume the implementer will find the ADR.
 - **Test expectations are explicit.** Each task states what tests it requires. Don't rely on a blanket "write tests" task at the end to cover everything.
+- **Context horizon per task.** Each task's description + referenced files must fit within 3–5 source files. If a task needs context from more than 5 files, either inline the relevant parts directly into the task description or split the task into smaller pieces. See `.claude/rules/agent-workflow.md` for the context engineering rationale.
 
 ## Checklist Before Completing
 
