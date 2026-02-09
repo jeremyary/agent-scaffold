@@ -131,27 +131,43 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 @.claude/rules/api-conventions.md
 @.claude/rules/agent-workflow.md
 @.claude/rules/review-governance.md
+@.claude/rules/architecture.md
+@.claude/rules/api-development.md
+@.claude/rules/ui-development.md
+@.claude/rules/database-development.md
 
 ## Project Commands
 
-<!-- Uncomment and fill in the actual commands for your project -->
+<!-- Uncomment and fill in the actual commands for your project. -->
+<!-- The defaults below assume a Makefile-based workflow with Turborepo. -->
 
 ### Build
 ```bash
-# npm run build
+# make build
 ```
 
 ### Test
 ```bash
-# npm test
+# make test
 ```
 
 ### Lint
 ```bash
-# npm run lint
+# make lint
 ```
 
 ### Type Check
 ```bash
-# npm run typecheck
+# pnpm type-check
+```
+
+### Database
+```bash
+# make db-start
+# make db-upgrade
+```
+
+### Dev Server
+```bash
+# make dev
 ```
