@@ -54,6 +54,19 @@
 - <!-- e.g., "Budget: no paid services beyond hosting during PoC" -->
 - <!-- e.g., "Must support IE11" or "Modern browsers only (last 2 versions)" -->
 
+## Red Hat AI Compliance
+
+All AI-assisted work in this project must comply with Red Hat's internal AI policies. The full machine-enforceable rules are in `.claude/rules/ai-compliance.md`. Summary of obligations:
+
+1. **Human-in-the-Loop** — All AI-generated code must be reviewed, tested, and validated by a human before merge
+2. **Sensitive Data Prohibition** — Never input confidential data, PII, credentials, or internal hostnames into AI tools
+3. **AI Marking** — Include `// This project was developed with assistance from AI tools.` (or language equivalent) at the top of AI-assisted files, and use `Assisted-by:` / `Generated-by:` commit trailers
+4. **Copyright & Licensing** — Verify generated code doesn't reproduce copyrighted implementations; all dependencies must use [Fedora Allowed Licenses](https://docs.fedoraproject.org/en-US/legal/allowed-licenses/)
+5. **Upstream Contributions** — Check upstream project AI policies before contributing AI-generated code; default to disclosure
+6. **Security Review** — Treat AI-generated code with the same or higher scrutiny as human-written code, especially for auth, crypto, and input handling
+
+See `docs/ai-compliance-checklist.md` for the developer quick-reference checklist.
+
 ## Key Decisions
 
 <!-- Record major technology choices here so all agents stay aligned. -->
@@ -106,6 +119,7 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 
 ## Project Conventions
 
+@.claude/rules/ai-compliance.md
 @.claude/rules/code-style.md
 @.claude/rules/python-style.md
 @.claude/rules/git-workflow.md

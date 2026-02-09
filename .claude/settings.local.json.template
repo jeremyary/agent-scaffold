@@ -1,4 +1,15 @@
 {
+  "_hooks": {
+    "instructions": "To enable the sensitive data scanner, copy the 'hooks' object below into your settings.local.json at the top level (next to 'permissions'). This runs .claude/hooks/sensitive-data-check.sh before every tool use, catching credentials, Red Hat internal hostnames, and PII before they reach AI tools.",
+    "example_hooks": {
+      "PreToolUse": [
+        {
+          "matcher": ".*",
+          "command": ".claude/hooks/sensitive-data-check.sh"
+        }
+      ]
+    }
+  },
   "_template": {
     "instructions": "Copy this file to settings.local.json and customize. settings.local.json is gitignored — it's your personal config. Remove the _template key from your copy — it's documentation only.",
     "org_specific": "Domains under [ORG] in the allow list are Red Hat / OpenShift defaults. Replace with your organization's equivalents or remove if not needed.",

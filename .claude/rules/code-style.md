@@ -33,6 +33,6 @@ globs: "src/**/*.{ts,tsx,js,jsx}"
 ## Comments
 - Code should be self-documenting; add comments only for "why", not "what"
 - Include only comments necessary to understand the code
-- always include a comment at the top of code files indicating "This project was developed with assistance from AI tools." 
+- Always include a comment at the top of code files: `// This project was developed with assistance from AI tools.` — this is a Red Hat policy requirement per "Guidelines on Use of AI Generated Content" (see `.claude/rules/ai-compliance.md` for full obligations)
 - Use JSDoc for public API functions
 - TODO format: `// TODO: description`
