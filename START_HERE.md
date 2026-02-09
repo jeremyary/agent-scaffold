@@ -4,7 +4,6 @@ This guide walks you through customizing the agent scaffold for a new project. F
 
 **Time estimate:** 15–30 minutes for a thorough setup.
 
----
 
 ## Interactive Setup (Recommended)
 
@@ -18,51 +17,12 @@ The setup wizard will walk you through each step interactively — asking questi
 
 **This document serves as a detailed reference** if you want to understand what each step does, make manual edits later, or customize beyond what the wizard covers. The manual guide has 11 steps covering project identity, tech stack, code style, permissions, agents, domain rules, other rules, personal settings, secrets, AI compliance, and AI-native workflow practices.
 
----
-
 ## Prerequisites
 
 - Claude Code CLI installed
 - The scaffold copied into your new project directory
-- A general idea of your project's goals, tech stack, and maturity level
+- A general idea of your project's goals, tech stack, and target maturity level
 
----
-
-## Glossary of Claude Code Concepts
-
-If you're new to Claude Code's agent system, here's a quick reference:
-
-| Concept | What It Means |
-|---------|---------------|
-| **`@agent-name`** | Mention an agent in your prompt to invoke it (e.g., `@architect design a caching layer`) |
-| **`/skill-name`** | Invoke a user-invocable skill as a slash command (e.g., `/review`, `/setup`) |
-| **`tools`** | Frontmatter field in agent files — comma-separated string restricting which tools the agent can use |
-| **`memory: project`** | Agent retains context across sessions for this project (learns over time) |
-| **`model: opus`** | Uses the most capable (and most expensive) Claude model — reserved for high-impact decisions |
-| **`model: sonnet`** | Uses the standard Claude model — good quality at lower cost, used for most implementation work |
-| **plan mode (read-only)** | Agent can read and analyze code but cannot modify files — enforced by lacking Write/Edit tools |
-| **acceptEdits mode** | Agent can read and modify files; file edits are auto-accepted, Bash commands still require approval |
-| **`blockedBy`** | Task dependency — a task won't start until the tasks it's blocked by are complete |
-| **`settings.json`** | Shared permission configuration — committed to git, applies to all team members |
-| **`settings.local.json`** | Personal permission overrides — gitignored, only applies to you |
-| **`@.claude/rules/file.md`** | Import directive in CLAUDE.md — includes the referenced rule file's content |
-| **`globs` frontmatter** | Path-scoping for rules — the rule only applies to files matching the glob pattern |
-
-## Cost Guidance
-
-The scaffold uses two model tiers. The cost difference is significant:
-
-| Tier | Model | Agents | Relative Cost | Use For |
-|------|-------|--------|---------------|---------|
-| **High** | Opus | Dispatcher, Product Manager, Architect | ~5x Sonnet | Routing, product strategy, architecture — errors here cascade through everything |
-| **Standard** | Sonnet | All 15 others | 1x (baseline) | Implementation, review, analysis, project management — quality is sufficient for the task |
-
-For cost-conscious usage:
-- Use specialist agents directly (e.g., `@backend-developer`) instead of the dispatcher when you know which agent you need — this skips the Opus routing step
-- The dispatcher is most valuable for complex, cross-cutting tasks where routing errors would waste downstream work
-- Read-only agents (Code Reviewer, Security Engineer) are cheap since they don't generate file edits
-
----
 
 ## Step 1: Project Identity (`CLAUDE.md`)
 
@@ -164,8 +124,6 @@ pnpm test
 \`\`\`
 ```
 
----
-
 ## Step 2: Technology Stack Details (`project-conventions/SKILL.md`)
 
 **Why this matters:** This file provides detailed implementation conventions — directory layout, naming patterns, error handling patterns, and environment variables. Agents reference it when writing code.
@@ -237,8 +195,6 @@ List the actual environment variables your project needs:
 | `PORT` | No | Server port (default: 3000) |
 ```
 
----
-
 ## Step 3: Code Style Rules
 
 **Why this matters:** Style rules are path-scoped and language-specific. The scaffold ships with two style rules out of the box:
@@ -271,8 +227,6 @@ globs: "{src,web}/**/*.{ts,tsx}"  # Multiple directories
 Each style file has opinionated defaults. Review and adjust:
 - **Python:** indentation, line length, formatter (Black/Ruff), import sorting, type hint requirements
 - **JS/TS:** indentation, line length, semicolons, quote style, import grouping
-
----
 
 ## Step 4: Bash Permissions (`.claude/settings.json`)
 
@@ -340,8 +294,6 @@ The defaults block dangerous operations. Add project-specific denials if needed:
 "Bash(helm uninstall *)"
 ```
 
----
-
 ## Step 5: Prune or Add Agents
 
 **Why this matters:** Not every project needs all 18 agents. Unused agents add noise to the dispatcher's routing decisions.
@@ -387,8 +339,6 @@ Note: `name` must be kebab-case and match the filename. `tools` is a comma-separ
 
 Add the new agent to the dispatcher's table and the routing matrix in `.claude/CLAUDE.md`.
 
----
-
 ## Step 6: Domain-Specific Rules (Optional)
 
 **Why this matters:** Some projects have domain constraints that cut across all agents — data handling requirements, calculation precision, regulatory formats, etc.
@@ -418,8 +368,6 @@ Import it from root CLAUDE.md by adding:
 @.claude/rules/domain.md
 ```
 
----
-
 ## Step 7: Adjust Other Rules (If Needed)
 
 Review the remaining rules files and adjust if they don't fit your project:
@@ -437,8 +385,6 @@ Review the remaining rules files and adjust if they don't fit your project:
 | `.claude/rules/review-governance.md` | Different PR size limits, different plan-review thresholds, PoC projects may want to remove this |
 
 For most projects, the defaults are reasonable and don't need changes.
-
----
 
 ## Step 8: Personal Settings (`.claude/settings.local.json`)
 
@@ -484,8 +430,6 @@ Add any personal overrides or additional domains:
 "WebFetch(domain:internal-docs.mycompany.com)"
 ```
 
----
-
 ## Step 9: Secrets & Environment File Protection
 
 **Why this matters:** If your project uses `.env` files or similar for secrets, you need multiple layers of protection — not just git, but also AI-assisted tools that can read your files.
@@ -529,8 +473,6 @@ PORT=8000
 ```
 
 Reference the environment variables you defined in Step 2d (project-conventions) when creating this file.
-
----
 
 ## Step 10: AI Compliance & Hooks
 
@@ -607,8 +549,6 @@ Add the same `hooks` block to `.claude/settings.json` (the shared, committed con
 
 A developer quick-reference checklist covering pre-work, during development, at commit time, at PR/review time, and upstream contributions. Also includes common scenarios and an FAQ. Share this with your team as a practical guide alongside the machine-enforced rules.
 
----
-
 ## Step 11: AI-Native Workflow Practices
 
 **Why this matters:** Traditional Agile breaks down when AI generates code faster than humans can review it. These rules operationalize practices that keep AI-generated code from becoming unreviewed tech debt.
@@ -643,8 +583,6 @@ This rule enforces review discipline:
 
 A human-facing reference covering bolt methodology (scope-boxed iterations), new team rituals, metrics to track (and stop tracking), role evolution, and common anti-patterns. Recommended reading for the whole team — it doesn't affect agent behavior, but it provides context for why the agent rules exist.
 
----
-
 ## Quick-Start Checklist
 
 Copy this checklist and check off items as you go:
@@ -663,8 +601,6 @@ Copy this checklist and check off items as you go:
 [ ] Step 11: AI-native workflow — review agent-workflow.md and review-governance.md rules, share team playbook
 ```
 
----
-
 ## Available Slash Commands
 
 After setup, these skills are available in your project:
@@ -676,30 +612,90 @@ After setup, these skills are available in your project:
 | `/status` | Run lint, typecheck, tests, and dependency audit — report a health dashboard |
 | `/adr` | Create a new Architecture Decision Record interactively |
 
-## Verification
+## Glossary of Claude Code Concepts
 
-After completing setup, verify everything works:
+If you're new to Claude Code's agent system, here's a quick reference:
 
-1. **Open Claude Code** in the project directory
-2. **Check agents are discovered:** Type `@` and verify your agents appear in autocomplete
-3. **Test the dispatcher:** Ask it to plan a small task relevant to your project
-4. **Test a specialist:** Ask a relevant agent to do a small, concrete task
-5. **Check rules apply:** Ask an implementation agent to write code and verify it follows your code style rules
-6. **Test a skill:** Run `/status` to verify project commands are configured correctly
+| Concept | What It Means |
+|---------|---------------|
+| **`@agent-name`** | Mention an agent in your prompt to invoke it (e.g., `@architect design a caching layer`) |
+| **`/skill-name`** | Invoke a user-invocable skill as a slash command (e.g., `/review`, `/setup`) |
+| **`tools`** | Frontmatter field in agent files — comma-separated string restricting which tools the agent can use |
+| **`memory: project`** | Agent retains context across sessions for this project (learns over time) |
+| **`model: opus`** | Uses the most capable (and most expensive) Claude model — reserved for high-impact decisions |
+| **`model: sonnet`** | Uses the standard Claude model — good quality at lower cost, used for most implementation work |
+| **plan mode (read-only)** | Agent can read and analyze code but cannot modify files — enforced by lacking Write/Edit tools |
+| **acceptEdits mode** | Agent can read and modify files; file edits are auto-accepted, Bash commands still require approval |
+| **`blockedBy`** | Task dependency — a task won't start until the tasks it's blocked by are complete |
+| **`settings.json`** | Shared permission configuration — committed to git, applies to all team members |
+| **`settings.local.json`** | Personal permission overrides — gitignored, only applies to you |
+| **`@.claude/rules/file.md`** | Import directive in CLAUDE.md — includes the referenced rule file's content |
+| **`globs` frontmatter** | Path-scoping for rules — the rule only applies to files matching the glob pattern |
 
----
+## Cost Guidance
 
-## Example: PoC Setup in 5 Minutes
+The scaffold uses two model tiers. The cost difference is significant:
 
-If you're starting a quick proof-of-concept, here's the minimal path:
+| Tier | Model | Agents | Relative Cost | Use For |
+|------|-------|--------|---------------|---------|
+| **High** | Opus | Dispatcher, Product Manager, Architect | ~5x Sonnet | Routing, product strategy, architecture — errors here cascade through everything |
+| **Standard** | Sonnet | All 15 others | 1x (baseline) | Implementation, review, analysis, project management — quality is sufficient for the task |
 
-1. **CLAUDE.md** — Fill in project name, set maturity to `proof-of-concept`, list 2-3 goals, note key tech choices, fill in commands
-2. **project-conventions/SKILL.md** — Fill in tech stack table only (skip the rest)
-3. **Style rules** — Delete the style rule file you don't need (python-style.md or code-style.md) and remove its `@` import from CLAUDE.md
-4. **Delete agents:** Remove `product-manager.md`, `project-manager.md`, `sre-engineer.md`, `security-engineer.md`, `devops-engineer.md`, `performance-engineer.md`, `technical-writer.md`, `requirements-analyst.md` — you won't need them yet
-5. **Update dispatcher:** Remove deleted agents from the Available Agents table
-6. **Start building**
+For cost-conscious usage:
+- Use specialist agents directly (e.g., `@backend-developer`) instead of the dispatcher when you know which agent you need — this skips the Opus routing step
+- The dispatcher is most valuable for complex, cross-cutting tasks where routing errors would waste downstream work
+- Read-only agents (Code Reviewer, Security Engineer) are cheap since they don't generate file edits
 
-For PoC, also consider removing the `@.claude/rules/review-governance.md` import from `CLAUDE.md` — the plan-review-first and anti-rubber-stamping rules add overhead that may not be needed during rapid prototyping. Re-add it when the project matures to MVP.
+## What's Next — Using the Scaffold
 
-You can always re-add agents and flesh out conventions as the project matures from PoC to MVP to production.
+Setup is done. Now you need to know how to actually use this thing. Here's what to reach for depending on what you're doing.
+
+### "I need to build a non-trivial feature"
+
+Follow the **Spec-Driven Development (SDD) workflow** — the scaffold's recommended lifecycle for any feature involving new APIs, data shapes, or 3+ implementation tasks.
+
+**How it works in practice:**
+
+1. Ask `@product-manager` to create a product plan (`plans/product-plan.md`) — scoped to product concerns only (no architecture, no story breakout)
+2. Ask relevant agents (Architect, API Designer, Security Engineer) to review the plan — each writes a review to `plans/reviews/`
+3. Step through each review's recommendations with Claude Code and resolve them
+4. Ask `@product-manager` to validate the plan after changes
+5. Ask `@architect` to create the architecture design (`plans/architecture.md`) — same review-resolve-validate cycle
+6. Ask `@requirements-analyst` to create requirements (`plans/requirements.md`) — same review-resolve-validate cycle
+7. **Pause here** — don't proceed until product plan, architecture, and requirements are all thorough and agreed upon
+8. Ask `@tech-lead` to create a technical design for Phase 1 — review and validate
+9. Ask `@project-manager` to break out sized tasks for Phase 1
+10. Implement, review, repeat for Phase 2
+
+Each step stays strictly within its scope — the product plan doesn't include architecture, the architecture doesn't include task breakdown, etc. This prevents premature solutioning and gives each agent room to do their job well.
+
+**Full details:** `.claude/skills/workflow-patterns/SKILL.md` → "Spec-Driven Development (SDD)" section.
+
+### "I need to do something quick"
+
+Not everything needs the full SDD lifecycle. Use the right tool for the job:
+
+| Situation | What to Do |
+|-----------|-----------|
+| Bug fix with known cause | `@debug-specialist` directly |
+| Single-file code change | Ask the relevant implementer directly (`@backend-developer`, `@frontend-developer`) |
+| Performance issue | `@performance-engineer` directly |
+| Quick code review | `/review` slash command |
+| Health check | `/status` slash command |
+| Architecture decision | `@architect` directly, or `/adr` for an interactive ADR |
+
+### "I have a complex request but I'm not sure which agents to use"
+
+Start with the **Dispatcher**. Describe what you need and it will analyze your request, select the right agents, and create a sequenced task plan.
+
+The dispatcher is most valuable for cross-cutting work where routing errors would waste downstream effort. For single-domain tasks where you know the right agent, go direct — it saves the Opus routing cost.
+
+### Key references
+
+| Document | What It Covers | When to Read |
+|----------|---------------|-------------|
+| **`.claude/skills/workflow-patterns/SKILL.md`** | All workflow patterns (SDD, bug fix, refactoring, etc.) with phase-by-phase breakdowns | When you need to know the right sequence of agents for a type of work |
+| **`docs/ai-native-team-playbook.md`** | Team rituals, metrics, role evolution, anti-patterns | When onboarding the team or establishing team practices around AI-assisted development |
+| **`.claude/rules/agent-workflow.md`** | Task chunking limits and context engineering rules | When agents are producing poor results (tasks may be too large or context too noisy) |
+| **`.claude/rules/review-governance.md`** | Review discipline — plan-first, anti-rubber-stamping, PR size | When reviews feel rubber-stamped or AI-generated PRs are too large to review meaningfully |
+| **`.claude/CLAUDE.md`** | Agent routing matrix and orchestration patterns | When you need to know which agent handles what, or how agents coordinate |

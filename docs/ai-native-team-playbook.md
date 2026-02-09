@@ -29,14 +29,6 @@ This shift doesn't mean Agile is wrong — it means the time allocation within A
 
 ### Bolt Lifecycle
 
-```
-┌─────────────────────────────────────────────────┐
-│                   One Bolt                       │
-├──────────┬──────────────────┬───────────────────┤
-│  Spec    │      Build       │      Verify       │
-│  ~20%    │      ~50%        │      ~30%         │
-└──────────┴──────────────────┴───────────────────┘
-```
 
 | Phase | Time Share | Activities | Who |
 |-------|-----------|------------|-----|
@@ -95,9 +87,9 @@ This shift doesn't mean Agile is wrong — it means the time allocation within A
 
 ---
 
-## 4. New Metrics
+## 4. Am I Being Productive?
 
-### Metrics to Track
+### Measurements to Self-Evaluate
 
 | Metric | Definition | Target | Why It Matters |
 |--------|-----------|--------|----------------|
@@ -107,7 +99,7 @@ This shift doesn't mean Agile is wrong — it means the time allocation within A
 | **Spec revision rate** | % of bolts that required spec revision during Build | < 20% | High revision rate means Spec phase is too rushed |
 | **Review findings per PR** | Average findings per code review | ≥ 1 | Zero-finding reviews suggest rubber-stamping (see review-governance.md) |
 
-### Metrics to Stop Tracking
+### Outdated Measurements to Stop Worrying With
 
 | Metric | Why It's Misleading |
 |--------|-------------------|
@@ -120,28 +112,68 @@ This shift doesn't mean Agile is wrong — it means the time allocation within A
 
 ## 5. Role Evolution
 
-### Junior Developer → AI Supervisor
+AI-assisted development shifts the bottleneck from writing code to specifying and verifying it. This affects every role on the team — human and agent alike.
 
-The junior developer's primary job shifts from writing code to **reviewing and testing AI-generated code**. This is harder than it sounds — it requires reading code critically, understanding edge cases, and catching subtle bugs.
+### Human vs. Agent Roles
+
+Some roles in this scaffold exist as both a **human position** and an **AI agent**. The human and the agent are not interchangeable — they have different strengths and the human is always accountable.
+
+| Role | Human | Agent | Relationship |
+|------|-------|-------|-------------|
+| **Product Manager** | Owns product vision, stakeholder relationships, business context | `@product-manager` — structures PRDs, prioritizes features | Human drives discovery and decisions; agent structures and documents |
+| **Tech Lead** | Owns technical direction, mentors team, resolves ambiguity | `@tech-lead` — writes TDs, defines contracts | Human reviews and approves plans; agent produces the detailed artifacts |
+| **Architect** | Owns system-level decisions, evaluates trade-offs in business context | `@architect` — documents architecture, writes ADRs | Human makes judgment calls; agent captures and structures decisions |
+| **Code Reviewer** | Accountable for what ships, catches subtle issues, enforces standards | `@code-reviewer` — systematic quality analysis | Human is the final gate; agent provides thorough first-pass analysis |
+| **Security Engineer** | Owns threat model, risk acceptance decisions | `@security-engineer` — scans for known vulnerability patterns | Human assesses risk in context; agent catches mechanical issues |
+| **Developer** | Writes specs, reviews output, makes design judgments, debugs production | `@backend-developer`, `@frontend-developer` — generates code from specs | Human specifies and verifies; agent implements within constraints |
+
+**The key distinction:** Agents generate artifacts. Humans make decisions, bear accountability, and verify quality. No agent output ships without human review.
+
+### How Engineering Roles Shift
+
+#### Early-Career Engineers
+
+The shift: from writing code as the primary learning activity to **reviewing, testing, and debugging AI-generated code** as the primary learning activity.
 
 **Key activities:**
-- Review AI-generated code for correctness and edge cases
-- Write tests that exercise the boundaries AI tends to miss
+- Review AI-generated code for correctness and edge cases — this builds code-reading skills faster than writing from scratch
+- Write tests that exercise the boundaries AI tends to miss (error paths, concurrency, edge cases)
 - Flag code that "looks right but feels wrong" — AI often produces plausible but subtly incorrect implementations
-- Learn codebase patterns by reviewing how AI applies them (and where it gets them wrong)
+- Debug failures in AI-generated code — understanding *why* something broke builds deeper skills than writing it correctly the first time
+- Pair with more experienced engineers on spec writing and plan review to build those muscles early
 
-### Tech Lead → Orchestrator
+**Growth path:** As review skills develop, take on spec writing for small features, then plan review for features you didn't spec.
 
-The Tech Lead's primary job shifts from writing code to **writing specifications and reviewing plans**. Code review remains important, but plan review is now higher leverage.
+#### Mid-Level Engineers
+
+The shift: from implementing features end-to-end to **specifying features precisely enough that agents can implement them correctly**, and reviewing the results critically.
 
 **Key activities:**
-- Write Technical Design Documents with concrete interface contracts
-- Review plans before implementation begins — this is the highest-leverage review
-- Define machine-verifiable exit conditions for every task
-- Resolve spec conflicts when implementation discovers problems
-- Coach juniors on how to review AI output effectively
+- Write clear, scoped task descriptions with machine-verifiable exit conditions
+- Review AI-generated code with domain expertise — catch business logic errors that agents miss
+- Own the verify phase of bolts — integration testing, manual verification, edge case validation
+- Identify when AI output is structurally correct but architecturally wrong (right code, wrong place)
+- Mentor early-career engineers on effective AI review techniques
 
-### Product Manager → Context Engineer
+**Growth path:** Take on technical design for multi-task features, define interface contracts, lead spec elaboration sessions.
+
+#### Senior / Staff Engineers
+
+The shift: from writing the hardest code to **writing the specifications and plans that make AI-generated code correct**, and serving as the quality backstop.
+
+**Key activities:**
+- Write Technical Design Documents with concrete interface contracts and exit conditions
+- Lead plan review — the highest-leverage review activity in AI-native development
+- Resolve spec conflicts when implementation discovers problems (spec revision protocol)
+- Conduct architecture reviews to detect context drift before it compounds
+- Design the system-level patterns that agents apply at the feature level
+- Coach other engineers on spec quality, review effectiveness, and when to override AI suggestions
+
+**Growth path:** Shape team workflow and agent configurations, contribute to agent prompt engineering, define project-level conventions.
+
+### How Non-Engineering Roles Shift
+
+#### Product Manager → Context Engineer
 
 The PM's primary job shifts from managing backlogs to **engineering precise context** for AI consumption. Vague requirements produce vague code.
 
@@ -149,39 +181,21 @@ The PM's primary job shifts from managing backlogs to **engineering precise cont
 - Write acceptance criteria that are specific enough to generate machine-verifiable exit conditions
 - Define scope boundaries explicitly — what's IN and what's OUT
 - Provide concrete examples (sample data, expected behavior) rather than abstract descriptions
-- Prioritize ruthlessly — AI makes it easy to build everything, but review capacity is limited
+- Prioritize ruthlessly — AI makes it easy to build everything, but review capacity is the real constraint
 
-### Code Reviewer → Last Line of Defense
+#### Code Reviewer → Quality Gate
 
-Code review becomes the **primary quality gate** rather than a formality. The reviewer is now the last human who reads the code before it ships.
+Code review becomes the **primary quality assurance activity** rather than a formality. Whether performed by a human, an agent, or both — the human reviewer is the last person who reads the code before it ships.
 
 **Key activities:**
 - Read every line, not just the diff summary — AI-generated code often has subtle issues that aren't visible in a quick skim
 - Verify tests actually test the behavior, not just the implementation
 - Check that the code matches the spec, not just that it compiles
-- Flag patterns for promotion to project rules when they recur
+- Flag recurring patterns for promotion to project rules (see `review-governance.md`)
 
 ---
 
-## 6. The Broken Rung Problem
-
-AI-assisted development creates a risk for junior developers: if they spend all their time reviewing AI output, they may never develop the deep skills that come from writing code from scratch — debugging production issues, designing systems, making architectural trade-offs.
-
-This is the "broken rung" — juniors who can supervise AI but can't function without it.
-
-### Mitigations
-
-| Practice | How It Helps |
-|----------|-------------|
-| **Rotation** | Alternate between AI-supervised work and manual implementation — e.g., 3 weeks with AI, 1 week without |
-| **Pair programming** | Pair a junior with a senior on tasks where the junior writes code and the senior reviews — not the reverse |
-| **Learning sprints** | Dedicate occasional bolts where AI assistance is limited or prohibited — focus on skill-building |
-| **Focus on AI-weak areas** | Assign juniors to areas where AI is weakest: system design, production debugging, business context interpretation, cross-system integration |
-| **Code review mentorship** | Seniors review the junior's reviews — teach them what to look for and how to evaluate AI output critically |
-
----
-
-## 7. Anti-Patterns
+## 6. Anti-Patterns
 
 ### Vibe Coding
 
