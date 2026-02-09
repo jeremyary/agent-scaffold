@@ -42,4 +42,5 @@ globs: "**/*.py"
 - Code should be self-documenting; add comments only for "why", not "what"
 - Use Google-style or NumPy-style docstrings consistently (pick one for the project)
 - All public modules, classes, and functions must have docstrings
+- Always include a comment at the top of code files: `# This project was developed with assistance from AI tools.` — this is a Red Hat policy requirement per "Guidelines on Use of AI Generated Content" (see `.claude/rules/ai-compliance.md` for full obligations)
 - TODO format: `# TODO: description`

@@ -426,6 +426,7 @@ Review the remaining rules files and adjust if they don't fit your project:
 
 | File | When to Modify |
 |------|---------------|
+| `.claude/rules/ai-compliance.md` | Different org AI policies, different license list, different internal hostname patterns |
 | `.claude/rules/git-workflow.md` | Different branch strategy, non-Conventional Commits |
 | `.claude/rules/testing.md` | Different coverage targets, test structure, or naming |
 | `.claude/rules/security.md` | Stricter compliance requirements or different security model |
@@ -529,6 +530,83 @@ Reference the environment variables you defined in Step 2d (project-conventions)
 
 ---
 
+## Step 10: AI Compliance & Hooks
+
+**Why this matters:** If your team uses AI code assistants, you need clear compliance guardrails — marking AI-generated code, preventing sensitive data leaks, and tracking AI assistance in git history. The scaffold ships with a Red Hat-aligned AI compliance framework that you can adopt as-is or customize for your organization.
+
+### 10a. AI Compliance Rule
+
+**File:** `.claude/rules/ai-compliance.md`
+
+This rule enforces 6 obligations for AI-assisted development: human-in-the-loop review, sensitive data prohibition, AI marking requirements, copyright/licensing checks, upstream contribution policy, and security review standards.
+
+**To customize for your organization:**
+- Replace Red Hat-specific references (e.g., `*.redhat.com`, `*.corp.redhat.com`) with your org's internal domains
+- Replace the [Fedora Allowed Licenses](https://docs.fedoraproject.org/en-US/legal/allowed-licenses/) link with your org's approved license list
+- Adjust the upstream contribution policy section to match your org's open-source guidelines
+
+**To remove if not needed:** Delete `.claude/rules/ai-compliance.md`, remove the `@.claude/rules/ai-compliance.md` import from `CLAUDE.md`, and remove the "Red Hat AI Compliance" section from `CLAUDE.md`.
+
+### 10b. Git Hook: AI Assistance Trailers
+
+**File:** `.claude/hooks/prepare-commit-msg`
+
+This hook automatically appends an `Assisted-by: Claude Code` trailer to commits made through Claude Code. It detects Claude Code commits by checking for the `Co-Authored-By` trailer or the `CLAUDE_CODE` environment variable.
+
+**Setup (choose one):**
+
+```bash
+# Option 1 — Symlink (recommended, stays in sync with the repo)
+ln -sf ../../.claude/hooks/prepare-commit-msg .git/hooks/prepare-commit-msg
+
+# Option 2 — Set hooks directory (replaces ALL hooks paths — copy existing hooks first)
+git config core.hooksPath .claude/hooks
+
+# Option 3 — Copy (static, won't auto-update)
+cp .claude/hooks/prepare-commit-msg .git/hooks/prepare-commit-msg
+chmod +x .git/hooks/prepare-commit-msg
+```
+
+The hook does nothing for merge or squash commits. To change the default trailer (e.g., to `Generated-by: Claude Code`), edit the `DEFAULT_TRAILER` variable in the script or set the `CLAUDE_COMMIT_TRAILER` environment variable.
+
+### 10c. Sensitive Data Check (Optional)
+
+**File:** `.claude/hooks/sensitive-data-check.sh`
+
+This script scans text for patterns that may indicate sensitive data (credentials, internal hostnames, PII) before it's sent to AI tools. It catches AWS keys, API tokens, private keys, internal hostnames, RFC 1918 IPs, email addresses, passwords, connection strings, and GitHub/GitLab tokens.
+
+**To enable for yourself (personal use):**
+
+Copy the hooks configuration from `.claude/settings.local.json.template` into your `.claude/settings.local.json`:
+
+```json
+{
+  "permissions": { ... },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "command": ".claude/hooks/sensitive-data-check.sh"
+      }
+    ]
+  }
+}
+```
+
+**To enable for the whole team:**
+
+Add the same `hooks` block to `.claude/settings.json` (the shared, committed config).
+
+**To customize patterns:** Edit the script to add project-specific patterns in the `CUSTOM_PATTERNS` section, or adjust the internal hostname regex for your organization (replace `redhat.com` patterns with your org's domains).
+
+### 10d. AI Compliance Checklist
+
+**File:** `docs/ai-compliance-checklist.md`
+
+A developer quick-reference checklist covering pre-work, during development, at commit time, at PR/review time, and upstream contributions. Also includes common scenarios and an FAQ. Share this with your team as a practical guide alongside the machine-enforced rules.
+
+---
+
 ## Quick-Start Checklist
 
 Copy this checklist and check off items as you go:
@@ -540,9 +618,10 @@ Copy this checklist and check off items as you go:
 [ ] Step 4: settings.json — bash commands + WebFetch domains for your stack
 [ ] Step 5: Remove unused agents, update dispatcher + routing matrix
 [ ] Step 6: (Optional) Add .claude/rules/domain.md for domain-specific rules
-[ ] Step 7: (Optional) Review git-workflow.md, testing.md, security.md, error-handling.md, observability.md, api-conventions.md
+[ ] Step 7: (Optional) Review ai-compliance.md, git-workflow.md, testing.md, security.md, error-handling.md, observability.md, api-conventions.md
 [ ] Step 8: Copy settings.local.json.template → settings.local.json, replace org-specific domains
 [ ] Step 9: Verify secrets protection — IDE ignore files, .env.example, .dockerignore if applicable
+[ ] Step 10: AI compliance — review ai-compliance.md, set up prepare-commit-msg hook, optionally enable sensitive data check
 ```
 
 ---
