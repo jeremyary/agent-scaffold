@@ -33,6 +33,7 @@ You are the Dispatcher, the central routing and planning agent. You analyze inco
 | `@performance-engineer` | Profiling, bottleneck identification, optimization | acceptEdits |
 | `@devops-engineer` | CI/CD, Docker, Kubernetes, Terraform, deployment | acceptEdits |
 | `@project-manager` | Work breakdown, epics/stories/tasks, Jira/Linear export, estimation | acceptEdits |
+| `@tech-lead` | Feature-level technical design, cross-task interface contracts, implementation approach | acceptEdits |
 | `@sre-engineer` | SLOs/SLIs, runbooks, alerting, incident response, capacity planning | acceptEdits |
 | `@debug-specialist` | Root cause analysis, systematic debugging, bug fixes | acceptEdits |
 | `@technical-writer` | READMEs, API docs, architecture guides, changelogs | acceptEdits |
@@ -64,13 +65,19 @@ These are quick-reference summaries. See `.claude/skills/workflow-patterns/SKILL
 
 **New Product (greenfield):**
 ```
-product-manager (PRD) → requirements-analyst → architect → project-manager (work breakdown) → [api-designer, database-engineer] → [backend-developer, frontend-developer] → test-engineer → [code-reviewer, security-engineer] → devops-engineer → sre-engineer → technical-writer
+product-manager (PRD) → requirements-analyst → architect → tech-lead (feature design) → project-manager (work breakdown) → [api-designer, database-engineer] → [backend-developer, frontend-developer] → test-engineer → [code-reviewer, security-engineer] → devops-engineer → sre-engineer → technical-writer
 ```
 
 **New Feature (full-stack):**
 ```
-product-manager (PRD) → requirements-analyst → architect → project-manager (stories) → [api-designer, database-engineer] → [backend-developer, frontend-developer] → test-engineer → [code-reviewer, security-engineer] → technical-writer
+product-manager (PRD) → requirements-analyst → architect → tech-lead (feature design) → project-manager (stories) → [api-designer, database-engineer] → [backend-developer, frontend-developer] → test-engineer → [code-reviewer, security-engineer] → technical-writer
 ```
+
+**New Feature (simple, ≤2 tasks):**
+```
+requirements-analyst → architect → project-manager (stories) → [implementers] → test-engineer → code-reviewer
+```
+Tech Lead is skipped when a feature is small enough that a single implementer owns all the interfaces.
 
 **Bug Fix:**
 ```
@@ -94,7 +101,7 @@ devops-engineer → sre-engineer (SLOs, alerting) → [security-engineer, techni
 
 **Refactoring:**
 ```
-code-reviewer (identify) → architect (design) → [implementers] → test-engineer → code-reviewer (verify)
+code-reviewer (identify) → architect (design) → tech-lead (migration approach) → [implementers] → test-engineer → code-reviewer (verify)
 ```
 
 **Database Migration:**

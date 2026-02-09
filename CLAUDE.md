@@ -82,6 +82,7 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 | Shape a product idea into a plan | **Product Manager** | `@product-manager` |
 | Gather requirements | **Requirements Analyst** | `@requirements-analyst` |
 | Design system architecture | **Architect** | `@architect` |
+| Design feature-level implementation approach | **Tech Lead** | `@tech-lead` |
 | Break work into epics & stories | **Project Manager** | `@project-manager` |
 | Write backend/API code | **Backend Developer** | `@backend-developer` |
 | Build UI components | **Frontend Developer** | `@frontend-developer` |

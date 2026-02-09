@@ -55,7 +55,7 @@ The scaffold uses two model tiers. The cost difference is significant:
 | Tier | Model | Agents | Relative Cost | Use For |
 |------|-------|--------|---------------|---------|
 | **High** | Opus | Dispatcher, Product Manager, Architect | ~5x Sonnet | Routing, product strategy, architecture — errors here cascade through everything |
-| **Standard** | Sonnet | All 14 others | 1x (baseline) | Implementation, review, analysis, project management — quality is sufficient for the task |
+| **Standard** | Sonnet | All 15 others | 1x (baseline) | Implementation, review, analysis, project management — quality is sufficient for the task |
 
 For cost-conscious usage:
 - Use specialist agents directly (e.g., `@backend-developer`) instead of the dispatcher when you know which agent you need — this skips the Opus routing step
@@ -344,7 +344,7 @@ The defaults block dangerous operations. Add project-specific denials if needed:
 
 ## Step 5: Prune or Add Agents
 
-**Why this matters:** Not every project needs all 17 agents. Unused agents add noise to the dispatcher's routing decisions.
+**Why this matters:** Not every project needs all 18 agents. Unused agents add noise to the dispatcher's routing decisions.
 
 **Directory:** `.claude/agents/`
 

@@ -7,7 +7,8 @@ When the user's request matches keywords below, route to the corresponding agent
 | Keywords / Signals | Primary Agent | Secondary |
 |---|---|---|
 | "product", "PRD", "vision", "roadmap", "feature priority", "discovery", "persona" | Product Manager | Requirements Analyst |
-| "design", "architecture", "ADR", "trade-off", "tech stack" | Architect | — |
+| "design", "architecture", "ADR", "trade-off", "tech stack" | Architect | Tech Lead |
+| "technical design", "interface contract", "implementation approach", "how should we build" | Tech Lead | Architect |
 | "API", "endpoint", "handler", "middleware", "server" | Backend Developer | API Designer |
 | "component", "UI", "CSS", "accessibility", "responsive" | Frontend Developer | — |
 | "schema", "migration", "query", "index", "database" | Database Engineer | — |
@@ -37,6 +38,7 @@ Mode is determined by the agent's tool set: agents without Write/Edit tools are 
 | Frontend Developer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | Database Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | API Designer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch | — |
+| Tech Lead | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | project |
 | Code Reviewer | sonnet | plan | Read, Glob, Grep, Bash | project |
 | Test Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | Security Engineer | sonnet | plan | Read, Glob, Grep, Bash, WebSearch | project |
@@ -89,11 +91,12 @@ Opus is reserved for decisions with high blast radius (product direction, archit
 
 ## Agent Memory (`memory: project`)
 
-Nine agents have `memory: project` enabled: Dispatcher, Product Manager, Architect, Code Reviewer, Security Engineer, Project Manager, SRE Engineer, Technical Writer, and Requirements Analyst. This means they retain context across sessions for the current project.
+Ten agents have `memory: project` enabled: Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer, Security Engineer, Project Manager, SRE Engineer, Technical Writer, and Requirements Analyst. This means they retain context across sessions for the current project.
 
 **What agents should remember:**
 - Product vision, personas, success metrics, and feature priorities (Product Manager)
 - Architectural decisions and their rationale (Architect)
+- Feature-level technical patterns, interface conventions, and implementation approaches that worked well (Tech Lead)
 - Recurring code quality patterns — both positive and negative (Code Reviewer)
 - Known vulnerabilities, accepted risks, and security exceptions (Security Engineer)
 - Estimation accuracy, velocity patterns, and dependency structures (Project Manager)

@@ -64,8 +64,14 @@ A vertical slice of user-facing functionality. Deliverable within a single sprin
 - [ ] Given [context], when [action], then [result]
 - [ ] Given [context], when [action], then [result]
 
-### Technical Notes
-[Implementation hints, constraints, or references to architecture decisions]
+### Technical Context
+[Relevant architecture decisions (from ADRs or Architect output) that apply to this story.
+Summarize the decision and its rationale — don't just reference a document ID.
+Include relevant API contracts, data models, or integration patterns.]
+
+### Scope Boundaries
+[What is explicitly in and out of scope for this story, pulled from the PRD's MoSCoW classification.
+Example: "Covers email login only. OAuth/SSO is P1, not included in this story."]
 
 ### Dependencies
 - Blocked by: [S-NNN, E-NNN]
@@ -73,7 +79,7 @@ A vertical slice of user-facing functionality. Deliverable within a single sprin
 ```
 
 ### Task
-A technical sub-unit of a story. Not user-facing. Maps to a single agent action.
+A technical sub-unit of a story. Not user-facing. Maps to a single agent action. **Tasks must be self-contained** — an implementer should be able to start work by reading only the task, without chasing references across upstream documents.
 
 ```markdown
 ## Task: [T-NNN] [Title]
@@ -82,11 +88,32 @@ A technical sub-unit of a story. Not user-facing. Maps to a single agent action.
 **Agent:** @agent-name
 **Estimate:** [XS/S/M]
 
+### Context
+[Why this task exists — the user-facing goal it serves, pulled from the parent story.
+Include the specific acceptance criteria from the story that this task satisfies.]
+
+### Architecture & Design Decisions
+[Relevant decisions from the Architect that constrain or guide implementation.
+Example: "ADR-003: Use event-driven pattern for notifications — publish to message bus, not direct HTTP calls."
+Omit this section only if no architectural decisions apply to this task.]
+
+### Scope Boundaries
+[What this task includes and explicitly excludes. Pulled from the PRD and story scope.
+Example: "Implements the REST endpoint only. GraphQL support is Phase 2 (out of scope)."]
+
 ### Description
-[Concrete technical action to take]
+[Concrete technical action to take. Include:
+- Where in the codebase this work happens (files, modules, packages)
+- Interfaces this task must conform to (API contracts, data shapes, function signatures)
+- Integration points with other tasks or existing code]
+
+### Test Expectations
+[What tests are expected as part of this task.
+Example: "Unit tests for the validation logic. Integration test for the full endpoint covered by T-NNN."]
 
 ### Done When
-- [ ] [Specific completion criteria]
+- [ ] [Specific, verifiable completion criteria]
+- [ ] [Relevant acceptance criteria from parent story restated as checkable items]
 ```
 
 ## Estimation Guidelines
@@ -215,13 +242,18 @@ Write to `docs/project/agent-tasks.md` — formatted for the Dispatcher to creat
 ## Work Breakdown Process
 
 1. **Read inputs** — Review PRD, requirements docs, architecture decisions, and existing code structure
-2. **Identify epics** — Map PRD features/phases to epics
-3. **Decompose into stories** — Break each epic into vertical slices (user-facing increments)
-4. **Define tasks** — Break stories into technical tasks mapped to specific agents
-5. **Map dependencies** — Identify blocking relationships between items
-6. **Estimate** — Apply story point estimates based on complexity
-7. **Sequence** — Arrange into milestones/phases respecting dependencies and parallelism
-8. **Export** — Generate output in the requested format(s)
+2. **Build a context index** — Extract and organize the upstream context you'll embed into work items:
+   - From the **PRD**: scope boundaries (MoSCoW), personas, success metrics, phasing
+   - From the **Requirements Analyst**: acceptance criteria (Given/When/Then), edge cases, non-functional requirements
+   - From the **Architect**: ADRs, tech decisions, system boundaries, integration patterns, data models
+3. **Identify epics** — Map PRD features/phases to epics
+4. **Decompose into stories** — Break each epic into vertical slices (user-facing increments). Embed relevant acceptance criteria and scope boundaries directly into each story.
+5. **Define tasks** — Break stories into self-contained technical tasks. Each task must carry forward the specific context an implementer needs (see Task template). **An implementer should never need to read the PRD, requirements doc, or ADRs to understand their task.**
+6. **Map dependencies** — Identify blocking relationships between items
+7. **Estimate** — Apply story point estimates based on complexity
+8. **Sequence** — Arrange into milestones/phases respecting dependencies and parallelism
+9. **Verify context propagation** — Review each task and confirm it answers: What am I building? Why? What constraints apply? Where does it go in the codebase? What does "done" look like?
+10. **Export** — Generate output in the requested format(s)
 
 ## Guidelines
 
@@ -234,6 +266,16 @@ Write to `docs/project/agent-tasks.md` — formatted for the Dispatcher to creat
 - Flag risks: items with high uncertainty, external dependencies, or new technology
 - Keep estimation honest — padding erodes trust, optimism creates surprises
 
+### Context Propagation Rules
+
+The most common failure in work breakdown is producing tasks that reference upstream documents instead of carrying the relevant context. Follow these rules:
+
+- **Inline, don't reference.** Write "Use event-driven pattern — publish to message bus per ADR-003" not "See ADR-003."
+- **Acceptance criteria flow down.** Every Given/When/Then from the Requirements Analyst must appear in a story or task — none can be left only in the requirements doc.
+- **Scope boundaries flow down.** If the PRD says "Phase 1: email only, no OAuth", that boundary must appear on every story and task it affects.
+- **Architecture decisions flow down.** If the Architect chose PostgreSQL with JSONB columns for flexible metadata, the relevant database tasks must state this, not assume the implementer will find the ADR.
+- **Test expectations are explicit.** Each task states what tests it requires. Don't rely on a blanket "write tests" task at the end to cover everything.
+
 ## Checklist Before Completing
 
 - [ ] All PRD features are covered by at least one epic
@@ -244,6 +286,8 @@ Write to `docs/project/agent-tasks.md` — formatted for the Dispatcher to creat
 - [ ] At least one export format generated (Jira, Linear, GitHub, or Agent Task Plan)
 - [ ] Review gates included after implementation phases
 - [ ] Risks and blockers documented
+- [ ] **Context propagation verified** — every task is self-contained (answers: what, why, constraints, where, done-when) without requiring the implementer to read upstream documents
+- [ ] **All acceptance criteria accounted for** — every Given/When/Then from the Requirements Analyst appears in at least one story or task
 
 ## Output Format
 
