@@ -252,3 +252,65 @@ Phase 3: Security Audit
 Phase 4: Documentation
   → @technical-writer: Runbooks, operational docs, architecture guide
 ```
+
+## Spec-Driven Development (SDD)
+
+The default workflow for non-trivial features — those involving new data shapes, APIs, integration points, or 3+ implementation tasks. The key difference from "New Feature (Full-Stack)" is explicit review gates after each planning phase, machine-verifiable exit conditions, task sizing constraints, and anti-rubber-stamping governance.
+
+Use SDD when a feature is complex enough that getting the spec wrong would waste more time than writing the spec takes. For simple, single-concern tasks (1–2 files, one implementer), use the simpler Bug Fix or direct single-agent routing instead.
+
+```
+Phase 1: Product Definition
+  → @product-manager: PRD with scope, success metrics, and prioritized features
+  ★ REVIEW GATE: User confirms PRD scope and priorities before proceeding
+
+Phase 2: Requirements
+  → @requirements-analyst: Detailed user stories with Given/When/Then acceptance criteria
+  ★ REVIEW GATE: User confirms acceptance criteria are complete and correct
+
+Phase 3: Technical Design
+  → @tech-lead: Technical Design Document with:
+    - Concrete interface contracts (actual JSON shapes, actual type definitions)
+    - Data flow covering happy path AND error paths
+    - Machine-verifiable exit conditions per task (see agent-workflow.md)
+    - File structure mapped to actual codebase layout
+    - No TBDs in binding contracts
+  ★ REVIEW GATE: Plan review per review-governance.md checklist:
+    (1) Contracts concrete, (2) Error paths covered, (3) Exit conditions verifiable,
+    (4) File structure maps to codebase, (5) No TBDs in binding contracts
+
+Phase 4: Work Breakdown
+  → @project-manager: Epics, stories, and tasks with:
+    - 3–5 file scope per task (agent-workflow.md constraint)
+    - Machine-verifiable "Done When" with verification commands
+    - Self-contained descriptions (no "see document X" references)
+    - Estimates and dependency mapping
+
+Phase 5: Implementation (parallel where possible)
+  → Assigned implementers (@backend-developer, @frontend-developer, etc.)
+  → Each task verified against its exit condition before marking complete
+  → If a spec problem is discovered: STOP → revise TD → unblock (tech-lead's spec revision protocol)
+
+Phase 6: Review (parallel)
+  → @code-reviewer: Code quality review with anti-rubber-stamping (review-governance.md):
+    - At least one finding per review (mandatory findings rule)
+    - Test review is not optional — happy-path-only tests are a Warning
+    - Scope matching — out-of-scope changes are themselves a finding
+  → @security-engineer: Security audit (required for auth, crypto, data deletion code)
+
+Phase 7: Documentation
+  → @technical-writer: User docs, API docs, changelog
+```
+
+### When to Use SDD vs. Simpler Workflows
+
+| Signal | Use SDD | Use Simpler Workflow |
+|--------|---------|---------------------|
+| New API endpoints or data shapes | Yes | — |
+| 3+ implementation tasks | Yes | — |
+| Multiple agents need to produce integrating code | Yes | — |
+| Cross-cutting concern (auth, logging, error handling) | Yes | — |
+| Single file change | — | Direct single-agent routing |
+| Bug fix with known root cause | — | Bug Fix workflow |
+| Performance optimization | — | Performance Optimization workflow |
+| Documentation-only change | — | Direct @technical-writer |

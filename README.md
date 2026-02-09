@@ -11,7 +11,7 @@ A **Template repository** providing Claude Code agent scaffolding for full softw
 | Category | Count | Details |
 |----------|-------|---------|
 | **Agents** | 18 | Dispatcher, Product Manager, Architect, Tech Lead, Backend/Frontend Developer, Database Engineer, API Designer, Code Reviewer, Test Engineer, Security Engineer, Performance Engineer, DevOps Engineer, Project Manager, SRE Engineer, Debug Specialist, Technical Writer, Requirements Analyst |
-| **Convention Rules** | 9 | Code style (JS/TS + Python), git workflow, testing, security, error handling, observability, API conventions, AI compliance |
+| **Convention Rules** | 11 | Code style (JS/TS + Python), git workflow, testing, security, error handling, observability, API conventions, AI compliance, agent workflow, review governance |
 | **Hooks** | 2 | `prepare-commit-msg` (AI assistance trailers), `sensitive-data-check.sh` (credential/PII scanner) |
 | **Slash Commands** | 4 | `/setup` (wizard), `/review` (code + security), `/status` (health dashboard), `/adr` (architecture decisions) |
 | **Permissions** | Pre-configured | Safe Bash commands pre-approved, dangerous operations blocked, secrets protected |
@@ -35,8 +35,9 @@ claude
 
 | Document | Purpose |
 |----------|---------|
-| **[START_HERE.md](START_HERE.md)** | Complete setup guide — 9 steps to customize the scaffold for your project |
+| **[START_HERE.md](START_HERE.md)** | Complete setup guide — 11 steps to customize the scaffold for your project |
 | **[CLAUDE.md](CLAUDE.md)** | Project configuration file read by all agents — customize this first |
+| **[docs/ai-native-team-playbook.md](docs/ai-native-team-playbook.md)** | Team process reference — bolt methodology, metrics, role evolution, anti-patterns |
 
 ## Project Structure
 
@@ -44,7 +45,7 @@ claude
 .claude/
 ├── agents/          # 18 agent definitions (1 orchestrator + 17 specialists)
 ├── hooks/           # 2 hooks (AI commit trailers, sensitive data scanner)
-├── rules/           # 9 convention rules (code style, testing, security, AI compliance, etc.)
+├── rules/           # 11 convention rules (code style, testing, security, AI compliance, agent workflow, review governance, etc.)
 ├── skills/          # 6 skills (setup wizard, review, status, ADR, workflows, conventions)
 ├── settings.json    # Shared tool permissions (committed to git)
 └── CLAUDE.md        # Routing rules and orchestration patterns

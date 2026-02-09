@@ -115,7 +115,8 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 1. **Start with the Dispatcher** for any non-trivial task — it analyzes your request and creates a sequenced task plan with the right agents.
 2. **Use a specialist directly** when you know exactly which agent you need.
 3. **Rules files** (imported below) enforce project conventions automatically across all agents.
-4. **Skills** provide workflow templates and project convention references.
+4. **Spec-Driven Development** is the default for non-trivial features — plan review before code review, machine-verifiable exit conditions, and anti-rubber-stamping governance.
+5. **Skills** provide workflow templates and project convention references.
 
 ## Project Conventions
 
@@ -128,6 +129,8 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 @.claude/rules/error-handling.md
 @.claude/rules/observability.md
 @.claude/rules/api-conventions.md
+@.claude/rules/agent-workflow.md
+@.claude/rules/review-governance.md
 
 ## Project Commands
 
