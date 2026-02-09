@@ -255,52 +255,141 @@ Phase 4: Documentation
 
 ## Spec-Driven Development (SDD)
 
-The default workflow for non-trivial features — those involving new data shapes, APIs, integration points, or 3+ implementation tasks. The key difference from "New Feature (Full-Stack)" is explicit review gates after each planning phase, machine-verifiable exit conditions, task sizing constraints, and anti-rubber-stamping governance.
+The default workflow for non-trivial features. The defining principle is **scope discipline** — each phase stays strictly within its responsibility and does not do work that belongs to downstream agents. This prevents premature solutioning and ensures each agent gets to do their job with fresh perspective rather than rubber-stamping decisions already baked into an upstream artifact.
 
 Use SDD when a feature is complex enough that getting the spec wrong would waste more time than writing the spec takes. For simple, single-concern tasks (1–2 files, one implementer), use the simpler Bug Fix or direct single-agent routing instead.
 
+### Scope Discipline
+
+This is the most important principle in the workflow. Each phase must stay within its lane:
+
+| Phase | IN Scope | OUT of Scope |
+|-------|----------|-------------|
+| **Product Plan** | Problem, users, success metrics, feature scope (MoSCoW), user flows, phasing, risks | Architecture, technology choices, epic/story breakout, database design, API design |
+| **Architecture** | System design, component boundaries, technology decisions, ADRs, integration patterns | Product scope changes, detailed API contracts, task breakdown, implementation details |
+| **Requirements** | User stories, acceptance criteria (Given/When/Then), edge cases, non-functional requirements | Architecture decisions, task sizing, implementation approach |
+| **Technical Design** | Interface contracts, data flow, error strategies, file structure, exit conditions | Product scope changes, architecture overrides, work breakdown, estimation |
+| **Work Breakdown** | Epics, stories, tasks, estimates, dependencies, agent assignments | Product decisions, architecture changes, interface contract changes |
+
+**Why this matters:** When a product plan includes architecture decisions, the Architect is reduced to rubber-stamping rather than designing. When a technical design includes work breakdown, the Project Manager has no room to apply sizing constraints. Each agent's value comes from doing their analysis fresh — not from inheriting premature decisions from upstream.
+
+### Lifecycle
+
 ```
-Phase 1: Product Definition
-  → @product-manager: PRD with scope, success metrics, and prioritized features
-  ★ REVIEW GATE: User confirms PRD scope and priorities before proceeding
+Phase 1: Product Plan
+  → @product-manager: Product plan (plans/product-plan.md)
+    - Problem statement, target users, success metrics
+    - Feature scope with MoSCoW prioritization
+    - User flows, phasing, risks
+    ⚠ SCOPE: No architecture, no technology choices, no epic/story breakout.
+      Anything better decided by downstream agents is left out to avoid
+      premature solutioning.
 
-Phase 2: Requirements
-  → @requirements-analyst: Detailed user stories with Given/When/Then acceptance criteria
-  ★ REVIEW GATE: User confirms acceptance criteria are complete and correct
+Phase 2: Product Plan Review (parallel)
+  → @architect: Review from architecture feasibility perspective
+  → @api-designer: Review from API design perspective
+  → @security-engineer: Review from security/compliance perspective
+  → Reviews written to plans/reviews/product-plan-review-[agent-name].md
+  ★ REVIEW GATE: User steps through each review's recommendations with
+    Claude Code and makes decisions on how to handle them.
 
-Phase 3: Technical Design
-  → @tech-lead: Technical Design Document with:
+Phase 3: Product Plan Validation
+  → @product-manager: Re-reviews the product plan after changes from
+    review feedback. Checks for internal consistency and completeness.
+
+Phase 4: Architecture
+  → @architect: Architecture design (plans/architecture.md)
+    - System design, component boundaries, data flow
+    - Technology decisions with trade-off analysis, ADRs
+    - Integration patterns, deployment model
+    ⚠ SCOPE: No product scope changes, no detailed API contracts,
+      no implementation details, no task breakdown.
+
+Phase 5: Architecture Review (parallel)
+  → Relevant agents review from their perspectives
+    (e.g., @security-engineer, @api-designer, @backend-developer, @sre-engineer)
+  → Reviews written to plans/reviews/architecture-review-[agent-name].md
+  ★ REVIEW GATE: User steps through review recommendations with Claude Code.
+
+Phase 6: Architecture Validation
+  → @architect: Final review of architecture document after changes.
+
+Phase 7: Requirements
+  → @requirements-analyst: Requirements document (plans/requirements.md)
+    - Built from product plan AND architecture
+    - Detailed user stories with Given/When/Then acceptance criteria
+    - Edge cases, non-functional requirements
+    ⚠ SCOPE: No architecture decisions, no task breakdown,
+      no implementation approach.
+
+Phase 8: Requirements Review (parallel)
+  → @product-manager: Review for completeness against product plan
+  → @architect: Review for alignment with architecture
+  → Reviews written to plans/reviews/requirements-review-[agent-name].md
+  ★ REVIEW GATE: User steps through review recommendations with Claude Code.
+
+  ★★ CONSENSUS GATE: Pause here. Product plan, architecture, and
+     requirements must be thorough, well-documented, accurate, and
+     agreed upon by all parties (including the user) before proceeding.
+
+Phase 9: Technical Design (per phase)
+  → @tech-lead: Technical Design Document (plans/technical-design-phase-N.md)
     - Concrete interface contracts (actual JSON shapes, actual type definitions)
     - Data flow covering happy path AND error paths
     - Machine-verifiable exit conditions per task (see agent-workflow.md)
     - File structure mapped to actual codebase layout
     - No TBDs in binding contracts
+    ⚠ SCOPE: No product scope changes, no architecture overrides,
+      no work breakdown, no estimation.
+
+Phase 10: Technical Design Review
+  → Relevant agents review the TD
+  → Reviews written to plans/reviews/technical-design-phase-N-review-[agent-name].md
   ★ REVIEW GATE: Plan review per review-governance.md checklist:
     (1) Contracts concrete, (2) Error paths covered, (3) Exit conditions verifiable,
     (4) File structure maps to codebase, (5) No TBDs in binding contracts
 
-Phase 4: Work Breakdown
+Phase 11: Work Breakdown (per phase)
   → @project-manager: Epics, stories, and tasks with:
     - 3–5 file scope per task (agent-workflow.md constraint)
     - Machine-verifiable "Done When" with verification commands
     - Self-contained descriptions (no "see document X" references)
     - Estimates and dependency mapping
+    ⚠ SCOPE: No product decisions, no architecture changes,
+      no interface contract changes.
 
-Phase 5: Implementation (parallel where possible)
+Phase 12: Implementation (per phase, parallel where possible)
   → Assigned implementers (@backend-developer, @frontend-developer, etc.)
   → Each task verified against its exit condition before marking complete
-  → If a spec problem is discovered: STOP → revise TD → unblock (tech-lead's spec revision protocol)
+  → If a spec problem is discovered: STOP → revise TD → unblock
+    (tech-lead's spec revision protocol)
 
-Phase 6: Review (parallel)
+Phase 13: Review (per phase, parallel)
   → @code-reviewer: Code quality review with anti-rubber-stamping (review-governance.md):
     - At least one finding per review (mandatory findings rule)
     - Test review is not optional — happy-path-only tests are a Warning
     - Scope matching — out-of-scope changes are themselves a finding
   → @security-engineer: Security audit (required for auth, crypto, data deletion code)
 
-Phase 7: Documentation
+Phase 14: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
+
+Phases 9–14 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined in the product plan.
+
+### Artifact Map
+
+| Phase | Output | Path |
+|-------|--------|------|
+| Product Plan | Product plan | `plans/product-plan.md` |
+| Product Plan Review | Agent reviews | `plans/reviews/product-plan-review-[agent-name].md` |
+| Architecture | Architecture design | `plans/architecture.md` |
+| Architecture Review | Agent reviews | `plans/reviews/architecture-review-[agent-name].md` |
+| Requirements | Requirements document | `plans/requirements.md` |
+| Requirements Review | Agent reviews | `plans/reviews/requirements-review-[agent-name].md` |
+| Technical Design | TD per phase | `plans/technical-design-phase-N.md` |
+| TD Review | Agent reviews | `plans/reviews/technical-design-phase-N-review-[agent-name].md` |
+| Work Breakdown | Task plan per phase | `docs/project/work-breakdown-phase-N.md` |
 
 ### When to Use SDD vs. Simpler Workflows
 
