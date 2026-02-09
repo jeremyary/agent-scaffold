@@ -15,7 +15,7 @@ Instead of following this guide manually, open Claude Code in your new project a
 
 The setup wizard will walk you through each step interactively — asking questions, gathering your answers, and making all the file edits for you. It covers everything in this guide (the wizard's 13 interactive steps correspond to the 11 steps below, broken into a more granular sequence).
 
-**This document serves as a detailed reference** if you want to understand what each step does, make manual edits later, or customize beyond what the wizard covers. The manual guide has 11 steps covering project identity, tech stack, code style, permissions, agents, domain rules, other rules, personal settings, secrets, AI compliance, and AI-native workflow practices.
+**This document serves as a detailed reference** if you want to understand what each step does, make manual edits later, or customize beyond what the wizard covers. The manual guide has 11 steps covering project identity, tech stack, code style, permissions, agents, domain rules, other rules, personal settings, secrets, AI compliance, and AI-native workflow practices. The scaffold ships with 15 convention rules covering both general practices and stack-specific development patterns.
 
 ## Prerequisites
 
@@ -197,28 +197,29 @@ List the actual environment variables your project needs:
 
 ## Step 3: Code Style Rules
 
-**Why this matters:** Style rules are path-scoped and language-specific. The scaffold ships with two style rules out of the box:
+**Why this matters:** Style rules ensure consistent code across agents. The scaffold ships with two style rules:
 
-| File | Language | Glob |
-|------|----------|------|
-| `.claude/rules/python-style.md` | Python | `**/*.py` |
-| `.claude/rules/code-style.md` | TypeScript/JS/React | `src/**/*.{ts,tsx,js,jsx}` |
+| File | Scope | Coverage |
+|------|-------|----------|
+| `.claude/rules/code-style.md` | Global | TypeScript + Python (merged) — default for full-stack projects |
+| `.claude/rules/python-style.md` | `**/*.py` | Python-only alternative — for projects without a frontend |
 
 ### 3a. Keep, Modify, or Remove
 
-- **Python + React project:** Both files are relevant — review each and adjust conventions to match your tooling (e.g., Black vs. Ruff, Vitest vs. Jest).
-- **Python-only project:** Delete `code-style.md` and remove its `@` import from `CLAUDE.md`.
-- **JS/TS-only project:** Delete `python-style.md` and remove its `@` import from `CLAUDE.md`.
+- **Full-stack project (Python + React):** Use `code-style.md` (the merged version). Remove `python-style.md` and its `@` import from `CLAUDE.md` to avoid duplicate guidance.
+- **Python-only project:** Use `python-style.md`. Remove `code-style.md` and its `@` import from `CLAUDE.md`.
+- **JS/TS-only project:** Use `code-style.md` (ignore the Python section). Remove `python-style.md` and its `@` import from `CLAUDE.md`.
 - **Other language:** Delete both and create your own (e.g., `go-style.md` with `globs: "**/*.go"`). Import it from `CLAUDE.md`.
 
 ### 3b. Adjust Glob Patterns
 
-If your source code lives in a non-standard directory, update the glob:
+The merged `code-style.md` is global (no glob). The path-scoped rules (`api-development.md`, `ui-development.md`, `database-development.md`) use globs targeting the monorepo package layout. If your source code lives in different directories, update the globs:
 
 ```yaml
 ---
+globs: "packages/api/**/*"        # Default API scope
+globs: "backend/**/*"             # Alternative backend directory
 globs: "app/**/*.py"              # Django-style
-globs: "{src,web}/**/*.{ts,tsx}"  # Multiple directories
 ---
 ```
 
@@ -383,6 +384,10 @@ Review the remaining rules files and adjust if they don't fit your project:
 | `.claude/rules/api-conventions.md` | GraphQL-only (no REST), different pagination strategy, different naming convention |
 | `.claude/rules/agent-workflow.md` | Different chunking limits (file count, step count), different context budget |
 | `.claude/rules/review-governance.md` | Different PR size limits, different plan-review thresholds, PoC projects may want to remove this |
+| `.claude/rules/architecture.md` | Different monorepo layout, different package managers, different dev commands |
+| `.claude/rules/api-development.md` | Different backend framework (not FastAPI), different project structure. Remove if no backend API |
+| `.claude/rules/ui-development.md` | Different frontend framework (not React/TanStack), different component patterns. Remove if no frontend |
+| `.claude/rules/database-development.md` | Different ORM (not SQLAlchemy), different migration tool (not Alembic). Remove if no database |
 
 For most projects, the defaults are reasonable and don't need changes.
 

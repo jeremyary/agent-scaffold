@@ -4,7 +4,9 @@ globs: "**/*.py"
 
 # Python Code Style
 
-<!-- These are defaults for Python projects. Adjust to match your project's tooling (ruff, black, flake8, etc.). -->
+<!-- Alternative to code-style.md for Python-only projects. If your project uses both -->
+<!-- TypeScript and Python, prefer the merged code-style.md and remove this file's -->
+<!-- @import from CLAUDE.md. For Python-only projects, use this file and remove code-style.md. -->
 
 ## Formatting
 - 4-space indentation, no tabs

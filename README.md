@@ -11,7 +11,7 @@ A **Template repository** providing Claude Code agent scaffolding for full softw
 | Category | Count | Details |
 |----------|-------|---------|
 | **Agents** | 18 | Dispatcher, Product Manager, Architect, Tech Lead, Backend/Frontend Developer, Database Engineer, API Designer, Code Reviewer, Test Engineer, Security Engineer, Performance Engineer, DevOps Engineer, Project Manager, SRE Engineer, Debug Specialist, Technical Writer, Requirements Analyst |
-| **Convention Rules** | 11 | Code style (JS/TS + Python), git workflow, testing, security, error handling, observability, API conventions, AI compliance, agent workflow, review governance |
+| **Convention Rules** | 15 | Code style (TS + Python), git workflow, testing, security, error handling, observability, API conventions, AI compliance, agent workflow, review governance, architecture, API development, UI development, database development |
 | **Hooks** | 2 | `prepare-commit-msg` (AI assistance trailers), `sensitive-data-check.sh` (credential/PII scanner) |
 | **Slash Commands** | 4 | `/setup` (wizard), `/review` (code + security), `/status` (health dashboard), `/adr` (architecture decisions) |
 | **Permissions** | Pre-configured | Safe Bash commands pre-approved, dangerous operations blocked, secrets protected |
@@ -45,7 +45,7 @@ claude
 .claude/
 ├── agents/          # 18 agent definitions (1 orchestrator + 17 specialists)
 ├── hooks/           # 2 hooks (AI commit trailers, sensitive data scanner)
-├── rules/           # 11 convention rules (code style, testing, security, AI compliance, agent workflow, review governance, etc.)
+├── rules/           # 15 convention rules (code style, testing, security, AI compliance, agent workflow, review governance, architecture, API/UI/DB development, etc.)
 ├── skills/          # 6 skills (setup wizard, review, status, ADR, workflows, conventions)
 ├── settings.json    # Shared tool permissions (committed to git)
 └── CLAUDE.md        # Routing rules and orchestration patterns
