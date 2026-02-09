@@ -122,8 +122,9 @@ sre-engineer (SLOs, alerting, runbooks) → devops-engineer (monitoring infra) �
 
 **Spec-Driven Development (SDD, for non-trivial features):**
 ```
-product-manager (PRD) → [review gate] → requirements-analyst → [review gate] → tech-lead (TD with exit conditions) → [review gate] → project-manager (sized tasks) → [implementers] → [code-reviewer, security-engineer] → technical-writer
+product-manager (product plan) → [agent reviews + user resolution] → product-manager (validate) → architect (architecture) → [agent reviews + user resolution] → architect (validate) → requirements-analyst (requirements) → [agent reviews + user resolution] → ★ CONSENSUS GATE ★ → per phase: tech-lead (TD) → [review gate] → project-manager (work breakdown) → [implementers] → [code-reviewer, security-engineer] → technical-writer
 ```
+Each phase stays strictly within its scope — no premature solutioning. See `workflow-patterns/SKILL.md` for full protocol with scope boundaries, artifact paths, and review conventions.
 
 ### Task Plan Format
 

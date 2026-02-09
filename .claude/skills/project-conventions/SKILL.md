@@ -55,16 +55,45 @@ project/
 │   ├── integration/      # Integration tests
 │   └── e2e/              # End-to-end tests (Playwright)
 ├── migrations/           # Database migrations (Alembic, etc.)
+├── plans/                # SDD planning artifacts (product plan, architecture, requirements)
+│   └── reviews/          # Agent review documents (product-plan-review-*.md, etc.)
 ├── docs/
 │   ├── adr/              # Architecture Decision Records
 │   ├── api/              # API documentation
-│   ├── product/          # PRDs and product plans
+│   ├── product/          # PRDs and product plans (legacy — prefer plans/ for SDD)
 │   ├── project/          # Work breakdowns, Jira/Linear exports
+│   ├── technical-designs/ # Technical Design Documents
 │   └── sre/              # SLOs, runbooks, incident reviews
 ├── infra/                # Infrastructure as code
 │   ├── docker/
 │   └── terraform/
 └── scripts/              # Build and utility scripts
+```
+
+## Planning Artifacts (SDD Workflow)
+
+When following the Spec-Driven Development workflow (see `workflow-patterns/SKILL.md`), planning artifacts live in `plans/` with agent reviews in `plans/reviews/`.
+
+| Artifact | Path | Produced By |
+|----------|------|-------------|
+| Product plan | `plans/product-plan.md` | @product-manager |
+| Architecture design | `plans/architecture.md` | @architect |
+| Requirements document | `plans/requirements.md` | @requirements-analyst |
+| Technical design (per phase) | `plans/technical-design-phase-N.md` | @tech-lead |
+| Agent review | `plans/reviews/<artifact>-review-<agent-name>.md` | Reviewing agent |
+| Work breakdown (per phase) | `docs/project/work-breakdown-phase-N.md` | @project-manager |
+
+### Review File Naming Convention
+
+```
+plans/reviews/product-plan-review-architect.md
+plans/reviews/product-plan-review-api-designer.md
+plans/reviews/product-plan-review-security-engineer.md
+plans/reviews/architecture-review-security-engineer.md
+plans/reviews/architecture-review-sre-engineer.md
+plans/reviews/requirements-review-product-manager.md
+plans/reviews/requirements-review-architect.md
+plans/reviews/technical-design-phase-1-review-code-reviewer.md
 ```
 
 ## Naming Conventions
