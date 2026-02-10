@@ -46,20 +46,19 @@ After the brain dump, map what you learned to this checklist. Track internally w
 | 2 | Maturity level (poc / mvp / production) | Yes | Critical — drives convention strictness |
 | 3 | Domain | No | e.g., fintech, healthcare, developer tooling |
 | 4 | Primary users | No | e.g., internal devs, end customers |
-| 5 | Team size | No | solo / small / large |
-| 6 | Compliance requirements | No | e.g., SOC 2, HIPAA, none |
-| 7 | Goals (2-4) | Yes | What the project is trying to achieve |
-| 8 | Non-goals | No | What's explicitly out of scope |
-| 9 | Constraints | No | Technical, business, or organizational |
-| 10 | Technology stack | Yes | Language, framework, DB, etc. — auto-detect helps |
-| 11 | Project commands | No | build, test, lint, typecheck |
-| 12 | Directory structure | No | Can auto-detect or use defaults |
-| 13 | Agents to remove | No | Default: keep all |
-| 14 | Convention rule preferences | No | Default: use scaffold defaults |
-| 15 | Domain-specific rules | No | e.g., HIPAA data handling, financial precision |
-| 16 | Org-specific settings | No | Default: strip Red Hat domains |
-| 17 | Secrets / .env setup | No | Default: skip .env.example |
-| 18 | Agent model tier | No | Default: expanded hybrid (see 5g) |
+| 5 | Compliance requirements | No | e.g., SOC 2, HIPAA, none |
+| 6 | Goals (2-4) | Yes | What the project is trying to achieve |
+| 7 | Non-goals | No | What's explicitly out of scope |
+| 8 | Constraints | No | Technical, business, or organizational |
+| 9 | Technology stack | Yes | Language, framework, DB, etc. — auto-detect helps |
+| 10 | Project commands | No | build, test, lint, typecheck |
+| 11 | Directory structure | No | Can auto-detect or use defaults |
+| 12 | Agents to remove | No | Default: keep all |
+| 13 | Convention rule preferences | No | Default: use scaffold defaults |
+| 14 | Domain-specific rules | No | e.g., HIPAA data handling, financial precision |
+| 15 | Org-specific settings | No | Default: strip Red Hat domains |
+| 16 | Secrets / .env setup | No | Default: skip .env.example |
+| 17 | Agent model tier | No | Default: expanded hybrid (see 5g) |
 
 Items marked "No" in the Required column have sensible defaults. Don't ask about them unless the user's brain dump hints at something relevant (e.g., they mention healthcare → ask about HIPAA compliance rules).
 
@@ -87,7 +86,7 @@ Once you have enough information, apply ALL edits. Do not ask for confirmation b
 
 - Edit `CLAUDE.md`: Replace `# Project Name` with `# <project name>`
 - Edit `CLAUDE.md`: Replace the placeholder description line with their description
-- Edit `CLAUDE.md`: Fill in the Project Context table (Maturity, Domain, Primary Users, Team Size, Compliance)
+- Edit `CLAUDE.md`: Fill in the Project Context table (Maturity, Domain, Primary Users, Compliance)
 - Edit `CLAUDE.md`: In the Maturity Expectations table, **keep only the column for the selected maturity level** and delete the other two columns. Keep the Concern column.
 
 ### 5b. Goals, Non-Goals, Constraints
@@ -132,7 +131,6 @@ Based on their stack:
 Based on the project description, **proactively suggest** agents to remove. For example:
 - No frontend mentioned → suggest removing Frontend Developer
 - PoC maturity → suggest removing Security Engineer, Performance Engineer, Technical Writer, SRE Engineer, Product Manager, Project Manager
-- Solo developer → suggest removing Requirements Analyst, Project Manager (no need for Jira/Linear exports)
 - No database → suggest removing Database Engineer
 - No production deployment yet → suggest removing SRE Engineer
 - Requirements already well-defined → suggest removing Product Manager
@@ -195,7 +193,7 @@ Setup complete! Here's what was configured:
 
 [x] Project identity: <project name>
 [x] Maturity level: <level>
-[x] Project context: <domain>, <users>, <team>, <compliance>
+[x] Project context: <domain>, <users>, <compliance>
 [x] Goals: <count> goals, <count> non-goals defined
 [x] Constraints: <count> constraints defined
 [x] Technology stack: <primary language/framework>

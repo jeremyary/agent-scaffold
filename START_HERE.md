@@ -60,7 +60,6 @@ Example for a PoC:
 | Maturity | `proof-of-concept` |
 | Domain | Internal tooling |
 | Primary Users | Finance team (5 people) |
-| Team Size | solo |
 | Compliance | none |
 ```
 

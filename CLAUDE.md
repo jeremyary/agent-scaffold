@@ -12,7 +12,6 @@
 | Maturity | `proof-of-concept` / `mvp` / `production` |
 | Domain | <!-- e.g., fintech, healthcare, developer tooling, internal ops --> |
 | Primary Users | <!-- e.g., internal developers, end customers, ops team --> |
-| Team Size | <!-- solo / small team / large team --> |
 | Compliance | <!-- e.g., none, SOC 2, HIPAA, PCI-DSS, FedRAMP --> |
 
 ### Maturity Expectations
