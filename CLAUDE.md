@@ -54,6 +54,24 @@
 - <!-- e.g., "Budget: no paid services beyond hosting during PoC" -->
 - <!-- e.g., "Must support IE11" or "Modern browsers only (last 2 versions)" -->
 
+## Stakeholder Preferences
+
+<!-- Record stakeholder decision patterns and preferences so agents can anticipate rather than re-ask. -->
+<!-- These accumulate over time as agents learn from interactions. -->
+
+| Preference Area | Observed Pattern |
+|-----------------|-----------------|
+| Review thoroughness | <!-- e.g., "Prefers detailed reviews with specific line references" --> |
+| Risk tolerance | <!-- e.g., "Conservative — prefers proven patterns over cutting-edge" --> |
+| Scope decisions | <!-- e.g., "Tends to defer nice-to-haves to Phase 2" --> |
+| Communication style | <!-- e.g., "Prefers concise summaries with options, not lengthy analysis" --> |
+| Technology biases | <!-- e.g., "Strongly prefers Python over Node.js for backend services" --> |
+| Testing expectations | <!-- e.g., "Expects integration tests for every API endpoint, not just unit tests" --> |
+| Documentation level | <!-- e.g., "Wants ADRs for every significant decision, even in PoC" --> |
+
+<!-- Add rows as patterns emerge. Agents with project memory should update this section -->
+<!-- when they observe consistent preferences across multiple interactions. -->
+
 ## Red Hat AI Compliance
 
 All AI-assisted work in this project must comply with Red Hat's internal AI policies. The full machine-enforceable rules are in `.claude/rules/ai-compliance.md`. Summary of obligations:

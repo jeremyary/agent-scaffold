@@ -340,6 +340,26 @@ Note: `name` must be kebab-case and match the filename. `tools` is a comma-separ
 
 Add the new agent to the dispatcher's table and the routing matrix in `.claude/CLAUDE.md`.
 
+### 5e. Agent Model Tiers
+
+The scaffold defaults to an **expanded hybrid** model strategy — Opus for planning and review agents, Sonnet for implementation agents. You can adjust this based on your budget and quality needs.
+
+| Preset | Opus Agents | Sonnet Agents | Best For |
+|--------|-------------|---------------|----------|
+| **Cost-optimized** | None | All 18 | PoC, solo developer, budget-constrained, rapid iteration |
+| **Hybrid** | Dispatcher, Product Manager, Architect | All others | Budget-conscious teams where planning quality still matters |
+| **Expanded hybrid** (default) | Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer | All others | Most teams — plan quality and review rigor get Opus, implementation gets Sonnet |
+| **Quality-optimized** | All 18 | None | Security-sensitive domains, can't afford to redo work, cost is not a constraint |
+
+To change an agent's model tier, edit the `model:` field in its frontmatter (`.claude/agents/<agent-name>.md`). Then update the Agent Capabilities Matrix and Cost Tiers tables in `.claude/CLAUDE.md` to match.
+
+**Guidance on where Opus matters most:**
+- **Dispatcher** — Bad routing wastes all downstream work. This is the riskiest agent to downgrade.
+- **Product Manager, Architect** — Errors in product direction and architecture cascade through everything downstream.
+- **Tech Lead** — Plan quality is the highest-leverage activity in AI-native development. Poor contracts cause integration failures.
+- **Code Reviewer** — The last line of defense before code ships. Opus catches subtle issues Sonnet may miss.
+- **Implementation agents** — Sonnet is genuinely sufficient for writing code within well-defined contracts. Upgrading these to Opus has the lowest return.
+
 ## Step 6: Domain-Specific Rules (Optional)
 
 **Why this matters:** Some projects have domain constraints that cut across all agents — data handling requirements, calculation precision, regulatory formats, etc.
@@ -643,13 +663,15 @@ The scaffold uses two model tiers. The cost difference is significant:
 
 | Tier | Model | Agents | Relative Cost | Use For |
 |------|-------|--------|---------------|---------|
-| **High** | Opus | Dispatcher, Product Manager, Architect | ~5x Sonnet | Routing, product strategy, architecture — errors here cascade through everything |
-| **Standard** | Sonnet | All 15 others | 1x (baseline) | Implementation, review, analysis, project management — quality is sufficient for the task |
+| **High** | Opus | Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer | ~5x Sonnet | Routing, product strategy, architecture, technical design, code review — errors in planning and review cascade |
+| **Standard** | Sonnet | All 13 others | 1x (baseline) | Implementation, analysis, project management, documentation — quality is sufficient for the task |
+
+The default is **expanded hybrid** — Opus for agents where plan quality and review rigor have the highest leverage (routing, product, architecture, technical design, code review). Implementation agents use Sonnet, which is sufficient for writing code within well-defined contracts.
 
 For cost-conscious usage:
 - Use specialist agents directly (e.g., `@backend-developer`) instead of the dispatcher when you know which agent you need — this skips the Opus routing step
 - The dispatcher is most valuable for complex, cross-cutting tasks where routing errors would waste downstream work
-- Read-only agents (Code Reviewer, Security Engineer) are cheap since they don't generate file edits
+- Switch to all-sonnet for rapid PoC iteration where cost matters more than precision (see Step 5e)
 
 ## What's Next — Using the Scaffold
 

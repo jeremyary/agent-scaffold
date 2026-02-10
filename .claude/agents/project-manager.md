@@ -98,49 +98,105 @@ Example: "Covers email login only. OAuth/SSO is P1, not included in this story."
 - Blocks: [S-NNN]
 ```
 
+### Work Unit (WU)
+A group of 2–4 related tasks that share context. Work Units solve the problem of inter-task knowledge dependencies — when database schema, API handler, and service logic all touch the same domain concept, they need shared context but granular scope.
+
+Shared context lives at the WU level. Granular scope lives at the task level. An implementer reads the WU header once, then executes tasks within it sequentially.
+
+**When to group tasks into a WU:**
+- Tasks touch the same database table(s) or domain model
+- Tasks share an API surface (endpoint + schema + handler + tests)
+- Tasks modify the same module or package
+- A later task depends on understanding what an earlier task in the group produced
+
+**When NOT to use a WU (just use standalone tasks):**
+- Tasks are truly independent (different modules, no shared state)
+- Only 1 task exists for this area of the codebase
+- Tasks are assigned to different agents with no shared contracts
+
+**What NOT to put in WU shared context:**
+- Task-specific files (put those in individual task prompts)
+- Implementation details (that belongs in task steps)
+- Full upstream documents (inline only the relevant excerpts)
+
+```markdown
+## Work Unit: [WU-NNN] [Title]
+
+**Story:** [S-NNN]
+**Tasks:** [T-NNN, T-NNN, T-NNN]
+**Agent:** @agent-name (all tasks in a WU should target the same agent)
+
+### Shared Context
+[The context that ALL tasks in this WU need. This is loaded once and stays
+in context for the duration of the WU. Include:]
+
+**Read these files first:**
+- `path/to/relevant/module.py` — [why: existing code being modified]
+- `path/to/schema.py` — [why: data model this WU extends]
+- `plans/technical-design-phase-N.md`, Section "Interface Contracts > [relevant section]" — [why: binding contracts]
+
+**Key design decisions:**
+- [Inline the specific architectural and TD decisions that apply to ALL tasks in this WU.
+  Example: "Use async SQLAlchemy sessions. All DB operations must use `async with get_session()`."]
+
+**Scope boundaries:**
+- [What this WU covers and what it explicitly excludes.
+  Example: "Covers the /users CRUD endpoints. Auth middleware is WU-003."]
+
+### Tasks
+[List of task references in execution order]
+```
+
 ### Task
-A technical sub-unit of a story. Not user-facing. Maps to a single agent action. **Tasks must be self-contained** — an implementer should be able to start work by reading only the task, without chasing references across upstream documents.
+A technical sub-unit of a work unit or story. Maps to a single agent action. **Tasks must be self-contained** — an implementer should be able to start work by reading the WU shared context (if present) plus the task, without chasing references across upstream documents.
 
 ```markdown
 ## Task: [T-NNN] [Title]
 
-**Story:** [S-NNN]
+**Work Unit:** [WU-NNN] (or **Story:** [S-NNN] if standalone)
 **Agent:** @agent-name
 **Estimate:** [XS/S/M]
 
-### Context
-[Why this task exists — the user-facing goal it serves, pulled from the parent story.
-Include the specific acceptance criteria from the story that this task satisfies.]
+### Agent Prompt
+[This is the complete instruction set for the implementing agent. Write it as
+a direct prompt — not a description of what to do, but the actual instructions
+the agent will follow.]
 
-### Architecture & Design Decisions
-[Relevant decisions from the Architect that constrain or guide implementation.
-Example: "ADR-003: Use event-driven pattern for notifications — publish to message bus, not direct HTTP calls."
-Omit this section only if no architectural decisions apply to this task.]
+**1. Read these files:**
+- `path/to/file.py` — [why this file is relevant]
+- `path/to/other.ts` — [why this file is relevant]
+(If this task is part of a WU, reference "WU shared context files" instead of
+re-listing them. Add only task-specific files here.)
 
-### Scope Boundaries
-[What this task includes and explicitly excludes. Pulled from the PRD and story scope.
-Example: "Implements the REST endpoint only. GraphQL support is Phase 2 (out of scope)."]
+**2. Do these steps:**
+1. [Concrete step — e.g., "Add UserCreate and UserResponse Pydantic models to `packages/api/src/schemas/user.py`"]
+2. [Concrete step — e.g., "Implement POST /api/v1/users handler in `packages/api/src/routes/users.py` using the schema from step 1"]
+3. [Concrete step — e.g., "Write unit tests in `packages/api/tests/unit/test_users.py` covering: valid creation, duplicate email (409), missing required fields (422)"]
+4. [Concrete step — max 4-5 steps per task]
 
-### Description
-[Concrete technical action to take. Include:
-- Where in the codebase this work happens (files, modules, packages)
-- Interfaces this task must conform to (API contracts, data shapes, function signatures)
-- Integration points with other tasks or existing code]
+**3. Verify:**
+- [ ] `pytest packages/api/tests/unit/test_users.py` — all tests pass
+- [ ] `ruff check packages/api/src/` — no lint errors
+- [ ] `npx tsc --noEmit` — type check clean (if applicable)
+
+### Constraints
+- [Interface contracts this task must conform to — inline the specific contract, don't reference a document]
+- [Scope exclusions — e.g., "Do NOT add auth middleware — that's T-NNN"]
+- [Architecture decisions — e.g., "Use async def, not sync — per ADR-003"]
 
 ### Test Expectations
 [What tests are expected as part of this task.
 Example: "Unit tests for the validation logic. Integration test for the full endpoint covered by T-NNN."]
-
-### Done When
-Each item must include a **verification command** — a concrete command that returns pass/fail:
-
-- [ ] Unit tests pass: `pytest tests/unit/test_<module>.py`
-- [ ] Type check clean: `npx tsc --noEmit`
-- [ ] Endpoint responds correctly: `curl -s localhost:3000/<path> | jq .data`
-- [ ] Lint passes: `ruff check src/<path>`
-
-**Not acceptable:** "Implementation is complete", "Code follows conventions", "Endpoint works correctly". These are not verifiable — they require subjective human judgment and leave "done" ambiguous.
 ```
+
+**Agent Prompt guidelines:**
+- Write prompts as direct instructions, not descriptions. "Add a POST handler" not "A POST handler should be added."
+- Steps must be concrete and verifiable. "Add field X to model Y" not "Update the model as needed."
+- Limit to 4–5 steps per task. If you need more, the task is too large — split it.
+- Every task must end with verification commands. No exceptions.
+- If the task is part of a WU, assume the agent has already read the WU shared context files. Only list additional task-specific files in the "Read these files" section.
+
+**Not acceptable in verification:** "Implementation is complete", "Code follows conventions", "Endpoint works correctly". These are not verifiable — they require subjective judgment and leave "done" ambiguous.
 
 ## Estimation Guidelines
 
@@ -260,45 +316,51 @@ Write to `docs/project/agent-tasks.md` — formatted for the Dispatcher to creat
 1. [@product-manager] Finalize PRD for [feature] → blockedBy: none
 2. [@requirements-analyst] Write user stories for [feature] → blockedBy: [1]
 3. [@architect] Design system architecture for [feature] → blockedBy: [2]
+4. [@tech-lead] Technical design for phase 1 → blockedBy: [3]
+5. [@project-manager] Work breakdown for phase 1 → blockedBy: [4]
 
-### Phase 2: Implementation (parallel)
-4. [@api-designer] Define API contracts → blockedBy: [3]
-5. [@database-engineer] Design schema and migrations → blockedBy: [3]
-6. [@backend-developer] Implement API handlers → blockedBy: [4, 5]
-7. [@frontend-developer] Build UI components → blockedBy: [4]
+### Phase 2: Implementation (parallel, per work breakdown)
+WU-001: User API [@backend-developer] → blockedBy: [5]
+  6. T-001: Add User model and schema
+  7. T-002: Implement CRUD endpoints
+  8. T-003: Write unit tests
+WU-002: User UI [@frontend-developer] → blockedBy: [5]
+  9. T-004: Add user list page
+  10. T-005: Add user form component
 
 ### Phase 3: Quality
-8. [@test-engineer] Write integration tests → blockedBy: [6, 7]
-9. [@code-reviewer] Review implementation → blockedBy: [6, 7]
-10. [@security-engineer] Security audit → blockedBy: [6, 7]
+11. [@code-reviewer] Review implementation → blockedBy: [8, 10]
+12. [@security-engineer] Security audit → blockedBy: [8, 10]
 
 ### Phase 4: Delivery
-11. [@devops-engineer] Configure deployment → blockedBy: [9, 10]
-12. [@sre-engineer] Define SLOs and alerting → blockedBy: [11]
-13. [@technical-writer] Write documentation → blockedBy: [6, 7]
+13. [@technical-writer] Write documentation → blockedBy: [11, 12]
 ```
 
 ## Work Breakdown Process
 
-1. **Read inputs** — Review PRD, requirements docs, architecture decisions, and existing code structure
+1. **Read inputs** — Review PRD, requirements docs, architecture decisions, technical design, and existing code structure
 2. **Build a context index** — Extract and organize the upstream context you'll embed into work items:
    - From the **PRD**: scope boundaries (MoSCoW), personas, success metrics, phasing
    - From the **Requirements Analyst**: acceptance criteria (Given/When/Then), edge cases, non-functional requirements
    - From the **Architect**: ADRs, tech decisions, system boundaries, integration patterns, data models
+   - From the **Tech Lead**: interface contracts, data flow, error strategies, file structure, exit conditions — the TD is the primary context source for implementation tasks
 3. **Identify epics** — Map PRD features/phases to epics
 4. **Decompose into stories** — Break each epic into vertical slices (user-facing increments). Embed relevant acceptance criteria and scope boundaries directly into each story.
-5. **Define tasks** — Break stories into self-contained technical tasks. Each task must carry forward the specific context an implementer needs (see Task template). **An implementer should never need to read the PRD, requirements doc, or ADRs to understand their task.**
-6. **Map dependencies** — Identify blocking relationships between items
-7. **Estimate** — Apply story point estimates based on complexity
-8. **Sequence** — Arrange into milestones/phases respecting dependencies and parallelism
-9. **Verify context propagation** — Review each task and confirm it answers: What am I building? Why? What constraints apply? Where does it go in the codebase? What does "done" look like?
-10. **Export** — Generate output in the requested format(s)
+5. **Group into work units** — Identify tasks that share context (same module, same API surface, same domain model) and group them into WUs of 2–4 tasks. Write the WU shared context once; tasks within the WU inherit it. The Tech Lead's TD "Context Package" section maps directly to WU shared context.
+6. **Define tasks as agent prompts** — Break stories/WUs into self-contained technical tasks. Each task must be written as a direct agent prompt: files to read, steps to execute, commands to verify. **An implementer should never need to read the PRD, requirements doc, ADRs, or TD to understand their task — all relevant context is inlined.**
+7. **Map dependencies** — Identify blocking relationships between items. Tasks within a WU are typically sequential (each builds on the prior). WUs themselves may be parallel if they touch different modules.
+8. **Estimate** — Apply story point estimates based on complexity
+9. **Sequence** — Arrange into milestones/phases respecting dependencies and parallelism
+10. **Verify context propagation** — Review each task and confirm it answers: What am I building? Why? What constraints apply? Where does it go in the codebase? What does "done" look like? What are the exact verification commands?
+11. **Export** — Generate output in the requested format(s)
 
 ## Guidelines
 
 - Stories should be vertical slices — each delivers a testable increment of user value
 - Prefer many small stories over few large ones — aim for 3-5 point stories
 - Every story must have testable acceptance criteria
+- Group related tasks into Work Units when they share context — this prevents inter-task knowledge gaps (e.g., database schema + API handler + service logic for the same domain concept)
+- Write tasks as agent prompts, not descriptions — direct instructions the implementing agent follows
 - Map tasks to specific agents so the Dispatcher can route them directly
 - Include review gates (code-reviewer, security-engineer) after implementation phases
 - Identify the critical path — the longest chain of dependent items
@@ -309,17 +371,20 @@ Write to `docs/project/agent-tasks.md` — formatted for the Dispatcher to creat
 
 The most common failure in work breakdown is producing tasks that reference upstream documents instead of carrying the relevant context. Follow these rules:
 
-- **Inline, don't reference.** Write "Use event-driven pattern — publish to message bus per ADR-003" not "See ADR-003."
+- **The TD is the primary context source.** The Tech Lead's Technical Design Document already synthesizes architecture, requirements, and codebase patterns into concrete contracts. Use the TD's interface contracts, data flow, and file structure as the backbone of your WU shared context and task prompts. Don't re-derive what the TD already specifies.
+- **Inline, don't reference.** Write "Use event-driven pattern — publish to message bus per ADR-003" not "See ADR-003." Write the actual JSON schema in the task, not "See TD section 3.2."
 - **Acceptance criteria flow down.** Every Given/When/Then from the Requirements Analyst must appear in a story or task — none can be left only in the requirements doc.
 - **Scope boundaries flow down.** If the PRD says "Phase 1: email only, no OAuth", that boundary must appear on every story and task it affects.
 - **Architecture decisions flow down.** If the Architect chose PostgreSQL with JSONB columns for flexible metadata, the relevant database tasks must state this, not assume the implementer will find the ADR.
 - **Test expectations are explicit.** Each task states what tests it requires. Don't rely on a blanket "write tests" task at the end to cover everything.
-- **Context horizon per task.** Each task's description + referenced files must fit within 3–5 source files. If a task needs context from more than 5 files, either inline the relevant parts directly into the task description or split the task into smaller pieces. See `.claude/rules/agent-workflow.md` for the context engineering rationale.
+- **Context horizon per task.** Each task's files-to-read list must stay within 3–5 source files. If a task needs more, either inline the relevant parts directly into the task prompt or split the task. WU shared context files count toward this budget for the first task but are already loaded for subsequent tasks in the WU. See `.claude/rules/agent-workflow.md` for the context engineering rationale.
 
 ## Checklist Before Completing
 
 - [ ] All PRD features are covered by at least one epic
 - [ ] Stories are vertical slices with user-facing acceptance criteria
+- [ ] Related tasks grouped into Work Units where they share context (same module, API surface, or domain model)
+- [ ] Every task written as an agent prompt (files to read, steps to execute, commands to verify)
 - [ ] Dependencies mapped and no circular dependencies exist
 - [ ] Estimates applied to all stories (story points) and tasks (T-shirt sizes)
 - [ ] Critical path identified and highlighted

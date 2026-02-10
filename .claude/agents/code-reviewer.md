@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Analyzes code for quality, correctness, and adherence to project standards. Read-only — produces review findings only.
-model: sonnet
+model: opus
 tools: Read, Glob, Grep, Bash
 permissionMode: plan
 memory: project
