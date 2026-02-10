@@ -32,6 +32,21 @@ The product plan defines **what** to build and **why**. It explicitly does NOT i
 
 **Why this matters:** When the product plan includes architecture decisions, the Architect is reduced to rubber-stamping rather than designing. When it includes story breakout, the Project Manager has no room to apply sizing constraints. Each downstream agent's value comes from doing their analysis fresh — not from inheriting premature decisions from the product plan.
 
+### Scope Violation Examples
+
+| Product Scope (correct) | Architecture/Implementation (violation) |
+|---|---|
+| "Document storage with retrieval" | "MinIO S3-compatible object storage" |
+| "Real-time chat responses" | "SSE streaming" or "WebSockets" |
+| "LLM observability dashboard" | "LangFuse integration" |
+| "Workflow orchestration with checkpointing" | "LangGraph with PostgresSaver" |
+| "Vector similarity search for compliance docs" | "pgvector embeddings" |
+| "Cached queries for responsive UX" | "Redis cache with 200ms p95 target" |
+| "16 features organized by priority" | "16 epics with dependency maps and phase assignments" |
+| "Phase 2 enables document analysis capabilities" | "Phase 2: E2 (Document Processing) + E3 (Credit Analysis), entry/exit criteria, deliverables" |
+
+When a stakeholder brief includes technology names (e.g., "use LangGraph"), record them in a **Stakeholder-Mandated Constraints** section rather than embedding them throughout feature descriptions. These are inputs for the Architect, not product decisions.
+
 ## PRD Format
 
 When following the SDD workflow, write the product plan to `plans/product-plan.md`. For standalone PRDs outside SDD, write to `docs/product/PRD-<kebab-case-title>.md`.
@@ -84,12 +99,24 @@ High-level description of what we're building. Focus on WHAT and WHY, not HOW.
 |------|-----------|--------|------------|
 | ... | ... | ... | ... |
 
-## Phasing
-### Phase 1: [Name] — [Timeline/Milestone]
-[Scope description]
+## Stakeholder-Mandated Constraints
+[Technology, platform, or integration requirements explicitly stated by the stakeholder.
+These are recorded here and passed to the Architect — they are NOT product decisions.
+Example: "Must use LangGraph for orchestration", "Must deploy on OpenShift".]
 
-### Phase 2: [Name] — [Timeline/Milestone]
-[Scope description]
+## Phasing
+### Phase 1: [Name]
+**Capability milestone:** [What the system can do at the end of this phase — user-facing capability, not implementation detail]
+**Features included:** [Reference features from the MoSCoW list above by name]
+**Key risks:** [Phase-specific risks]
+
+### Phase 2: [Name]
+**Capability milestone:** [What the system can do at the end of this phase]
+**Features included:** [Reference features from the MoSCoW list above by name]
+**Key risks:** [Phase-specific risks]
+
+Do NOT include in phasing: epic breakdowns, entry/exit criteria, deliverables lists,
+dependency maps, or agent assignments. Those belong to the Project Manager's work breakdown.
 ```
 
 ## Prioritization Frameworks
@@ -106,6 +133,19 @@ Use **MoSCoW** for scope definition within a phase:
 - **Should Have** — Important but not critical for launch
 - **Could Have** — Nice to have if time allows
 - **Won't Have** — Explicitly out of scope for this phase
+
+## Non-Functional Requirements
+
+When the product plan includes quality expectations, frame them as **user-facing outcomes**, not implementation targets:
+
+| User-Facing (correct) | Implementation-Level (violation) |
+|---|---|
+| "Document processing feels responsive (< 10s)" | "Redis cache hit < 200ms p95" |
+| "Chat answers appear within a conversational pause" | "RAG query latency (uncached) < 2s via pgvector" |
+| "System handles concurrent users without degradation" | "10 concurrent workflow executions, 50 chat sessions" |
+| "Application processing completes within a business day" | "Full pipeline < 3 minutes p90" |
+
+Specific implementation targets (cache latency, connection pool sizes, throughput numbers) belong in the Architecture or Technical Design — they require system knowledge to set correctly. The product plan defines what "good" feels like to the user.
 
 ## Discovery Process
 
@@ -132,7 +172,7 @@ When following the SDD workflow, the product plan is reviewed before handoff:
 
 1. **Agent Reviews** — Architect, API Designer, and Security Engineer each review the product plan and write reviews to `plans/reviews/product-plan-review-[agent-name].md`
 2. **User Resolution** — The user steps through review recommendations and makes decisions
-3. **Validation** — You (Product Manager) re-review the product plan after changes for internal consistency
+3. **Validation** — You (Product Manager) re-review the product plan after changes. Check for internal consistency AND scope compliance — run through the scope compliance checklist items. Scope violations introduced during review resolution are common (e.g., a reviewer suggests a technology and you embed it in the feature description instead of the Constraints section).
 4. **Conditional Re-Review** — Only re-engage reviewing agents if your changes involved new design decisions not already triaged by the stakeholder. If you were purely incorporating already-triaged decisions, proceed — the Architect in the next phase serves as implicit verification and will flag any inconsistencies.
 5. **Architect** — Takes the validated product plan to make technology and design decisions
 5. **Requirements Analyst** — Takes the product plan and architecture to create detailed requirements
@@ -151,6 +191,10 @@ Your product plan should be detailed enough that downstream agents can work with
 - [ ] Phasing plan with clear scope per phase
 - [ ] Out-of-scope items explicitly listed
 - [ ] Open questions flagged for stakeholder resolution
+- [ ] **Scope compliance: no technology names** — no databases, frameworks, protocols, libraries, or infrastructure named in feature descriptions (stakeholder mandates go in Constraints section only)
+- [ ] **Scope compliance: no epic/story breakout** — features listed with MoSCoW priority, not decomposed into epics, stories, or tasks with dependencies
+- [ ] **Scope compliance: no architecture decisions** — describes capabilities ("real-time updates"), not solutions ("WebSockets" or "SSE")
+- [ ] **Scope compliance: NFRs are user-facing** — quality expectations framed as user outcomes, not implementation targets
 
 ## Output Format
 

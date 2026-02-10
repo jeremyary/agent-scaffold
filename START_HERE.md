@@ -296,7 +296,7 @@ The defaults block dangerous operations. Add project-specific denials if needed:
 
 ## Step 5: Prune or Add Agents
 
-**Why this matters:** Not every project needs all 18 agents. Unused agents add noise to the dispatcher's routing decisions.
+**Why this matters:** Not every project needs all 17 agents. Unused agents add noise to routing decisions.
 
 **Directory:** `.claude/agents/`
 
@@ -313,15 +313,11 @@ The defaults block dangerous operations. Add project-specific denials if needed:
 | No product discovery phase | `product-manager.md` (if requirements are already defined) |
 | Not running production yet | `sre-engineer.md` (add back when you deploy) |
 
-### 5b. Update the Dispatcher
+### 5b. Update the Routing Matrix
 
-If you remove agents, update the dispatcher's agent table in `.claude/agents/dispatcher.md` — remove the deleted agents from the "Available Agents" table so it doesn't try to route to them.
+If you remove agents, update the routing matrix in `.claude/CLAUDE.md` — remove rows for deleted agents from the "Routing Decision Matrix" and "Agent Capabilities Matrix" tables.
 
-### 5c. Update the Routing Matrix
-
-Also update the routing matrix in `.claude/CLAUDE.md` — remove rows for deleted agents from the "Routing Decision Matrix" and "Agent Capabilities Matrix" tables.
-
-### 5d. Add Custom Agents (Optional)
+### 5c. Add Custom Agents (Optional)
 
 If your project needs a specialist not in the scaffold, create a new file in `.claude/agents/`. Use an existing agent as a template and follow the frontmatter pattern:
 
@@ -337,23 +333,22 @@ permissionMode: acceptEdits
 
 Note: `name` must be kebab-case and match the filename. `tools` is a comma-separated string (not a YAML array). Optional fields: `memory: project` for cross-session persistence.
 
-Add the new agent to the dispatcher's table and the routing matrix in `.claude/CLAUDE.md`.
+Add the new agent to the routing matrix and agent capabilities matrix in `.claude/CLAUDE.md`.
 
-### 5e. Agent Model Tiers
+### 5d. Agent Model Tiers
 
 The scaffold defaults to an **expanded hybrid** model strategy — Opus for planning and review agents, Sonnet for implementation agents. You can adjust this based on your budget and quality needs.
 
 | Preset | Opus Agents | Sonnet Agents | Best For |
 |--------|-------------|---------------|----------|
-| **Cost-optimized** | None | All 18 | PoC, solo developer, budget-constrained, rapid iteration |
-| **Hybrid** | Dispatcher, Product Manager, Architect | All others | Budget-conscious teams where planning quality still matters |
-| **Expanded hybrid** (default) | Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer | All others | Most teams — plan quality and review rigor get Opus, implementation gets Sonnet |
-| **Quality-optimized** | All 18 | None | Security-sensitive domains, can't afford to redo work, cost is not a constraint |
+| **Cost-optimized** | None | All 17 | PoC, solo developer, budget-constrained, rapid iteration |
+| **Hybrid** | Product Manager, Architect | All others | Budget-conscious teams where planning quality still matters |
+| **Expanded hybrid** (default) | Product Manager, Architect, Tech Lead, Code Reviewer | All others | Most teams — plan quality and review rigor get Opus, implementation gets Sonnet |
+| **Quality-optimized** | All 17 | None | Security-sensitive domains, can't afford to redo work, cost is not a constraint |
 
 To change an agent's model tier, edit the `model:` field in its frontmatter (`.claude/agents/<agent-name>.md`). Then update the Agent Capabilities Matrix and Cost Tiers tables in `.claude/CLAUDE.md` to match.
 
 **Guidance on where Opus matters most:**
-- **Dispatcher** — Bad routing wastes all downstream work. This is the riskiest agent to downgrade.
 - **Product Manager, Architect** — Errors in product direction and architecture cascade through everything downstream.
 - **Tech Lead** — Plan quality is the highest-leverage activity in AI-native development. Poor contracts cause integration failures.
 - **Code Reviewer** — The last line of defense before code ships. Opus catches subtle issues Sonnet may miss.
@@ -616,7 +611,7 @@ Copy this checklist and check off items as you go:
 [ ] Step 2: project-conventions/SKILL.md — tech stack table, directory structure, env vars
 [ ] Step 3: Style rules — keep/remove/adjust python-style.md and code-style.md for your language(s)
 [ ] Step 4: settings.json — bash commands + WebFetch domains for your stack
-[ ] Step 5: Remove unused agents, update dispatcher + routing matrix
+[ ] Step 5: Remove unused agents, update routing matrix in .claude/CLAUDE.md
 [ ] Step 6: (Optional) Add .claude/rules/domain.md for domain-specific rules
 [ ] Step 7: (Optional) Review ai-compliance.md, git-workflow.md, testing.md, security.md, error-handling.md, observability.md, api-conventions.md
 [ ] Step 8: Copy settings.local.json.template → settings.local.json, replace org-specific domains
@@ -662,15 +657,15 @@ The scaffold uses two model tiers. The cost difference is significant:
 
 | Tier | Model | Agents | Relative Cost | Use For |
 |------|-------|--------|---------------|---------|
-| **High** | Opus | Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer | ~5x Sonnet | Routing, product strategy, architecture, technical design, code review — errors in planning and review cascade |
+| **High** | Opus | Product Manager, Architect, Tech Lead, Code Reviewer | ~5x Sonnet | Product strategy, architecture, technical design, code review — errors in planning and review cascade |
 | **Standard** | Sonnet | All 13 others | 1x (baseline) | Implementation, analysis, project management, documentation — quality is sufficient for the task |
 
-The default is **expanded hybrid** — Opus for agents where plan quality and review rigor have the highest leverage (routing, product, architecture, technical design, code review). Implementation agents use Sonnet, which is sufficient for writing code within well-defined contracts.
+The default is **expanded hybrid** — Opus for agents where plan quality and review rigor have the highest leverage (product, architecture, technical design, code review). Implementation agents use Sonnet, which is sufficient for writing code within well-defined contracts.
 
 For cost-conscious usage:
-- Use specialist agents directly (e.g., `@backend-developer`) instead of the dispatcher when you know which agent you need — this skips the Opus routing step
-- The dispatcher is most valuable for complex, cross-cutting tasks where routing errors would waste downstream work
-- Switch to all-sonnet for rapid PoC iteration where cost matters more than precision (see Step 5e)
+- Use specialist agents directly (e.g., `@backend-developer`) when you know which agent you need
+- The workflow-patterns skill provides sequencing templates for complex, cross-cutting tasks
+- Switch to all-sonnet for rapid PoC iteration where cost matters more than precision (see Step 5d)
 
 ## What's Next — Using the Scaffold
 
@@ -712,9 +707,9 @@ Not everything needs the full SDD lifecycle. Use the right tool for the job:
 
 ### "I have a complex request but I'm not sure which agents to use"
 
-Start with the **Dispatcher**. Describe what you need and it will analyze your request, select the right agents, and create a sequenced task plan.
+Describe what you need in plain language. The main session uses the routing matrix (`.claude/CLAUDE.md`) and the workflow-patterns skill to select the right agents and sequence work.
 
-The dispatcher is most valuable for cross-cutting work where routing errors would waste downstream effort. For single-domain tasks where you know the right agent, go direct — it saves the Opus routing cost.
+For single-domain tasks where you know the right agent, invoke it directly (e.g., `@backend-developer`). For cross-cutting work, the workflow-patterns skill provides sequencing templates for common scenarios.
 
 ### Key references
 
