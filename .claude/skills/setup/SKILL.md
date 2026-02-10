@@ -136,9 +136,9 @@ Based on the project description, **proactively suggest** agents to remove. For 
 - Requirements already well-defined → suggest removing Product Manager
 - Small scope / no PM tooling needed → suggest removing Project Manager
 
-Include your suggestions in the confirmation message (Phase 4). If the user agrees or doesn't object, remove them.
+Include your suggestions in the confirmation message (Phase 4). **Do not remove any agents unless the user explicitly confirms which ones to remove.** Silence or a generic "looks good" about the overall setup is not confirmation for pruning — the user must specifically acknowledge the agent removal list.
 
-For each agent to remove:
+For each agent the user confirms for removal:
 - Delete the agent file from `.claude/agents/`
 - Edit `.claude/agents/dispatcher.md`: Remove the agent's row from the Available Agents table
 - Edit `.claude/CLAUDE.md`: Remove the agent's row from the Routing Decision Matrix and Agent Capabilities Matrix tables
@@ -207,8 +207,11 @@ Setup complete! Here's what was configured:
 [x] Personal settings: <configured or defaults>
 [x] Secrets protection: git + Claude Code deny rules active
 
-Your agents are ready. Start with @dispatcher for multi-step tasks,
-or call any specialist agent directly (e.g., @architect, @backend-developer).
+Your agents are ready. Just describe what you want to do in plain
+language — the system will route to the right agents automatically.
+
+Example: "I'd like to work with our agents to build a user
+authentication system" or "Help me optimize the database queries."
 
 Available slash commands:
   /review  — Code quality + security review of current branch
