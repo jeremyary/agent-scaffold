@@ -4,6 +4,7 @@
 
 ## General
 
+- Never use emojis in code, comments, commit messages, documentation, or agent output
 - Always include a comment at the top of code files indicating AI assistance: `// This project was developed with assistance from AI tools.` (JS/TS) or `# This project was developed with assistance from AI tools.` (Python) — this is a Red Hat policy requirement per `.claude/rules/ai-compliance.md`
 - Code should be self-documenting; add comments only for "why", not "what"
 - Include only comments necessary to understand the code

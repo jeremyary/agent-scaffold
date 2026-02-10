@@ -90,10 +90,12 @@ What is the change we are making? State the decision clearly.
 When following the Spec-Driven Development workflow:
 
 1. **Input** — The validated product plan (`plans/product-plan.md`)
-2. **Output** — Architecture design (`plans/architecture.md`) + ADRs (`docs/adr/`)
-3. **Review** — Relevant agents review and write to `plans/reviews/architecture-review-[agent-name].md`
-4. **Resolution** — User steps through review feedback and you incorporate changes
-5. **Validation** — You do a final review of the architecture document after all changes
+2. **Downstream Verification** — While designing, flag any product plan inconsistencies you discover. You are the first consumer of the post-review product plan — if changes introduced during review resolution created contradictions or gaps, catch them here rather than letting them propagate.
+3. **Output** — Architecture design (`plans/architecture.md`) + ADRs (`docs/adr/`)
+4. **Review** — Relevant agents review and write to `plans/reviews/architecture-review-[agent-name].md`
+5. **Resolution** — User steps through review feedback and you incorporate changes
+6. **Validation** — You do a final review of the architecture document after all changes
+7. **Conditional Re-Review** — Only re-engage reviewing agents if your changes involved new design decisions not already triaged by the stakeholder. If purely incorporating triaged decisions, proceed — the Requirements Analyst in the next phase serves as implicit verification.
 
 ## Output Format
 

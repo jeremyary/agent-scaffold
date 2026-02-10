@@ -36,8 +36,9 @@ The work breakdown translates upstream artifacts into sized, assignable tasks. I
 When following the Spec-Driven Development workflow:
 
 1. **Input** — Validated product plan + architecture + requirements + technical design for the current phase
-2. **Output** — Work breakdown per delivery phase (`docs/project/work-breakdown-phase-N.md`)
-3. **Applies** — Task sizing constraints (see below) and context propagation rules
+2. **Downstream Verification** — While breaking down work, flag any technical design inconsistencies you discover. You are the first consumer of the post-review TD — if changes introduced during review resolution created contradictions, gaps, or tasks that violate sizing constraints, catch them here rather than letting them propagate into implementation.
+3. **Output** — Work breakdown per delivery phase (`docs/project/work-breakdown-phase-N.md`)
+4. **Applies** — Task sizing constraints (see below) and context propagation rules
 
 ## Work Breakdown Structure
 

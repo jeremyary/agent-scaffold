@@ -273,6 +273,23 @@ This is the most important principle in the workflow. Each phase must stay withi
 
 **Why this matters:** When a product plan includes architecture decisions, the Architect is reduced to rubber-stamping rather than designing. When a technical design includes work breakdown, the Project Manager has no room to apply sizing constraints. Each agent's value comes from doing their analysis fresh — not from inheriting premature decisions from upstream.
 
+### Conditional Re-Review
+
+After resolving review feedback on any artifact, the user decides whether re-review is necessary:
+
+> **Re-review an updated artifact only if the update involved new design decisions not already triaged by the stakeholder.** If the update is purely incorporating already-triaged decisions, trust the validating agent and proceed — the next downstream phase serves as implicit verification.
+
+This prevents unnecessary review cycles while still catching problems. Each downstream agent naturally verifies the upstream artifact because they must build on it:
+
+| Artifact Updated | Downstream Verifier | Implicit Verification |
+|---|---|---|
+| Product Plan (Phase 3) | Architect (Phase 4) | Flags product plan inconsistencies while designing |
+| Architecture (Phase 6) | Requirements Analyst (Phase 7) | Flags architecture inconsistencies while writing requirements |
+| Requirements (Phase 8) | Tech Lead (Phase 9) | Flags requirements inconsistencies while designing |
+| Technical Design (Phase 10) | Project Manager (Phase 11) | Flags TD inconsistencies while breaking down work |
+
+If a downstream agent discovers an inconsistency, pause and resolve it before continuing — don't work around it. This is cheaper than discovering the problem during implementation.
+
 ### Lifecycle
 
 ```
@@ -281,7 +298,7 @@ Phase 1: Product Plan
     - Problem statement, target users, success metrics
     - Feature scope with MoSCoW prioritization
     - User flows, phasing, risks
-    ⚠ SCOPE: No architecture, no technology choices, no epic/story breakout.
+    SCOPE: No architecture, no technology choices, no epic/story breakout.
       Anything better decided by downstream agents is left out to avoid
       premature solutioning.
 
@@ -290,45 +307,63 @@ Phase 2: Product Plan Review (parallel)
   → @api-designer: Review from API design perspective
   → @security-engineer: Review from security/compliance perspective
   → Reviews written to plans/reviews/product-plan-review-[agent-name].md
-  ★ REVIEW GATE: User steps through each review's recommendations with
+  REVIEW GATE: User steps through each review's recommendations with
     Claude Code and makes decisions on how to handle them.
 
 Phase 3: Product Plan Validation
   → @product-manager: Re-reviews the product plan after changes from
     review feedback. Checks for internal consistency and completeness.
+  CONDITIONAL RE-REVIEW: Only re-engage reviewing agents if changes
+    involved new design decisions not already triaged by the stakeholder.
+    If purely incorporating triaged decisions, proceed — Phase 4 serves
+    as implicit verification.
 
 Phase 4: Architecture
   → @architect: Architecture design (plans/architecture.md)
     - System design, component boundaries, data flow
     - Technology decisions with trade-off analysis, ADRs
     - Integration patterns, deployment model
-    ⚠ SCOPE: No product scope changes, no detailed API contracts,
+    SCOPE: No product scope changes, no detailed API contracts,
       no implementation details, no task breakdown.
+    DOWNSTREAM VERIFICATION: Flag any product plan inconsistencies
+      discovered while designing. This serves as implicit verification
+      of the post-review product plan.
 
 Phase 5: Architecture Review (parallel)
   → Relevant agents review from their perspectives
     (e.g., @security-engineer, @api-designer, @backend-developer, @sre-engineer)
   → Reviews written to plans/reviews/architecture-review-[agent-name].md
-  ★ REVIEW GATE: User steps through review recommendations with Claude Code.
+  REVIEW GATE: User steps through review recommendations with Claude Code.
 
 Phase 6: Architecture Validation
   → @architect: Final review of architecture document after changes.
+  CONDITIONAL RE-REVIEW: Same rule as Phase 3. Only re-engage
+    reviewers if changes involved new design decisions.
 
 Phase 7: Requirements
   → @requirements-analyst: Requirements document (plans/requirements.md)
     - Built from product plan AND architecture
     - Detailed user stories with Given/When/Then acceptance criteria
     - Edge cases, non-functional requirements
-    ⚠ SCOPE: No architecture decisions, no task breakdown,
+    SCOPE: No architecture decisions, no task breakdown,
       no implementation approach.
+    DOWNSTREAM VERIFICATION: Flag any architecture inconsistencies
+      discovered while writing requirements.
+    LARGE PROJECTS: If upstream documents are very thorough (5+ Must-Have
+      features, lengthy product plan + architecture), use the two-pass
+      approach: (1) requirements skeleton with story map, cross-cutting
+      concerns, and cross-feature dependencies, then (2) detailed specs
+      chunked by feature area. See requirements-analyst agent for details.
 
 Phase 8: Requirements Review (parallel)
   → @product-manager: Review for completeness against product plan
   → @architect: Review for alignment with architecture
   → Reviews written to plans/reviews/requirements-review-[agent-name].md
-  ★ REVIEW GATE: User steps through review recommendations with Claude Code.
+  REVIEW GATE: User steps through review recommendations with Claude Code.
+  CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
+    changes involved new design decisions.
 
-  ★★ CONSENSUS GATE: Pause here. Product plan, architecture, and
+  ** CONSENSUS GATE: Pause here. Product plan, architecture, and
      requirements must be thorough, well-documented, accurate, and
      agreed upon by all parties (including the user) before proceeding.
 
@@ -339,15 +374,19 @@ Phase 9: Technical Design (per phase)
     - Machine-verifiable exit conditions per task (see agent-workflow.md)
     - File structure mapped to actual codebase layout
     - No TBDs in binding contracts
-    ⚠ SCOPE: No product scope changes, no architecture overrides,
+    SCOPE: No product scope changes, no architecture overrides,
       no work breakdown, no estimation.
+    DOWNSTREAM VERIFICATION: Flag any requirements inconsistencies
+      discovered while designing.
 
 Phase 10: Technical Design Review
   → Relevant agents review the TD
   → Reviews written to plans/reviews/technical-design-phase-N-review-[agent-name].md
-  ★ REVIEW GATE: Plan review per review-governance.md checklist:
+  REVIEW GATE: Plan review per review-governance.md checklist:
     (1) Contracts concrete, (2) Error paths covered, (3) Exit conditions verifiable,
     (4) File structure maps to codebase, (5) No TBDs in binding contracts
+  CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
+    changes involved new design decisions.
 
 Phase 11: Work Breakdown (per phase)
   → @project-manager: Epics, stories, and tasks with:
@@ -355,8 +394,10 @@ Phase 11: Work Breakdown (per phase)
     - Machine-verifiable "Done When" with verification commands
     - Self-contained descriptions (no "see document X" references)
     - Estimates and dependency mapping
-    ⚠ SCOPE: No product decisions, no architecture changes,
+    SCOPE: No product decisions, no architecture changes,
       no interface contract changes.
+    DOWNSTREAM VERIFICATION: Flag any TD inconsistencies
+      discovered while breaking down work.
 
 Phase 12: Implementation (per phase, parallel where possible)
   → Assigned implementers (@backend-developer, @frontend-developer, etc.)
