@@ -38,8 +38,8 @@ Mode is determined by the agent's tool set: agents without Write/Edit tools are 
 | Frontend Developer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | Database Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | API Designer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch | — |
-| Tech Lead | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | project |
-| Code Reviewer | sonnet | plan | Read, Glob, Grep, Bash | project |
+| Tech Lead | opus | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | project |
+| Code Reviewer | opus | plan | Read, Glob, Grep, Bash | project |
 | Test Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
 | Security Engineer | sonnet | plan | Read, Glob, Grep, Bash, WebSearch | project |
 | Performance Engineer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
@@ -84,16 +84,18 @@ Repeat if metrics not met.
 
 | Tier | Model | Agents | Use When |
 |---|---|---|---|
-| **High** | opus | Dispatcher, Product Manager, Architect | Routing decisions, product strategy, architectural choices — errors here cascade |
-| **Standard** | sonnet | All others | Implementation, review, analysis, project management — quality sufficient for task |
+| **High** | opus | Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer | Routing, product strategy, architecture, technical design, code review — errors in planning and review cascade through everything |
+| **Standard** | sonnet | All others | Implementation, analysis, project management, documentation — quality sufficient for the task |
 
-Opus is reserved for decisions with high blast radius (product direction, architecture, routing). All implementation, analysis, and project management work uses sonnet to optimize cost.
+Opus is reserved for decisions and reviews with high blast radius: product direction, architecture, routing, technical design (plan quality), and code review (review rigor). All implementation, analysis, and project management work uses sonnet to optimize cost.
 
 ## Agent Memory (`memory: project`)
 
 Ten agents have `memory: project` enabled: Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer, Security Engineer, Project Manager, SRE Engineer, Technical Writer, and Requirements Analyst. This means they retain context across sessions for the current project.
 
 **What agents should remember:**
+
+*Agent-specific knowledge:*
 - Product vision, personas, success metrics, and feature priorities (Product Manager)
 - Architectural decisions and their rationale (Architect)
 - Feature-level technical patterns, interface conventions, and implementation approaches that worked well (Tech Lead)
@@ -104,6 +106,9 @@ Ten agents have `memory: project` enabled: Dispatcher, Product Manager, Architec
 - Project terminology, documentation structure, and style preferences (Technical Writer)
 - Stakeholder preferences, domain rules, and requirements history (Requirements Analyst)
 - Routing patterns that worked well and agent selection rationale (Dispatcher)
+
+*Cross-cutting — all memory-enabled agents should track:*
+- **Stakeholder preferences** — Decision patterns, risk tolerance, scope tendencies, communication style, technology biases. When you observe a consistent preference across interactions (e.g., "stakeholder always defers nice-to-haves to Phase 2", "prefers conservative technology choices"), record it. Over time, this lets agents anticipate preferences rather than re-asking. The canonical record lives in the root `CLAUDE.md` Stakeholder Preferences table — update it when a pattern is clear.
 
 **What agents should NOT remember:**
 - Transient debugging state or temporary workarounds

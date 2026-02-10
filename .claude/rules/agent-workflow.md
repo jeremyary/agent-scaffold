@@ -67,6 +67,8 @@ Before reading a file, articulate why it's relevant to the current task:
 
 Budget approximately **5 source files** per task. This is a soft limit — occasionally you'll need 6 or 7, but if you're regularly exceeding it, the tasks are too large.
 
+When working within a **Work Unit**, shared context files (loaded for the first task) remain in context for subsequent tasks. Only count task-specific files against the budget for the second task onward — the WU shared context is already loaded.
+
 Context budget does NOT include:
 - Rule files (these are short and always relevant)
 - The task description itself

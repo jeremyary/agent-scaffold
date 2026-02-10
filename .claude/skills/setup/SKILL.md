@@ -59,6 +59,7 @@ After the brain dump, map what you learned to this checklist. Track internally w
 | 15 | Domain-specific rules | No | e.g., HIPAA data handling, financial precision |
 | 16 | Org-specific settings | No | Default: strip Red Hat domains |
 | 17 | Secrets / .env setup | No | Default: skip .env.example |
+| 18 | Agent model tier | No | Default: expanded hybrid (see 5g) |
 
 Items marked "No" in the Required column have sensible defaults. Don't ask about them unless the user's brain dump hints at something relevant (e.g., they mention healthcare → ask about HIPAA compliance rules).
 
@@ -101,13 +102,13 @@ Once you have enough information, apply ALL edits. Do not ask for confirmation b
 - Edit `.claude/skills/project-conventions/SKILL.md`: Replace the Technology Stack table with actual choices and versions
 
 **Style rules** — The scaffold ships with two style rule files:
-- `.claude/rules/python-style.md` (scoped to `**/*.py`) — Python conventions
-- `.claude/rules/code-style.md` (scoped to `src/**/*.{ts,tsx,js,jsx}`) — TypeScript/JavaScript conventions
+- `.claude/rules/code-style.md` (global) — Merged TypeScript + Python conventions. Default for full-stack projects.
+- `.claude/rules/python-style.md` (scoped to `**/*.py`) — Python-only alternative.
 
 Based on their stack:
-- **Python + JS/TS:** Keep both. Review and adjust conventions to match their tooling.
-- **Python-only:** Delete `code-style.md` and remove its `@` import from `CLAUDE.md`.
-- **JS/TS-only:** Delete `python-style.md` and remove its `@` import from `CLAUDE.md`.
+- **Python + JS/TS:** Keep `code-style.md` (the merged version). Remove `python-style.md` and its `@` import from `CLAUDE.md`.
+- **Python-only:** Keep `python-style.md`. Remove `code-style.md` and its `@` import from `CLAUDE.md`.
+- **JS/TS-only:** Keep `code-style.md`. Remove `python-style.md` and its `@` import from `CLAUDE.md`.
 - **Other language (Go, Rust, Java, etc.):** Delete both style files and create a new one (e.g., `go-style.md` with `globs: "**/*.go"`). Add its `@` import to `CLAUDE.md` and remove the old imports.
 
 **Bash permissions** — `settings.json` already includes commands for both Python and Node.js toolchains. Based on their stack:
@@ -145,24 +146,39 @@ For each agent to remove:
 - Edit `.claude/CLAUDE.md`: Remove the agent's row from the Routing Decision Matrix and Agent Capabilities Matrix tables
 - Edit `CLAUDE.md`: Remove the agent's row from the Quick Reference table
 
-### 5g. Convention Rules
+### 5g. Agent Model Tiers
+
+The scaffold defaults to **expanded hybrid** — Opus for Dispatcher, Product Manager, Architect, Tech Lead, and Code Reviewer; Sonnet for all others.
+
+Adjust based on the user's maturity level and budget:
+- **PoC or budget-constrained:** Suggest switching to all-sonnet (cost-optimized). Set `model: sonnet` in all agent frontmatter files.
+- **MVP (default):** Keep expanded hybrid. No changes needed.
+- **Production or security-sensitive:** Suggest quality-optimized if budget allows, or keep expanded hybrid.
+
+If changing model tiers:
+- Edit the `model:` field in each affected agent's frontmatter (`.claude/agents/*.md`)
+- Edit `.claude/CLAUDE.md`: Update the Agent Capabilities Matrix table (Model column) and the Cost Tiers table to match
+
+Only suggest changing model tiers if the user's maturity level or budget hints at it. Don't ask about it unprompted for MVP-maturity projects — the default is appropriate.
+
+### 5h. Convention Rules
 
 Use scaffold defaults unless the user mentioned specific preferences. If they mentioned things like "we use Ruff" or "Google-style docstrings", update the relevant rule files.
 
-### 5h. Domain-Specific Rules
+### 5i. Domain-Specific Rules
 
 If the user mentioned domain-specific concerns (HIPAA, financial precision, accessibility, data residency, etc.):
 - Create `.claude/rules/domain.md` with the rules formatted clearly
 - Edit `CLAUDE.md`: Add `@.claude/rules/domain.md` to the Project Conventions section
 
-### 5i. Personal Settings
+### 5j. Personal Settings
 
 - Copy `.claude/settings.local.json.template` to `.claude/settings.local.json` if it doesn't exist
 - Default behavior: remove Red Hat / OpenShift org-specific domains (listed in `_template.org_domains`) unless the user indicated they work in that ecosystem
 - Remove the `_template` key from `settings.local.json`
 - If the user mentioned their organization's documentation domains, add those
 
-### 5j. Secrets & Environment Protection
+### 5k. Secrets & Environment Protection
 
 After all edits, inform the user about the scaffold's secret protection layers:
 
@@ -188,6 +204,7 @@ Setup complete! Here's what was configured:
 [x] Project structure: <configured or default>
 [x] Convention rules: <reviewed or defaults> (<count> active rules)
 [x] Agents: <count> active (removed: <list or "none">)
+[x] Model tier: <expanded hybrid (default) / cost-optimized / hybrid / quality-optimized>
 [x] Domain rules: <added or skipped>
 [x] Personal settings: <configured or defaults>
 [x] Secrets protection: git + Claude Code deny rules active

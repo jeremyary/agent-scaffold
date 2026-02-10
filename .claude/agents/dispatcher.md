@@ -122,9 +122,9 @@ sre-engineer (SLOs, alerting, runbooks) → devops-engineer (monitoring infra) �
 
 **Spec-Driven Development (SDD, for non-trivial features):**
 ```
-product-manager (product plan) → [agent reviews + user resolution] → product-manager (validate, conditional re-review) → architect (architecture + verify product plan) → [agent reviews + user resolution] → architect (validate, conditional re-review) → requirements-analyst (requirements + verify architecture) → [agent reviews + user resolution] → CONSENSUS GATE → per phase: tech-lead (TD + verify requirements) → [review gate, conditional re-review] → project-manager (work breakdown + verify TD) → [implementers] → [code-reviewer, security-engineer] → technical-writer
+product-manager (product plan) → [agent reviews + user resolution] → product-manager (validate, conditional re-review) → architect (architecture + verify product plan) → [agent reviews + user resolution] → architect (validate, conditional re-review) → requirements-analyst (requirements + verify architecture) → [agent reviews + user resolution] → CONSENSUS GATE → per phase: tech-lead (TD with context packages + verify requirements) → [review gate, conditional re-review] → project-manager (work units + agent-prompt tasks + verify TD) → [implementers per WU] → [code-reviewer, security-engineer] → technical-writer
 ```
-Each phase stays strictly within its scope — no premature solutioning. Each downstream agent verifies the upstream artifact and flags inconsistencies. Re-review is conditional: only if changes involved new design decisions not already triaged. See `workflow-patterns/SKILL.md` for full protocol with scope boundaries, artifact paths, and review conventions.
+Each phase stays strictly within its scope — no premature solutioning. Each downstream agent verifies the upstream artifact and flags inconsistencies. Re-review is conditional: only if changes involved new design decisions not already triaged. The TD's Context Package maps directly into Work Unit shared context; tasks are written as direct agent prompts (files to read, steps to execute, commands to verify). See `workflow-patterns/SKILL.md` for full protocol.
 
 ### Task Plan Format
 

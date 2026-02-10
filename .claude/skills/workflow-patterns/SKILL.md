@@ -389,11 +389,14 @@ Phase 10: Technical Design Review
     changes involved new design decisions.
 
 Phase 11: Work Breakdown (per phase)
-  → @project-manager: Epics, stories, and tasks with:
+  → @project-manager: Epics, stories, Work Units, and tasks with:
+    - Work Units grouping 2–4 related tasks that share context
+    - Tasks written as agent prompts (files to read, steps to execute, commands to verify)
     - 3–5 file scope per task (agent-workflow.md constraint)
-    - Machine-verifiable "Done When" with verification commands
-    - Self-contained descriptions (no "see document X" references)
+    - Machine-verifiable verification commands per task
+    - Self-contained — all relevant context inlined, no "see document X"
     - Estimates and dependency mapping
+    The TD's Context Package maps directly into WU shared context.
     SCOPE: No product decisions, no architecture changes,
       no interface contract changes.
     DOWNSTREAM VERIFICATION: Flag any TD inconsistencies
