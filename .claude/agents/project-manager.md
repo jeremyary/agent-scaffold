@@ -305,7 +305,7 @@ Write to `docs/project/work-breakdown.md` — a structured markdown document tha
 
 ### Agent Task Plan
 
-Write to `docs/project/agent-tasks.md` — formatted for the Dispatcher to create TaskCreate calls:
+Write to `docs/project/agent-tasks.md` — formatted for creating TaskCreate calls with blockedBy dependencies:
 
 ```markdown
 # Agent Task Plan: [Feature Name]
@@ -361,7 +361,7 @@ WU-002: User UI [@frontend-developer] → blockedBy: [5]
 - Every story must have testable acceptance criteria
 - Group related tasks into Work Units when they share context — this prevents inter-task knowledge gaps (e.g., database schema + API handler + service logic for the same domain concept)
 - Write tasks as agent prompts, not descriptions — direct instructions the implementing agent follows
-- Map tasks to specific agents so the Dispatcher can route them directly
+- Map tasks to specific agents so they can be routed directly via @agent-name
 - Include review gates (code-reviewer, security-engineer) after implementation phases
 - Identify the critical path — the longest chain of dependent items
 - Flag risks: items with high uncertainty, external dependencies, or new technology

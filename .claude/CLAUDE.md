@@ -23,7 +23,7 @@ When the user's request matches keywords below, route to the corresponding agent
 | "bug", "error", "crash", "debug", "broken", "not working" | Debug Specialist | — |
 | "docs", "README", "changelog", "documentation" | Technical Writer | — |
 | "requirements", "user story", "acceptance criteria" | Requirements Analyst | Product Manager |
-| Multi-step, cross-cutting, or ambiguous | **Dispatcher** | — |
+| Multi-step, cross-cutting, or ambiguous | **Main session** | Use workflow-patterns skill |
 
 ## Agent Capabilities Matrix
 
@@ -31,7 +31,6 @@ Mode is determined by the agent's tool set: agents without Write/Edit tools are 
 
 | Agent | Model | Mode | Tools | Memory |
 |---|---|---|---|---|
-| Dispatcher | opus | plan | Read, Glob, Grep, Bash, WebSearch, WebFetch, TaskCreate, TaskUpdate, TaskList, TaskGet | project |
 | Product Manager | opus | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion | project |
 | Architect | opus | acceptEdits | Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch | project |
 | Backend Developer | sonnet | acceptEdits | Read, Write, Edit, Glob, Grep, Bash | — |
@@ -80,18 +79,30 @@ performance-engineer (profile) → implementer (fix) → performance-engineer (v
 ```
 Repeat if metrics not met.
 
+## Planning Principles
+
+When orchestrating multi-agent work, apply these principles:
+
+- **When in doubt, include a review gate.** Code-reviewer and security-engineer are read-only and cheap.
+- **Prefer parallel execution** when tasks are independent — don't create unnecessary sequential chains.
+- **Right-size the plan** — a single file change doesn't need 7 agents. Match plan complexity to request complexity.
+- **Include context propagation** — each task description should include what prior steps will have produced.
+- **Apply chunking heuristics** — each task should touch 3-5 files max, have a machine-verifiable exit condition, and be completable in ~1 hour. Split tasks that violate these limits.
+- **Every task needs a verifiable exit condition** in its description (test command, type-check, endpoint assertion). "Implementation complete" is not verifiable.
+- **Prefer spec-first** for work involving new data shapes, APIs, or integration points — the cost of specifying before building is always less than the cost of reworking after.
+
 ## Cost Tiers
 
 | Tier | Model | Agents | Use When |
 |---|---|---|---|
-| **High** | opus | Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer | Routing, product strategy, architecture, technical design, code review — errors in planning and review cascade through everything |
+| **High** | opus | Product Manager, Architect, Tech Lead, Code Reviewer | Product strategy, architecture, technical design, code review — errors in planning and review cascade through everything |
 | **Standard** | sonnet | All others | Implementation, analysis, project management, documentation — quality sufficient for the task |
 
-Opus is reserved for decisions and reviews with high blast radius: product direction, architecture, routing, technical design (plan quality), and code review (review rigor). All implementation, analysis, and project management work uses sonnet to optimize cost.
+Opus is reserved for decisions and reviews with high blast radius: product direction, architecture, technical design (plan quality), and code review (review rigor). All implementation, analysis, and project management work uses sonnet to optimize cost.
 
 ## Agent Memory (`memory: project`)
 
-Ten agents have `memory: project` enabled: Dispatcher, Product Manager, Architect, Tech Lead, Code Reviewer, Security Engineer, Project Manager, SRE Engineer, Technical Writer, and Requirements Analyst. This means they retain context across sessions for the current project.
+Nine agents have `memory: project` enabled: Product Manager, Architect, Tech Lead, Code Reviewer, Security Engineer, Project Manager, SRE Engineer, Technical Writer, and Requirements Analyst. This means they retain context across sessions for the current project.
 
 **What agents should remember:**
 
@@ -105,7 +116,6 @@ Ten agents have `memory: project` enabled: Dispatcher, Product Manager, Architec
 - SLO targets, incident history, capacity baselines, and operational patterns (SRE Engineer)
 - Project terminology, documentation structure, and style preferences (Technical Writer)
 - Stakeholder preferences, domain rules, and requirements history (Requirements Analyst)
-- Routing patterns that worked well and agent selection rationale (Dispatcher)
 
 *Cross-cutting — all memory-enabled agents should track:*
 - **Stakeholder preferences** — Decision patterns, risk tolerance, scope tendencies, communication style, technology biases. When you observe a consistent preference across interactions (e.g., "stakeholder always defers nice-to-haves to Phase 2", "prefers conservative technology choices"), record it. Over time, this lets agents anticipate preferences rather than re-asking. The canonical record lives in the root `CLAUDE.md` Stakeholder Preferences table — update it when a pattern is clear.

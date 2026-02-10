@@ -6,9 +6,20 @@ This rule establishes review discipline for AI-native development. It prevents r
 
 > Correcting a plan takes minutes; refactoring bad code takes days.
 
-For features with **3+ implementation tasks**, the Tech Lead's Technical Design Document must be reviewed before implementation begins. This is the highest-leverage review in the entire workflow.
+For features with **3+ implementation tasks**, both the Product Manager's product plan and the Tech Lead's Technical Design Document must be reviewed before downstream work begins. Use the Product Plan Review Checklist for product plans and the Technical Design Review Checklist for TDs. These are the highest-leverage reviews in the entire workflow.
 
-### Plan Review Checklist
+### Product Plan Review Checklist
+
+| Check | What to Look For |
+|-------|-----------------|
+| **No technology names in feature descriptions** | Features describe capabilities ("document storage", "real-time chat"), not solutions ("MinIO", "WebSockets", "LangGraph"). Technology mandates from stakeholders should be in a Constraints section, not woven into features. |
+| **MoSCoW prioritization used** | Features classified as Must/Should/Could/Won't — not organized as numbered epics with dependency maps |
+| **No epic or story breakout** | Features are described and prioritized, not decomposed into implementation work items. No dependency graphs, entry/exit criteria, or agent assignments. |
+| **NFRs are user-facing** | Quality expectations framed as user outcomes ("feels responsive"), not implementation targets ("< 200ms Redis cache hit") |
+| **User flows present** | Key persona journeys through the system are documented — not just feature lists |
+| **Phasing describes capability milestones** | Each phase describes what the system can do, not which epics/stories are included |
+
+### Technical Design Review Checklist
 
 | Check | What to Look For |
 |-------|-----------------|

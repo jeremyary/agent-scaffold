@@ -140,13 +140,12 @@ Include your suggestions in the confirmation message (Phase 4). **Do not remove 
 
 For each agent the user confirms for removal:
 - Delete the agent file from `.claude/agents/`
-- Edit `.claude/agents/dispatcher.md`: Remove the agent's row from the Available Agents table
 - Edit `.claude/CLAUDE.md`: Remove the agent's row from the Routing Decision Matrix and Agent Capabilities Matrix tables
 - Edit `CLAUDE.md`: Remove the agent's row from the Quick Reference table
 
 ### 5g. Agent Model Tiers
 
-The scaffold defaults to **expanded hybrid** — Opus for Dispatcher, Product Manager, Architect, Tech Lead, and Code Reviewer; Sonnet for all others.
+The scaffold defaults to **expanded hybrid** — Opus for Product Manager, Architect, Tech Lead, and Code Reviewer; Sonnet for all others.
 
 Adjust based on the user's maturity level and budget:
 - **PoC or budget-constrained:** Suggest switching to all-sonnet (cost-optimized). Set `model: sonnet` in all agent frontmatter files.

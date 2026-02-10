@@ -102,13 +102,13 @@ See `docs/ai-compliance-checklist.md` for the developer quick-reference checklis
 
 ## Agent System
 
-This project uses a multi-agent system with specialized Claude Code agents orchestrated by a central dispatcher. Each agent has a defined role, model tier, and tool set optimized for its task.
+This project uses a multi-agent system with specialized Claude Code agents. The main session handles routing and orchestration using the routing matrix in `.claude/CLAUDE.md`. Each agent has a defined role, model tier, and tool set optimized for its task.
 
 ### Quick Reference — "I need to..."
 
 | Need | Agent | Command |
 |------|-------|---------|
-| Plan a feature or large task | **Dispatcher** | Start here for any multi-step work |
+| Plan a feature or large task | **Main session** | Describe what you need; routing matrix and workflow-patterns skill guide orchestration |
 | Shape a product idea into a plan | **Product Manager** | `@product-manager` |
 | Gather requirements | **Requirements Analyst** | `@requirements-analyst` |
 | Design system architecture | **Architect** | `@architect` |
@@ -129,8 +129,8 @@ This project uses a multi-agent system with specialized Claude Code agents orche
 
 ### How It Works
 
-1. **Start with the Dispatcher** for any non-trivial task — it analyzes your request and creates a sequenced task plan with the right agents.
-2. **Use a specialist directly** when you know exactly which agent you need.
+1. **Describe what you need** — for non-trivial tasks, the main session uses the routing matrix and workflow-patterns skill to select agents and sequence work.
+2. **Use a specialist directly** when you know exactly which agent you need (e.g., `@backend-developer`).
 3. **Rules files** (imported below) enforce project conventions automatically across all agents.
 4. **Spec-Driven Development** is the default for non-trivial features — plan review before code review, machine-verifiable exit conditions, and anti-rubber-stamping governance.
 5. **Skills** provide workflow templates and project convention references.

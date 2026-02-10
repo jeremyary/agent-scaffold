@@ -1,13 +1,11 @@
 ---
-description: Reference templates for common multi-agent workflows. Provides sequencing patterns, parallel execution groups, and review gates for the dispatcher.
+description: Reference templates for common multi-agent workflows. Provides sequencing patterns, parallel execution groups, and review gates for orchestrating specialist agents.
 user_invocable: false
 ---
 
 # Workflow Patterns
 
-These templates define standard multi-agent orchestration sequences. The dispatcher uses these as starting points, adapting them to the specific request.
-
-Note: The dispatcher (`.claude/agents/dispatcher.md`) has compact one-line summaries of these same workflows for quick reference. If you update a workflow here, update the dispatcher's summary to match.
+These templates define standard multi-agent orchestration sequences. Use these as starting points, adapting them to the specific request.
 
 ## New Feature (Full-Stack)
 
@@ -307,12 +305,18 @@ Phase 2: Product Plan Review (parallel)
   → @api-designer: Review from API design perspective
   → @security-engineer: Review from security/compliance perspective
   → Reviews written to plans/reviews/product-plan-review-[agent-name].md
+  SCOPE CHECK: All reviewers also check for scope violations per the
+    Product Plan Review Checklist in review-governance.md (technology
+    names in features, epic breakout, architecture decisions, etc.).
+    The Architect reviewer is the primary scope checker.
   REVIEW GATE: User steps through each review's recommendations with
     Claude Code and makes decisions on how to handle them.
 
 Phase 3: Product Plan Validation
   → @product-manager: Re-reviews the product plan after changes from
-    review feedback. Checks for internal consistency and completeness.
+    review feedback. Checks for internal consistency, completeness,
+    AND scope compliance (run scope compliance checklist — scope
+    violations are commonly introduced during review resolution).
   CONDITIONAL RE-REVIEW: Only re-engage reviewing agents if changes
     involved new design decisions not already triaged by the stakeholder.
     If purely incorporating triaged decisions, proceed — Phase 4 serves
