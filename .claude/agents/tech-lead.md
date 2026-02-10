@@ -37,10 +37,12 @@ The technical design translates architecture into concrete, implementable contra
 When following the Spec-Driven Development workflow:
 
 1. **Input** — Validated product plan + architecture + requirements
-2. **Output** — Technical design per delivery phase (`plans/technical-design-phase-N.md`)
-3. **Review** — Relevant agents review and write to `plans/reviews/technical-design-phase-N-review-[agent-name].md`
-4. **Resolution** — User steps through review feedback
-5. **Handoff** — Project Manager takes the validated TD and creates the work breakdown
+2. **Downstream Verification** — While designing, flag any requirements inconsistencies you discover. You are the first consumer of the post-review requirements — if changes introduced during review resolution created contradictions or gaps, catch them here rather than letting them propagate into the work breakdown.
+3. **Output** — Technical design per delivery phase (`plans/technical-design-phase-N.md`)
+4. **Review** — Relevant agents review and write to `plans/reviews/technical-design-phase-N-review-[agent-name].md`
+5. **Resolution** — User steps through review feedback
+6. **Conditional Re-Review** — Only re-engage reviewers if changes involved new design decisions not already triaged. If purely incorporating triaged decisions, proceed — the Project Manager serves as implicit verification.
+7. **Handoff** — Project Manager takes the validated TD and creates the work breakdown
 
 ## When to Use This Agent
 

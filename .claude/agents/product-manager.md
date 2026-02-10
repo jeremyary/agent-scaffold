@@ -133,7 +133,8 @@ When following the SDD workflow, the product plan is reviewed before handoff:
 1. **Agent Reviews** — Architect, API Designer, and Security Engineer each review the product plan and write reviews to `plans/reviews/product-plan-review-[agent-name].md`
 2. **User Resolution** — The user steps through review recommendations and makes decisions
 3. **Validation** — You (Product Manager) re-review the product plan after changes for internal consistency
-4. **Architect** — Takes the validated product plan to make technology and design decisions
+4. **Conditional Re-Review** — Only re-engage reviewing agents if your changes involved new design decisions not already triaged by the stakeholder. If you were purely incorporating already-triaged decisions, proceed — the Architect in the next phase serves as implicit verification and will flag any inconsistencies.
+5. **Architect** — Takes the validated product plan to make technology and design decisions
 5. **Requirements Analyst** — Takes the product plan and architecture to create detailed requirements
 6. **Project Manager** — Takes all upstream artifacts to create the work breakdown
 

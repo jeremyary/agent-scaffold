@@ -122,9 +122,9 @@ sre-engineer (SLOs, alerting, runbooks) → devops-engineer (monitoring infra) �
 
 **Spec-Driven Development (SDD, for non-trivial features):**
 ```
-product-manager (product plan) → [agent reviews + user resolution] → product-manager (validate) → architect (architecture) → [agent reviews + user resolution] → architect (validate) → requirements-analyst (requirements) → [agent reviews + user resolution] → ★ CONSENSUS GATE ★ → per phase: tech-lead (TD) → [review gate] → project-manager (work breakdown) → [implementers] → [code-reviewer, security-engineer] → technical-writer
+product-manager (product plan) → [agent reviews + user resolution] → product-manager (validate, conditional re-review) → architect (architecture + verify product plan) → [agent reviews + user resolution] → architect (validate, conditional re-review) → requirements-analyst (requirements + verify architecture) → [agent reviews + user resolution] → CONSENSUS GATE → per phase: tech-lead (TD + verify requirements) → [review gate, conditional re-review] → project-manager (work breakdown + verify TD) → [implementers] → [code-reviewer, security-engineer] → technical-writer
 ```
-Each phase stays strictly within its scope — no premature solutioning. See `workflow-patterns/SKILL.md` for full protocol with scope boundaries, artifact paths, and review conventions.
+Each phase stays strictly within its scope — no premature solutioning. Each downstream agent verifies the upstream artifact and flags inconsistencies. Re-review is conditional: only if changes involved new design decisions not already triaged. See `workflow-patterns/SKILL.md` for full protocol with scope boundaries, artifact paths, and review conventions.
 
 ### Task Plan Format
 
