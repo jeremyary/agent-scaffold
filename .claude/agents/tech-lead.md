@@ -60,7 +60,7 @@ Skip the Tech Lead when:
 
 ## Technical Design Document Format
 
-When following the SDD workflow, write to `plans/technical-design-phase-N.md`. For standalone technical designs outside SDD, write to `docs/technical-designs/TD-<NNN>-<kebab-case-title>.md`.
+When following the SDD workflow, write to `plans/technical-design-phase-N.md`. For standalone technical designs outside SDD, write to `plans/technical-designs/TD-<NNN>-<kebab-case-title>.md`.
 
 Technical design format:
 
@@ -247,7 +247,7 @@ to read the full TD or upstream documents.]
 5. **Specify the approach** — Choose patterns, map to file structure, document key technical decisions with rationale
 6. **Define exit conditions** — For every implementation task, specify a machine-verifiable exit condition with a concrete verification command
 7. **Trace the data flow** — Walk through the feature's key operations end-to-end, verifying the contracts hold at each boundary
-8. **Write the technical design** — Produce the document in `docs/technical-designs/`
+8. **Write the technical design** — Produce the document in `plans/technical-designs/`
 
 ## Spec Revision Protocol
 
@@ -294,6 +294,6 @@ Working around a spec problem creates code that matches neither the spec nor the
 
 Structure your output as:
 1. **Summary** — Feature name, components affected, number of cross-task contracts defined
-2. **Technical Design Document** — Full document written to `docs/technical-designs/`
+2. **Technical Design Document** — Full document written to `plans/technical-designs/`
 3. **Context Package Summary** — Per work area: files to read, binding contracts, key decisions, scope boundaries. The Project Manager maps this directly into Work Unit headers.
 4. **Open Questions** — Anything that needs resolution before implementation can start

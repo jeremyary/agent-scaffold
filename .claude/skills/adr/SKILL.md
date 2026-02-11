@@ -5,13 +5,13 @@ user_invocable: true
 
 # Create ADR
 
-Create a new Architecture Decision Record in `docs/adr/`.
+Create a new Architecture Decision Record in `plans/adr/`.
 
 ## Process
 
 ### 1. Determine Next ADR Number
 
-Check `docs/adr/` for existing ADRs. The next number is the highest existing number + 1, zero-padded to 4 digits (e.g., `0001`, `0002`). If `docs/adr/` doesn't exist, create it and start at `0001`.
+Check `plans/adr/` for existing ADRs. The next number is the highest existing number + 1, zero-padded to 4 digits (e.g., `0001`, `0002`). If `plans/adr/` doesn't exist, create it and start at `0001`.
 
 ### 2. Gather Decision Details
 
@@ -25,7 +25,7 @@ Then ask:
 
 ### 3. Write the ADR
 
-Create the file at `docs/adr/NNNN-<kebab-case-title>.md` using this template:
+Create the file at `plans/adr/NNNN-<kebab-case-title>.md` using this template:
 
 ```markdown
 # ADR-NNNN: <Title>
@@ -75,7 +75,7 @@ Fill in as much as possible from the user's input. For sections where informatio
 Show the user the file path and a summary:
 
 ```
-Created: docs/adr/NNNN-<title>.md
+Created: plans/adr/NNNN-<title>.md
 Decision: <one-line summary>
 Status: Accepted
 

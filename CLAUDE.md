@@ -18,6 +18,8 @@
 
 <!-- Delete the rows that don't apply and keep only your maturity level -->
 
+**Important:** Maturity level governs **implementation quality** — test coverage, error handling depth, documentation thoroughness, infrastructure complexity. It does **not** govern **workflow phases**. A PoC still follows the full plan-review-build-verify sequence when SDD criteria are met (see `workflow-patterns` skill). The artifacts may be lighter, but they are not skipped.
+
 | Concern | Proof-of-Concept | MVP | Production |
 |---------|-------------------|-----|------------|
 | Testing | Smoke tests only | Happy path + critical edges | Full coverage targets (80%+) |
@@ -87,7 +89,7 @@ See `docs/ai-compliance-checklist.md` for the developer quick-reference checklis
 ## Key Decisions
 
 <!-- Record major technology choices here so all agents stay aligned. -->
-<!-- Move detailed trade-off analysis to docs/adr/ as the project matures. -->
+<!-- Move detailed trade-off analysis to plans/adr/ as the project matures. -->
 
 - **Language:** <!-- e.g., TypeScript 5.x -->
 - **Runtime:** <!-- e.g., Node.js 22 LTS -->

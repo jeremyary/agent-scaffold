@@ -437,9 +437,11 @@ Phases 9–14 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined
 | Requirements Review | Agent reviews | `plans/reviews/requirements-review-[agent-name].md` |
 | Technical Design | TD per phase | `plans/technical-design-phase-N.md` |
 | TD Review | Agent reviews | `plans/reviews/technical-design-phase-N-review-[agent-name].md` |
-| Work Breakdown | Task plan per phase | `docs/project/work-breakdown-phase-N.md` |
+| Work Breakdown | Task plan per phase | `plans/work-breakdown-phase-N.md` |
 
 ### When to Use SDD vs. Simpler Workflows
+
+**Only the signals in this table determine whether to use SDD.** Project maturity level (PoC, MVP, Production) is **not** a valid reason to skip SDD phases. Maturity affects the depth of artifacts (e.g., lighter documentation at PoC), not whether phases are executed. If any "Use SDD" signal is present, follow the full phase sequence regardless of maturity.
 
 | Signal | Use SDD | Use Simpler Workflow |
 |--------|---------|---------------------|

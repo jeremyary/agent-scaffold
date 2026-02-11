@@ -92,7 +92,7 @@ When following the Spec-Driven Development workflow (see `workflow-patterns/SKIL
 | Requirements document | `plans/requirements.md` | @requirements-analyst |
 | Technical design (per phase) | `plans/technical-design-phase-N.md` | @tech-lead |
 | Agent review | `plans/reviews/<artifact>-review-<agent-name>.md` | Reviewing agent |
-| Work breakdown (per phase) | `docs/project/work-breakdown-phase-N.md` | @project-manager |
+| Work breakdown (per phase) | `plans/work-breakdown-phase-N.md` | @project-manager |
 
 ### Review File Naming Convention
 

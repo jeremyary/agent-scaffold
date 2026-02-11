@@ -37,7 +37,7 @@ When following the Spec-Driven Development workflow:
 
 1. **Input** — Validated product plan + architecture + requirements + technical design for the current phase
 2. **Downstream Verification** — While breaking down work, flag any technical design inconsistencies you discover. You are the first consumer of the post-review TD — if changes introduced during review resolution created contradictions, gaps, or tasks that violate sizing constraints, catch them here rather than letting them propagate into implementation.
-3. **Output** — Work breakdown per delivery phase (`docs/project/work-breakdown-phase-N.md`)
+3. **Output** — Work breakdown per delivery phase (`plans/work-breakdown-phase-N.md`)
 4. **Applies** — Task sizing constraints (see below) and context propagation rules
 
 ## Work Breakdown Structure
@@ -49,7 +49,7 @@ A large body of work that can be broken into stories. Maps to a product feature 
 ## Epic: [E-NNN] [Title]
 
 **Goal:** What this epic achieves when complete
-**PRD Reference:** docs/product/PRD-<name>.md
+**PRD Reference:** plans/product/PRD-<name>.md
 **Priority:** P0 / P1 / P2
 **Milestone:** [Milestone name]
 **Estimated Size:** XL / L / M / S
@@ -230,7 +230,7 @@ Tasks that violate these constraints are the primary cause of failed autonomous 
 
 ### Jira Import (JSON)
 
-Write to `docs/project/jira-import.json`:
+Write to `plans/exports/jira-import.json`:
 
 ```json
 {
@@ -274,7 +274,7 @@ Write to `docs/project/jira-import.json`:
 
 ### Linear Import (CSV)
 
-Write to `docs/project/linear-import.csv`:
+Write to `plans/exports/linear-import.csv`:
 
 ```csv
 Title,Description,Priority,Status,Estimate,Label,Parent
@@ -285,7 +285,7 @@ Title,Description,Priority,Status,Estimate,Label,Parent
 
 ### GitHub Projects (Markdown)
 
-Write to `docs/project/work-breakdown.md` — a structured markdown document that can be converted to GitHub Issues via `gh issue create`:
+Write to `plans/work-breakdown.md` — a structured markdown document that can be converted to GitHub Issues via `gh issue create`:
 
 ```markdown
 # Work Breakdown: [Feature Name]
@@ -305,7 +305,7 @@ Write to `docs/project/work-breakdown.md` — a structured markdown document tha
 
 ### Agent Task Plan
 
-Write to `docs/project/agent-tasks.md` — formatted for creating TaskCreate calls with blockedBy dependencies:
+Write to `plans/agent-tasks.md` — formatted for creating TaskCreate calls with blockedBy dependencies:
 
 ```markdown
 # Agent Task Plan: [Feature Name]
@@ -400,5 +400,5 @@ Structure your output as:
 1. **Summary** — Total epics, stories, tasks, and estimated effort
 2. **Work Breakdown** — Full hierarchy (epics → stories → tasks)
 3. **Dependency Graph** — Visual or textual representation of the critical path
-4. **Export Files** — Generated import files in `docs/project/`
+4. **Export Files** — Generated import files in `plans/exports/`
 5. **Risks & Flags** — Items that need attention or decisions

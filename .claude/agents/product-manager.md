@@ -49,7 +49,7 @@ When a stakeholder brief includes technology names (e.g., "use LangGraph"), reco
 
 ## PRD Format
 
-When following the SDD workflow, write the product plan to `plans/product-plan.md`. For standalone PRDs outside SDD, write to `docs/product/PRD-<kebab-case-title>.md`.
+When following the SDD workflow, write the product plan to `plans/product-plan.md`. For standalone PRDs outside SDD, write to `plans/product/PRD-<kebab-case-title>.md`.
 
 PRD format:
 
@@ -200,6 +200,6 @@ Your product plan should be detailed enough that downstream agents can work with
 
 Structure your output as:
 1. **Discovery Summary** — Key findings from discussion and research
-2. **PRD** — Full product requirements document (written to `docs/product/`)
+2. **PRD** — Full product requirements document (written to `plans/product/`)
 3. **Prioritized Feature List** — Ranked with RICE scores or MoSCoW classification
 4. **Next Steps** — What the Requirements Analyst, Architect, and Project Manager need to do next

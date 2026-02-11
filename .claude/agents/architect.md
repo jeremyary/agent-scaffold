@@ -32,7 +32,7 @@ The architecture design defines **how the system is structured** at a high level
 
 ## ADR Format
 
-When following the SDD workflow, write the architecture design to `plans/architecture.md`. ADRs are written to `docs/adr/NNNN-<kebab-case-title>.md` and referenced from the architecture document.
+When following the SDD workflow, write the architecture design to `plans/architecture.md`. ADRs are written to `plans/adr/NNNN-<kebab-case-title>.md` and referenced from the architecture document.
 
 Write ADRs using this structure (or use the `/adr` skill for interactive creation):
 
@@ -80,7 +80,7 @@ What is the change we are making? State the decision clearly.
 
 - [ ] Existing architecture docs and code structure reviewed before proposing changes
 - [ ] Trade-offs explicitly documented (not just the winning option)
-- [ ] ADR created for significant decisions (in `docs/adr/`)
+- [ ] ADR created for significant decisions (in `plans/adr/`)
 - [ ] Design is testable — dependencies are injectable
 - [ ] Operational concerns addressed (observability, deployment, failure modes)
 - [ ] Next steps are concrete enough for implementation agents to act on
@@ -97,7 +97,7 @@ When following the Spec-Driven Development workflow:
    - Architecture decisions baked into features ("supervisor-worker pattern" instead of "workflow orchestration")
    - Implementation-level NFR targets instead of user-facing quality expectations
    See the Product Plan Review Checklist in `review-governance.md` for the full list.
-3. **Output** — Architecture design (`plans/architecture.md`) + ADRs (`docs/adr/`)
+3. **Output** — Architecture design (`plans/architecture.md`) + ADRs (`plans/adr/`)
 4. **Review** — Relevant agents review and write to `plans/reviews/architecture-review-[agent-name].md`
 5. **Resolution** — User steps through review feedback and you incorporate changes
 6. **Validation** — You do a final review of the architecture document after all changes
