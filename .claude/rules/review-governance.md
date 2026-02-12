@@ -156,3 +156,36 @@ If `@code-reviewer` flags the **same pattern** 3+ times across different reviews
 3. Future reviews can reference the rule instead of re-explaining
 
 This prevents review fatigue from repeatedly flagging the same issue and ensures institutional knowledge is captured.
+
+## Review Resolution Process
+
+After reviews complete at any review gate, the orchestrator follows this process to resolve findings:
+
+### 1. Parallel Reviews + Orchestrator Assessment
+
+Launch designated reviewers in parallel. While reviews run, the orchestrator (main session) reads the artifact independently and prepares its own assessment. The orchestrator assessment catches issues that specialist reviewers miss and provides a generalist perspective.
+
+### 2. Consolidate into Triage Table
+
+Merge all findings (from every reviewer plus the orchestrator) into a single triage table, classified by disposition:
+
+| Disposition | Meaning |
+|-------------|---------|
+| **Fix** | Must be addressed before proceeding. Incorrect, inconsistent, or violates a project rule. |
+| **Improvement** | Would make the artifact better but not blocking. Apply if approved. |
+| **Defer** | Valid concern but out of scope for this artifact. Track for future work. |
+| **Positive** | Something done well. Noted for pattern reinforcement. |
+
+Each row includes: source (which reviewer), finding ID, severity, disposition, and a concise description of both the problem and the recommended change.
+
+### 3. User Approval
+
+Present the full triage table to the user. The user approves, modifies, or rejects individual items. No changes are applied without explicit user approval.
+
+### 4. Batch Application
+
+Launch the appropriate agent to apply all approved changes in a single pass. This is more efficient and consistent than applying changes one at a time.
+
+### 5. Spot-Check and Commit
+
+Verify key changes with targeted searches (grep for removed patterns, check critical edits). Then commit, push, and create PR.

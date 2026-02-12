@@ -90,3 +90,33 @@ If you discover that the codebase has diverged from what the task description as
 3. **Wait** — let the task be revised before proceeding
 
 Working around a stale spec creates code that matches neither the spec nor the codebase. It's always cheaper to update the spec first.
+
+## Session Continuity
+
+### Long Workflows
+
+The full SDD lifecycle will typically exceed a single context window. Plan for this:
+
+- **One artifact per session** is a good target. A session that produces a TD and completes its review is a natural stopping point.
+- **Per-phase design** (see workflow-patterns) keeps each session focused. Design Phase 1 in one session, implement in subsequent sessions, then design Phase 2.
+- **Memory files** persist cross-session state. Agents with `memory: project` should write key decisions and learnings before their session ends.
+
+### Before Context Compaction
+
+If a session is approaching context limits, capture before compaction:
+- Current phase in the SDD lifecycle
+- Which artifacts are complete and which are in progress
+- Pending decisions or open questions
+- Key learnings that haven't been written to memory yet
+
+### Session Boundaries
+
+Structure work so each session completes a meaningful unit:
+- Product plan + its review
+- Architecture + its review
+- Requirements + its review
+- Phase N TD + its review
+- Phase N WB + its review
+- Phase N implementation (subset of stories)
+
+Avoid starting an artifact review in the same session that will need to apply triage changes -- this often pushes past context limits.

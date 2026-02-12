@@ -9,6 +9,10 @@ Examples:
 - `feat/user-authentication`
 - `fix/login-redirect-loop`
 - `refactor/extract-payment-service`
+- `docs/architecture`
+- `docs/technical-design-phase-1`
+- `docs/work-breakdown-phase-1`
+- `docs/requirements`
 
 ## Commit Messages
 Follow Conventional Commits:
