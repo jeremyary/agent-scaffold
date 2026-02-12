@@ -17,6 +17,5 @@ build/
 .DS_Store
 Thumbs.db
 
-workshop/
 docs/
 .claude/agent-memory/

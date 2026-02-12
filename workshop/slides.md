@@ -37,6 +37,213 @@ layout: section
 ---
 
 <div style="background: #151515; color: #fff; margin: -48px; padding: 48px; height: calc(100% + 96px); display: flex; flex-direction: column; justify-content: center;">
+  <p style="font-family: 'Red Hat Mono', monospace; color: #EE0000; font-size: 0.9em; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5em;">Prerequisite</p>
+  <h1 style="font-family: 'Red Hat Display', sans-serif; font-weight: 900; font-size: 3em; color: #fff; margin: 0;">Claude Code<br/>Essentials</h1>
+  <div style="width: 80px; height: 4px; background: #EE0000; margin-top: 0.8em; border-radius: 2px;"></div>
+  <p style="color: #A3A3A3; margin-top: 1em; font-size: 1.1em;">Know your tool before changing your process</p>
+</div>
+
+---
+
+# How Claude thinks
+
+<div class="mt-6" style="font-size: 1.1em; max-width: 85%;">
+
+When you give Claude a task, it works through three phases:
+
+</div>
+
+<div class="grid grid-cols-3 gap-6 mt-8">
+
+<div class="card" style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 1.2em; text-align: center;">
+  <div style="font-family: 'Red Hat Mono', monospace; font-size: 0.8em; color: #EE0000; margin-bottom: 0.3em;">Phase 1</div>
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #0066CC; font-size: 1.1em;">Gather Context</div>
+  <p style="font-size: 0.85em; margin-top: 0.5em; color: #A3A3A3;">Reads files, searches code, loads rules. Builds understanding before acting.</p>
+</div>
+
+<div class="card" style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 1.2em; text-align: center;">
+  <div style="font-family: 'Red Hat Mono', monospace; font-size: 0.8em; color: #EE0000; margin-bottom: 0.3em;">Phase 2</div>
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #0066CC; font-size: 1.1em;">Take Action</div>
+  <p style="font-size: 0.85em; margin-top: 0.5em; color: #A3A3A3;">Edits files, runs commands, creates content. Snapshots every file before editing.</p>
+</div>
+
+<div class="card" style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 1.2em; text-align: center;">
+  <div style="font-family: 'Red Hat Mono', monospace; font-size: 0.8em; color: #EE0000; margin-bottom: 0.3em;">Phase 3</div>
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #0066CC; font-size: 1.1em;">Verify Results</div>
+  <p style="font-size: 0.85em; margin-top: 0.5em; color: #A3A3A3;">Runs tests, checks output, validates against the task. Catches its own mistakes.</p>
+</div>
+
+</div>
+
+<div class="mt-8 callout" style="border-left: 4px solid #EE0000; padding: 0.8em 1.2em; background: #292929; border-radius: 0 6px 6px 0;">
+
+File snapshots mean every edit is reversible. Press **Esc twice** to rewind to the previous state, or ask Claude to undo.
+
+</div>
+
+---
+
+# Sessions are persistent
+
+<div class="mt-4" style="font-size: 1.05em; max-width: 85%;">
+
+Every conversation is a session tied to your working directory. Sessions survive across terminal restarts.
+
+</div>
+
+<div class="grid grid-cols-2 gap-8 mt-6">
+<div>
+
+### Continuing & resuming
+
+<div style="font-size: 0.95em;">
+
+- **`claude -c`** -- continue your last session
+- **`claude -r`** -- pick from a list of past sessions
+
+You pick up where you left off using the same session ID. New messages append to the existing conversation. Full history is restored, but **session-scoped permissions are not** -- you will need to re-approve those.
+
+</div>
+</div>
+<div>
+
+### Rewinding & forking
+
+<div style="font-size: 0.95em;">
+
+- **Esc twice** -- rewind to the previous state
+- **`claude -c --fork-session`** -- branch off to try a different approach without affecting the original
+
+Forking is how you experiment safely. The original session stays untouched, and the fork gets its own clean session from that point forward.
+
+</div>
+</div>
+</div>
+
+<div class="mt-6 callout" style="border-left: 4px solid #F5921B; padding: 0.8em 1.2em; background: #292929; border-radius: 0 6px 6px 0;">
+
+**`/clear`** empties context for a fresh start -- but the session still exists. You can always **`claude -r`** to get back to it.
+
+</div>
+
+---
+
+# Context management
+
+<div class="mt-4" style="font-size: 1.05em; max-width: 85%;">
+
+Claude's context window is finite -- how to inspect/manage it matters for long sessions.
+
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-6">
+
+<div class="card" style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 1.2em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #0066CC; margin-bottom: 0.5em;">Inspect</div>
+
+- **`/context`** -- see what is using space in the current window
+- **`/memory`** -- view what persistent memory is loaded and available to the agent
+
+</div>
+
+<div class="card" style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 1.2em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #3D7317; margin-bottom: 0.5em;">Manage</div>
+
+- **`/compact`** -- manually invoke compaction (summarizes conversation to free space)
+- **`/clear`** -- empty context entirely for a fresh start
+- Auto-compaction kicks in automatically as the window fills
+
+</div>
+
+</div>
+
+<div class="mt-8 callout" style="border-left: 4px solid #EE0000; padding: 0.8em 1.2em; background: #292929; border-radius: 0 6px 6px 0;">
+
+Long sessions accumulate noise. When Claude starts forgetting earlier instructions or repeating mistakes, it is time to **`/compact`** or start fresh.
+
+</div>
+
+---
+
+# Parallel sessions
+
+<div class="mt-4" style="font-size: 1.05em; max-width: 85%;">
+
+Sessions are tied to directories. This gives you a natural way to run multiple Claude sessions in parallel.
+
+</div>
+
+<div class="grid grid-cols-2 gap-8 mt-6">
+
+<div class="card" style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 1.2em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #3D7317; margin-bottom: 0.5em;">Git worktrees</div>
+  <p style="font-size: 0.9em;">Create separate directories for individual branches. Each worktree gets its own independent Claude session.</p>
+  <div style="font-family: 'Red Hat Mono', monospace; font-size: 0.8em; background: #151515; padding: 0.6em; border-radius: 4px; margin-top: 0.8em; color: #A3A3A3;">
+    git worktree add ../my-feature feat/branch
+  </div>
+</div>
+
+<div class="card" style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 1.2em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #0066CC; margin-bottom: 0.5em;">Fork session</div>
+  <p style="font-size: 0.9em;">Branch from the same starting point without affecting the original session. Each fork gets its own clean history.</p>
+  <div style="font-family: 'Red Hat Mono', monospace; font-size: 0.8em; background: #151515; padding: 0.6em; border-radius: 4px; margin-top: 0.8em; color: #A3A3A3;">
+    claude --continue --fork-session
+  </div>
+</div>
+
+</div>
+
+<div class="mt-8 callout" style="border-left: 4px solid #F5921B; padding: 0.8em 1.2em; background: #292929; border-radius: 0 6px 6px 0;">
+
+**Avoid resuming the same session in multiple terminals.** Both write to the same session file -- messages interleave like two people writing in the same notebook. Use **`--fork-session`** instead.
+
+</div>
+
+---
+
+# The building blocks
+
+<div style="font-size: 0.92em; color: #A3A3A3;">Six distinct mechanisms. Understanding what each does (and when it runs) is key.</div>
+
+<div class="grid grid-cols-3 gap-3 mt-3">
+
+<div style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 0.6em 0.8em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #EE0000; font-size: 0.9em;">CLAUDE.md</div>
+  <p style="font-size: 0.75em; color: #A3A3A3; margin: 0.2em 0 0;">The de facto rules file. Injected into <strong>every</strong> context including subagents. Your project's constitution.</p>
+</div>
+
+<div style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 0.6em 0.8em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #0066CC; font-size: 0.9em;">Rules</div>
+  <p style="font-size: 0.75em; color: #A3A3A3; margin: 0.2em 0 0;">Same priority as CLAUDE.md. Separate files for better organization and maintenance. Can be path-scoped with globs.</p>
+</div>
+
+<div style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 0.6em 0.8em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #3D7317; font-size: 0.9em;">Skills</div>
+  <p style="font-size: 0.75em; color: #A3A3A3; margin: 0.2em 0 0;">Loaded on-demand, not always present. Reusable knowledge packs and invocable workflows (<code>/review</code>, <code>/setup</code>).</p>
+</div>
+
+<div style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 0.6em 0.8em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #F5921B; font-size: 0.9em;">Subagents</div>
+  <p style="font-size: 0.75em; color: #A3A3A3; margin: 0.2em 0 0;">Run in isolated context. Work independently and return summaries to the parent. Keeps the main context clean.</p>
+</div>
+
+<div style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 0.6em 0.8em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #A3A3A3; font-size: 0.9em;">Hooks</div>
+  <p style="font-size: 0.75em; color: #A3A3A3; margin: 0.2em 0 0;">Deterministic shell scripts that run <strong>outside</strong> the Claude loop. Triggered by events like tool calls. Not AI -- just code.</p>
+</div>
+
+<div style="background: #292929; border: 1px solid #4D4D4D; border-radius: 8px; padding: 0.6em 0.8em;">
+  <div style="font-family: 'Red Hat Display'; font-weight: 700; color: #4D4D4D; font-size: 0.9em;">Agent Teams <span style="font-size: 0.7em; color: #6A6E73;">(experimental)</span></div>
+  <p style="font-size: 0.75em; color: #A3A3A3; margin: 0.2em 0 0;">Disabled by default. Agents communicate directly for collaboration. Known limitations -- use with caution.</p>
+</div>
+
+</div>
+
+---
+layout: section
+---
+
+<div style="background: #151515; color: #fff; margin: -48px; padding: 48px; height: calc(100% + 96px); display: flex; flex-direction: column; justify-content: center;">
   <p style="font-family: 'Red Hat Mono', monospace; color: #EE0000; font-size: 0.9em; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5em;">Act 1</p>
   <h1 style="font-family: 'Red Hat Display', sans-serif; font-weight: 900; font-size: 3em; color: #fff; margin: 0;">Questions<br/>& Concerns</h1>
   <div style="width: 80px; height: 4px; background: #EE0000; margin-top: 0.8em; border-radius: 2px;"></div>
