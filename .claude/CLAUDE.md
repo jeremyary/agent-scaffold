@@ -72,6 +72,8 @@ implement → [code-reviewer, security-engineer] (parallel) → proceed only if 
 ```
 If reviewers flag Critical issues, loop back to implementation.
 
+For SDD plan review gates (Phases 2, 5, 8, 10), the orchestrator also participates as a parallel reviewer for cross-cutting issues — see `review-governance.md` § Orchestrator Review.
+
 ### Iterative Loop
 Profile → implement → verify cycle, repeated until targets are met.
 ```

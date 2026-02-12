@@ -36,6 +36,32 @@ Plan review can be skipped when:
 - The work is a bug fix with a clear root cause
 - The change is purely additive (new test, new documentation) with no interface changes
 
+## Orchestrator Review
+
+At each SDD plan review gate (Phases 2, 5, 8, 10), the main session performs its own review **in parallel** with the specialist agents. The orchestrator acts as a safety net for cross-cutting issues that fall between specialist scopes.
+
+### Focus Areas
+
+| Area | What to Look For |
+|------|-----------------|
+| **Cross-cutting coherence** | Do the parts of this artifact tell a consistent story, or do sections contradict each other? |
+| **Scope discipline** | Does the artifact stay within its phase's scope boundaries (see `workflow-patterns` SDD Scope Discipline table), or does it make decisions that belong to a downstream phase? |
+| **Assumption gaps** | Are there unstated assumptions that two specialists might interpret differently? |
+| **Compounding scope creep** | Has the cumulative scope grown beyond what the product plan authorized? Compare the artifact against the original feature set. |
+| **Downstream feasibility** | Will downstream agents (implementers, testers, project manager) be able to act on this artifact without ambiguity? |
+| **Review coverage gaps** | Is there a concern that no specialist reviewer is scoped to catch? Flag it explicitly. |
+
+### How It Differs from Specialist Reviews
+
+The orchestrator does **not** duplicate specialist work. It reads with the question: *"What would I miss if I only read the specialist reviews?"* Specialists evaluate depth within their domain; the orchestrator evaluates breadth across domains.
+
+### Output Format
+
+- Same severity levels as specialist reviews: **Critical**, **Warning**, **Suggestion**, **Positive**
+- Same verdict options: APPROVE, REQUEST_CHANGES, or NEEDS_DISCUSSION
+- The **Mandatory Findings Rule** applies — at least one Suggestion or Positive finding per review
+- Output path: `plans/reviews/<artifact>-review-orchestrator.md`
+
 ## Code Review Anti-Rubber-Stamping
 
 ### PR Size Guidance
