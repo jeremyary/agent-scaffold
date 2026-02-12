@@ -127,4 +127,14 @@ Nine agents have `memory: project` enabled: Product Manager, Architect, Tech Lea
 - Content of secret/credential values encountered during sessions
 - Personal preferences of individual developers (use `settings.local.json` for those)
 
+**When agents should write memory:**
+
+Agents with `memory: project` should write to their memory file at the end of any session where they:
+- Made or discovered a significant decision (architecture choice, design pattern, stakeholder preference)
+- Encountered a recurring pattern (positive or negative) worth capturing for future sessions
+- Completed a planning artifact that downstream agents will need to reference
+- Discovered a constraint or gotcha that isn't documented elsewhere
+
+Memory is only valuable if agents proactively write it. The "what to remember" list above is not sufficient on its own -- agents must actively persist their learnings before their session ends.
+
 Memory builds up naturally over sessions. Agents with memory become more effective as the project matures because they can reference prior decisions and patterns without re-reading every file.

@@ -318,6 +318,11 @@ Phase 2: Product Plan Review (parallel)
     The Architect reviewer is the primary scope checker.
   REVIEW GATE: User steps through each review's recommendations with
     Claude Code and makes decisions on how to handle them.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
 Phase 3: Product Plan Validation
   → @product-manager: Re-reviews the product plan after changes from
@@ -346,6 +351,11 @@ Phase 5: Architecture Review (parallel)
   → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/architecture-review-[agent-name].md
   REVIEW GATE: User steps through review recommendations with Claude Code.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
 Phase 6: Architecture Validation
   → @architect: Final review of architecture document after changes.
@@ -375,10 +385,37 @@ Phase 8: Requirements Review (parallel)
   REVIEW GATE: User steps through review recommendations with Claude Code.
   CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
     changes involved new design decisions.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
   ** CONSENSUS GATE: Pause here. Product plan, architecture, and
      requirements must be thorough, well-documented, accurate, and
      agreed upon by all parties (including the user) before proceeding.
+
+--- Per-Phase Design Boundary ---
+
+  Phases 9 onward execute ONE DELIVERY PHASE AT A TIME. Do not design
+  multiple delivery phases in a single document. Each delivery phase gets
+  its own TD and WB files:
+    - plans/technical-design-phase-1.md, plans/technical-design-phase-2.md, etc.
+    - plans/work-breakdown-phase-1.md, plans/work-breakdown-phase-2.md, etc.
+
+  After a phase's WB is reviewed and approved, the user decides:
+    (a) Implement this phase (recommended -- real implementation informs
+        better design for the next phase)
+    (b) Continue to the next phase's TD before implementing
+
+  There is no option to design all phases at once. Even if the user
+  wants full design approval before implementation, they proceed through
+  the per-phase cycle for each phase sequentially. This ensures:
+    - Reviewable artifact sizes (~700 lines per TD, not 2,800)
+    - Context-window-friendly sessions (one phase per session)
+    - Implementation-informed design (Phase 2 TD benefits from Phase 1
+      implementation learnings)
+    - Natural file naming (phase-N suffix, no ambiguity)
 
 Phase 9: Technical Design (per phase)
   → @tech-lead: Technical Design Document (plans/technical-design-phase-N.md)
@@ -401,6 +438,11 @@ Phase 10: Technical Design Review (parallel)
     (4) File structure maps to codebase, (5) No TBDs in binding contracts
   CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
     changes involved new design decisions.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
 Phase 11: Work Breakdown (per phase)
   → @project-manager: Epics, stories, Work Units, and tasks with:
@@ -434,6 +476,11 @@ Phase 12: Work Breakdown Review (per phase)
     (5) No project management methodology assumptions (no sprints, no velocity, no effort estimates)
   CONDITIONAL RE-REVIEW: Same rule as other phases — only re-engage
     if changes involved new design decisions not already triaged.
+  ORCHESTRATOR ASSESSMENT: While the tech lead reviews, the main session
+    reads the work breakdown independently and prepares its own assessment.
+    All findings (tech lead review + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
 Phase 13: Implementation (per phase, parallel where possible)
   → Assigned implementers (@backend-developer, @frontend-developer, etc.)
@@ -452,7 +499,7 @@ Phase 15: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
 
-Phases 9–15 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined in the product plan.
+The per-phase cycle (TD -> TD Review -> WB -> WB Review -> Implementation -> Code Review -> Documentation) repeats for each delivery phase defined in the product plan. Always complete one phase's full cycle before starting the next phase's TD. This ensures each phase's design benefits from the previous phase's implementation learnings.
 
 ### Artifact Map
 
