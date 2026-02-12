@@ -38,7 +38,7 @@ Plan review can be skipped when:
 
 ## Orchestrator Review
 
-At each SDD plan review gate (Phases 2, 5, 8, 10), the main session performs its own review **in parallel** with the specialist agents. The orchestrator acts as a safety net for cross-cutting issues that fall between specialist scopes.
+At each SDD plan review gate (Phases 2, 5, 8, 10), the main session performs its own review as part of the **agent team** with the specialist reviewers. The orchestrator acts as a safety net for cross-cutting issues that fall between specialist scopes. Running within the team allows the orchestrator to cross-reference specialist findings in real time.
 
 ### Focus Areas
 
@@ -94,6 +94,21 @@ The following code categories require review by **both** `@code-reviewer` and `@
 - Database migration with data transformation
 
 For all other code, `@code-reviewer` alone is sufficient. Add `@security-engineer` whenever you're unsure.
+
+### Team-Based Review
+
+**Default for Two-Agent Review:** When both `@code-reviewer` and `@security-engineer` are required (see Two-Agent Review categories above), they run as an **agent team** rather than independent parallel reviewers. This is the default, not an option. For code that only requires `@code-reviewer` (not in the Two-Agent Review categories), no team is needed — single-agent review suffices.
+
+**Cross-Pollination:** Each reviewer reads the other's findings before finalizing their own assessment. Security findings may reveal patterns the code reviewer should check more broadly; code quality findings may expose areas where security assumptions are fragile.
+
+**Disagreement Protocol:** When reviewers disagree on severity or approach:
+- The **higher severity** stands — if one reviewer flags Critical and the other flags Warning for the same issue, it's treated as Critical
+- Both perspectives are documented in the review output
+- The implementing agent addresses the higher-severity assessment
+
+**Single Consolidated Output:** Team review produces a single consolidated review document rather than separate per-agent files. Findings are attributed `[code-reviewer]` or `[security-engineer]` so the implementing agent knows which domain the feedback comes from. Output path follows the standard review naming convention.
+
+**SDD Plan Review Gates:** At each SDD plan review gate (Phases 2, 5, 8, 10), reviewers run as an agent team by default, enabling them to challenge each other's findings rather than reporting independently. The orchestrator participates as a parallel reviewer within the same team. This replaces the implicit fan-out assumption in earlier versions of the workflow.
 
 ### "Explain It to Me" Protocol
 

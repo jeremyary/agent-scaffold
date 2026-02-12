@@ -81,17 +81,62 @@ performance-engineer (profile) → implementer (fix) → performance-engineer (v
 ```
 Repeat if metrics not met.
 
+### Agent Team
+
+> **Experimental.** Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` `env` block (already configured for this project).
+
+True parallel sessions with peer-to-peer messaging via shared mailbox and shared task list. Teammates can communicate directly, challenge each other's findings, and coordinate in real time. This is the **default mechanism for parallel work** in this project, replacing Parallel Fan-Out as the primary pattern.
+
+```
+A → team(B, C, D) → E
+```
+B, C, D run as teammates with shared mailbox. E has `blockedBy: [B, C, D]`.
+
+#### When Agent Teams Are the Default
+
+| Scenario | Why Teams Add Value |
+|----------|-------------------|
+| Review gates (Phases 2, 5, 8, 10, 13) | Reviewers challenge each other's findings, cross-reference domain perspectives |
+| Cross-layer implementation (backend + frontend) | Teammates coordinate on shared contracts, flag integration issues in real time |
+| Advisory input (specialists advising an authoring agent) | Advisors cross-reference each other's input; authoring agent asks clarifying questions |
+| Competing hypotheses (debug + perf) | Investigators share findings, avoid duplicate work, converge on root cause faster |
+
+#### When to Fall Back to Parallel Fan-Out
+
+| Scenario | Why Fan-Out Is Sufficient |
+|----------|--------------------------|
+| Two agents with completely independent concerns | No cross-reference needed; team coordination overhead exceeds benefit |
+| Trivially parallel tasks | Work is fully independent and results don't interact |
+
+#### When to Use Sequential Chain Instead
+
+| Scenario | Why Sequential Is Required |
+|----------|---------------------------|
+| Agent B needs agent A's output | True data dependency — no parallelism possible |
+| Same-file edits | No merge resolution in teams; sequential avoids conflicts |
+
+#### File Ownership Rule
+
+Each teammate must own distinct files, defined explicitly in the task description. If file ownership cannot be cleanly separated, use Sequential Chain instead. If a teammate needs a change in another teammate's file, they send a mailbox message describing the change and wait for acknowledgment — they do not edit it directly.
+
+#### Session Limitations
+
+- No resume mid-session — if a teammate fails, the team must be re-spawned
+- Higher token cost — each teammate maintains a separate context window
+- Keep teams to **2–4 agents** to limit coordination overhead and cost
+
 ## Planning Principles
 
 When orchestrating multi-agent work, apply these principles:
 
 - **When in doubt, include a review gate.** Code-reviewer and security-engineer are read-only and cheap.
-- **Prefer parallel execution** when tasks are independent — don't create unnecessary sequential chains.
+- **Default to agent teams for parallel work.** When multiple agents work on the same phase, use an agent team so they can cross-reference findings and coordinate. Fall back to fan-out only when agents have no need to communicate (see Agent Team pattern above).
 - **Right-size the plan** — a single file change doesn't need 7 agents. Match plan complexity to request complexity.
 - **Include context propagation** — each task description should include what prior steps will have produced.
 - **Apply chunking heuristics** — each task should touch 3-5 files max, have a machine-verifiable exit condition, and be completable in ~1 hour. Split tasks that violate these limits.
 - **Every task needs a verifiable exit condition** in its description (test command, type-check, endpoint assertion). "Implementation complete" is not verifiable.
 - **Prefer spec-first** for work involving new data shapes, APIs, or integration points — the cost of specifying before building is always less than the cost of reworking after.
+- **Assign file ownership explicitly** when using agent teams for implementation. Each teammate must own distinct files. Define ownership in the task description before spawning the team.
 
 ## Cost Tiers
 

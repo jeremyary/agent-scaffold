@@ -90,3 +90,36 @@ If you discover that the codebase has diverged from what the task description as
 3. **Wait** — let the task be revised before proceeding
 
 Working around a stale spec creates code that matches neither the spec nor the codebase. It's always cheaper to update the spec first.
+
+## Agent Team Coordination (Experimental)
+
+When running as part of an agent team (see `.claude/CLAUDE.md` § Agent Team), these additional disciplines apply on top of the standard task chunking and context engineering rules.
+
+### File Ownership
+
+Each teammate owns distinct files, defined in the task description before the team is spawned. Ownership is exclusive — only the owning teammate edits a file.
+
+If you need a change in another teammate's file:
+1. **Do not edit it** — send a mailbox message describing the change you need
+2. **Include specifics** — file path, what to change, and why
+3. **Wait for acknowledgment** — the owning teammate confirms or proposes an alternative
+4. **Continue with other work** while waiting — do not block on the response
+
+### Communication Discipline
+
+Use the shared mailbox for:
+- Findings that affect another teammate's work (e.g., "the schema I'm seeing doesn't match the contract you're implementing against")
+- Contract clarifications (e.g., "should this field be nullable?")
+- Blocking dependencies (e.g., "I need the type definition you're creating before I can proceed")
+
+Do NOT use the mailbox for:
+- Progress updates ("I'm 50% done") — the task list already tracks this
+- Questions the task description already answers — re-read the task first
+- Out-of-scope requests — if the work wasn't in the task description, it doesn't belong in this session
+
+### Exit Coordination
+
+When your task's exit condition passes:
+1. **Send a completion message** to the mailbox — include what you produced, what verification command you ran, and any deviations from the task description
+2. **Wait for all teammates** to signal completion before the team session ends
+3. **Flag unresolved issues** — if you discovered something that affects a teammate's work but couldn't resolve it through the mailbox, call it out explicitly in your completion message

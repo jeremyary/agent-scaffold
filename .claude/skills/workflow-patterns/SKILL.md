@@ -306,6 +306,9 @@ Phase 2: Product Plan Review (parallel)
   → @security-engineer: Review from security/compliance perspective
   → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/product-plan-review-[agent-name].md
+  TEAM REVIEW: Reviewers and orchestrator run as an agent team by default,
+    enabling cross-reference of findings and real-time challenge of each
+    other's assessments (see review-governance.md § Team-Based Review).
   SCOPE CHECK: All reviewers also check for scope violations per the
     Product Plan Review Checklist in review-governance.md (technology
     names in features, epic breakout, architecture decisions, etc.).
@@ -333,12 +336,24 @@ Phase 4: Architecture
     DOWNSTREAM VERIFICATION: Flag any product plan inconsistencies
       discovered while designing. This serves as implicit verification
       of the post-review product plan.
+    ADVISORY INPUT: When the feature is API-heavy (3+ new endpoints),
+      data-heavy (new tables or complex relationships), or operationally
+      complex, the orchestrator solicits brief memos from relevant
+      specialists (@api-designer, @database-engineer, @sre-engineer) as
+      an agent team so advisors can cross-reference each other's input
+      while the Architect authors. Format: 1-page max memo to
+      plans/advisory/architecture-advisory-[agent-name].md. The Architect
+      reads these as input, not binding directives. For simple features
+      (single concern, no cross-domain implications), this step can be skipped.
 
 Phase 5: Architecture Review (parallel)
   → Relevant agents review from their perspectives
     (e.g., @security-engineer, @api-designer, @backend-developer, @sre-engineer)
   → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/architecture-review-[agent-name].md
+  TEAM REVIEW: Reviewers and orchestrator run as an agent team by default,
+    enabling cross-reference of findings and real-time challenge of each
+    other's assessments (see review-governance.md § Team-Based Review).
   REVIEW GATE: User steps through review recommendations with Claude Code.
 
 Phase 6: Architecture Validation
@@ -360,12 +375,21 @@ Phase 7: Requirements
       approach: (1) requirements skeleton with story map, cross-cutting
       concerns, and cross-feature dependencies, then (2) detailed specs
       chunked by feature area. See requirements-analyst agent for details.
+    TEAM-BASED CHUNKING FOR LARGE PROJECTS: When using the two-pass
+      approach and Pass 2 is chunked into 3+ feature areas with
+      cross-feature dependencies identified in the Pass 1 skeleton,
+      chunks are executed as an agent team so teammates flag inter-chunk
+      inconsistencies in real time. For smaller projects (1-2 chunks),
+      sequential execution is fine.
 
 Phase 8: Requirements Review (parallel)
   → @product-manager: Review for completeness against product plan
   → @architect: Review for alignment with architecture
   → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/requirements-review-[agent-name].md
+  TEAM REVIEW: Reviewers and orchestrator run as an agent team by default,
+    enabling cross-reference of findings and real-time challenge of each
+    other's assessments (see review-governance.md § Team-Based Review).
   REVIEW GATE: User steps through review recommendations with Claude Code.
   CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
     changes involved new design decisions.
@@ -385,11 +409,24 @@ Phase 9: Technical Design (per phase)
       no work breakdown, no estimation.
     DOWNSTREAM VERIFICATION: Flag any requirements inconsistencies
       discovered while designing.
+    ADVISORY INPUT: For features that are API-heavy (3+ new endpoints),
+      schema-heavy (new tables or complex relationships), or security-sensitive
+      (auth, crypto), the orchestrator solicits brief memos from relevant
+      specialists (@api-designer, @database-engineer, @security-engineer) as
+      an agent team with the Tech Lead. Advisors cross-reference each other's
+      input and the Tech Lead can ask clarifying questions in real time.
+      Format: 1-page max memo to plans/advisory/technical-design-phase-N-advisory-[agent-name].md.
+      The Tech Lead reads these as input, not binding directives.
+      For simple features (single concern, no cross-domain implications),
+      this step can be skipped.
 
 Phase 10: Technical Design Review (parallel)
   → Relevant agents review the TD
   → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/technical-design-phase-N-review-[agent-name].md
+  TEAM REVIEW: Reviewers and orchestrator run as an agent team by default,
+    enabling cross-reference of findings and real-time challenge of each
+    other's assessments (see review-governance.md § Team-Based Review).
   REVIEW GATE: Plan review per review-governance.md checklist:
     (1) Contracts concrete, (2) Error paths covered, (3) Exit conditions verifiable,
     (4) File structure maps to codebase, (5) No TBDs in binding contracts
@@ -409,6 +446,12 @@ Phase 11: Work Breakdown (per phase)
       no interface contract changes.
     DOWNSTREAM VERIFICATION: Flag any TD inconsistencies
       discovered while breaking down work.
+    COMPLEXITY SIGNALS: For phases with 5+ tasks or multiple implementers,
+      the orchestrator asks implementation agents to provide brief complexity
+      assessments as an agent team before the PM finalizes estimates. Each
+      agent flags undersized tasks, hidden dependencies, and domain-specific
+      risks to plans/advisory/work-breakdown-phase-N-complexity-[agent-name].md.
+      For small phases (< 5 tasks, single implementer), this can be skipped.
 
 Phase 12: Implementation (per phase, parallel where possible)
   → Assigned implementers (@backend-developer, @frontend-developer, etc.)
@@ -422,6 +465,10 @@ Phase 13: Review (per phase, parallel)
     - Test review is not optional — happy-path-only tests are a Warning
     - Scope matching — out-of-scope changes are themselves a finding
   → @security-engineer: Security audit (required for auth, crypto, data deletion code)
+  TEAM REVIEW: When both @code-reviewer and @security-engineer are required
+    (Two-Agent Review categories in review-governance.md), they run as an agent
+    team so security findings inform code quality assessment and vice versa.
+    For code requiring only @code-reviewer, a single agent is sufficient.
 
 Phase 14: Documentation
   → @technical-writer: User docs, API docs, changelog
@@ -442,6 +489,7 @@ Phases 9–14 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined
 | Technical Design | TD per phase | `plans/technical-design-phase-N.md` |
 | TD Review | Agent + orchestrator reviews | `plans/reviews/technical-design-phase-N-review-[agent-name\|orchestrator].md` |
 | Work Breakdown | Task plan per phase | `plans/work-breakdown-phase-N.md` |
+| Advisory Input | Specialist memos | `plans/advisory/<phase>-advisory-[agent-name].md` |
 
 ### When to Use SDD vs. Simpler Workflows
 

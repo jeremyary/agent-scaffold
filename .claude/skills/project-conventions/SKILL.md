@@ -69,6 +69,7 @@ When following the Spec-Driven Development workflow (see `workflow-patterns/SKIL
 | Technical design (per phase) | `plans/technical-design-phase-N.md` | @tech-lead |
 | Agent review | `plans/reviews/<artifact>-review-<agent-name>.md` | Reviewing agent |
 | Orchestrator review | `plans/reviews/<artifact>-review-orchestrator.md` | Main session (orchestrator) |
+| Advisory memo | `plans/advisory/<phase>-advisory-[agent-name].md` | Advising agent |
 | Work breakdown (per phase) | `plans/work-breakdown-phase-N.md` | @project-manager |
 
 ### Review File Naming Convention
@@ -82,6 +83,9 @@ plans/reviews/architecture-review-orchestrator.md
 plans/reviews/requirements-review-orchestrator.md
 plans/reviews/technical-design-phase-1-review-code-reviewer.md
 plans/reviews/technical-design-phase-1-review-orchestrator.md
+plans/advisory/architecture-advisory-api-designer.md
+plans/advisory/technical-design-phase-1-advisory-security-engineer.md
+plans/advisory/work-breakdown-phase-1-complexity-backend-developer.md
 ```
 
 ## Environment Configuration
