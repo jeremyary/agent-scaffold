@@ -168,6 +168,8 @@ Both paths produce the same result. The wizard is faster; the manual guide gives
 
 **Why task chunking limits?** At 95% per-step reliability, a 20-step autonomous chain succeeds only ~36% of the time. Keeping tasks to 5-7 steps and 3-5 files resets the error chain and keeps compound failure probability manageable.
 
+**Why a repo template instead of a Claude Code plugin?** Plugins cannot ship arbitrary files like git hooks, settings templates, or path-scoped rules -- they only support a subset of what the scaffold provides. A repo template gives you the full file tree on day one with no bootstrap step required.
+
 ## Customization
 
 Everything in this scaffold is meant to be modified. During setup you will:
