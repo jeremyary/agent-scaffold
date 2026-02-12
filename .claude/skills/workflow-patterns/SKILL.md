@@ -304,6 +304,7 @@ Phase 2: Product Plan Review (parallel)
   → @architect: Review from architecture feasibility perspective
   → @api-designer: Review from API design perspective
   → @security-engineer: Review from security/compliance perspective
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/product-plan-review-[agent-name].md
   SCOPE CHECK: All reviewers also check for scope violations per the
     Product Plan Review Checklist in review-governance.md (technology
@@ -336,6 +337,7 @@ Phase 4: Architecture
 Phase 5: Architecture Review (parallel)
   → Relevant agents review from their perspectives
     (e.g., @security-engineer, @api-designer, @backend-developer, @sre-engineer)
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/architecture-review-[agent-name].md
   REVIEW GATE: User steps through review recommendations with Claude Code.
 
@@ -362,6 +364,7 @@ Phase 7: Requirements
 Phase 8: Requirements Review (parallel)
   → @product-manager: Review for completeness against product plan
   → @architect: Review for alignment with architecture
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/requirements-review-[agent-name].md
   REVIEW GATE: User steps through review recommendations with Claude Code.
   CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
@@ -383,8 +386,9 @@ Phase 9: Technical Design (per phase)
     DOWNSTREAM VERIFICATION: Flag any requirements inconsistencies
       discovered while designing.
 
-Phase 10: Technical Design Review
+Phase 10: Technical Design Review (parallel)
   → Relevant agents review the TD
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/technical-design-phase-N-review-[agent-name].md
   REVIEW GATE: Plan review per review-governance.md checklist:
     (1) Contracts concrete, (2) Error paths covered, (3) Exit conditions verifiable,
@@ -430,13 +434,13 @@ Phases 9–14 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined
 | Phase | Output | Path |
 |-------|--------|------|
 | Product Plan | Product plan | `plans/product-plan.md` |
-| Product Plan Review | Agent reviews | `plans/reviews/product-plan-review-[agent-name].md` |
+| Product Plan Review | Agent + orchestrator reviews | `plans/reviews/product-plan-review-[agent-name\|orchestrator].md` |
 | Architecture | Architecture design | `plans/architecture.md` |
-| Architecture Review | Agent reviews | `plans/reviews/architecture-review-[agent-name].md` |
+| Architecture Review | Agent + orchestrator reviews | `plans/reviews/architecture-review-[agent-name\|orchestrator].md` |
 | Requirements | Requirements document | `plans/requirements.md` |
-| Requirements Review | Agent reviews | `plans/reviews/requirements-review-[agent-name].md` |
+| Requirements Review | Agent + orchestrator reviews | `plans/reviews/requirements-review-[agent-name\|orchestrator].md` |
 | Technical Design | TD per phase | `plans/technical-design-phase-N.md` |
-| TD Review | Agent reviews | `plans/reviews/technical-design-phase-N-review-[agent-name].md` |
+| TD Review | Agent + orchestrator reviews | `plans/reviews/technical-design-phase-N-review-[agent-name\|orchestrator].md` |
 | Work Breakdown | Task plan per phase | `plans/work-breakdown-phase-N.md` |
 
 ### When to Use SDD vs. Simpler Workflows
