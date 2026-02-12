@@ -279,12 +279,12 @@ After resolving review feedback on any artifact, the user decides whether re-rev
 
 This prevents unnecessary review cycles while still catching problems. Each downstream agent naturally verifies the upstream artifact because they must build on it:
 
-| Artifact Updated | Downstream Verifier | Implicit Verification |
+| Artifact Updated After | Downstream Verifier | Implicit Verification |
 |---|---|---|
-| Product Plan (Phase 3) | Architect (Phase 4) | Flags product plan inconsistencies while designing |
-| Architecture (Phase 6) | Requirements Analyst (Phase 7) | Flags architecture inconsistencies while writing requirements |
-| Requirements (Phase 8) | Tech Lead (Phase 9) | Flags requirements inconsistencies while designing |
-| Technical Design (Phase 10) | Project Manager (Phase 11) | Flags TD inconsistencies while breaking down work |
+| Product Plan Validation (Phase 3) | Architect (Phase 4) | Flags product plan inconsistencies while designing |
+| Architecture Validation (Phase 6) | Requirements Analyst (Phase 7) | Flags architecture inconsistencies while writing requirements |
+| Requirements Review (Phase 8) | Tech Lead (Phase 9) | Flags requirements inconsistencies while designing |
+| TD Review (Phase 10) | Project Manager (Phase 11) | Flags TD inconsistencies while breaking down work |
 
 If a downstream agent discovers an inconsistency, pause and resolve it before continuing — don't work around it. This is cheaper than discovering the problem during implementation.
 

@@ -36,17 +36,7 @@ Do not use 200 with an error body. Use the appropriate 4xx/5xx status code.
 
 ## Error Class Hierarchy
 
-Define a base error class and extend it for specific error types. This hierarchy is illustrative — adapt to your language's exception/error patterns (e.g., Python exception classes, Go error types, Java checked exceptions).
-
-```
-AppError (base)
-├── ValidationError (422)
-├── NotFoundError (404)
-├── ConflictError (409)
-├── AuthenticationError (401)
-├── AuthorizationError (403)
-└── ExternalServiceError (502/503)
-```
+Define a base `AppError` class with domain-specific subclasses: `ValidationError` (422), `NotFoundError` (404), `ConflictError` (409), `AuthenticationError` (401), `AuthorizationError` (403), `ExternalServiceError` (502/503). Adapt to your language's error patterns.
 
 - Throw domain-specific errors in service/business logic layers
 - Map domain errors to HTTP responses at the handler/controller boundary

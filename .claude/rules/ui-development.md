@@ -1,5 +1,6 @@
 ---
-globs: "packages/ui/**/*"
+paths:
+  - "packages/ui/**/*"
 ---
 
 # UI Development
@@ -34,24 +35,9 @@ packages/ui/
 └── vitest.config.ts     # Test configuration
 ```
 
-## File-Based Routing
+## Routing
 
-TanStack Router uses the file system for route definitions:
-
-```typescript
-// src/routes/about.tsx -> /about
-import { createFileRoute } from '@tanstack/react-router';
-
-export const Route = createFileRoute('/about')({
-  component: About,
-});
-
-function About() {
-  return <div>About page</div>;
-}
-```
-
-### Route Patterns
+TanStack Router uses file-based route definitions:
 
 | File | Route |
 |------|-------|
@@ -63,123 +49,20 @@ function About() {
 
 The route tree (`routeTree.gen.ts`) regenerates automatically during development.
 
-## Component Patterns
+## Component Conventions
 
-### Atomic Design
-
-Organize components by complexity:
-
-```
-components/
-├── atoms/           # Basic building blocks (Button, Input, Badge)
-├── molecules/       # Combinations of atoms (FormField, Card)
-├── organisms/       # Complex components (Header, Footer, DataTable)
-└── templates/       # Page layouts (DashboardLayout)
-```
-
-### Component Structure
-
-Each component should have:
-- `component-name.tsx` — Component implementation
-- `component-name.test.tsx` — Tests (co-located)
-- `component-name.stories.tsx` — Storybook stories (optional)
-
-```typescript
-// components/atoms/button/button.tsx
-import { cn } from '@/lib/utils';
-
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'outline' | 'ghost';
-}
-
-export function Button({ variant = 'default', className, ...props }: ButtonProps) {
-  return (
-    <button
-      className={cn(
-        'px-4 py-2 rounded-md font-medium',
-        variant === 'default' && 'bg-primary text-white',
-        variant === 'outline' && 'border border-primary',
-        className
-      )}
-      {...props}
-    />
-  );
-}
-```
+- Organize by complexity: `atoms/` > `molecules/` > `organisms/` > `templates/`
+- Each component: `component-name.tsx` + `component-name.test.tsx` (co-located)
+- Define props interface above the component, use named exports
 
 ## API Integration Pattern
 
-Use the hooks/services pattern for API calls:
+Follow the layered pattern: `Component -> Hook -> TanStack Query -> Service -> API`
 
-```
-Component → Hook → TanStack Query → Service → API
-```
-
-### 1. Define Schema (Zod)
-
-```typescript
-// schemas/user.ts
-import { z } from 'zod';
-
-export const userSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  email: z.string().email(),
-});
-
-export type User = z.infer<typeof userSchema>;
-```
-
-### 2. Create Service
-
-```typescript
-// services/users.ts
-import { userSchema, type User } from '@/schemas/user';
-
-const API_URL = import.meta.env.VITE_API_BASE_URL;
-
-export async function fetchUsers(): Promise<User[]> {
-  const response = await fetch(`${API_URL}/users`);
-  if (!response.ok) throw new Error('Failed to fetch users');
-  const data = await response.json();
-  return z.array(userSchema).parse(data);
-}
-```
-
-### 3. Create Hook
-
-```typescript
-// hooks/users.ts
-import { useQuery } from '@tanstack/react-query';
-import { fetchUsers } from '@/services/users';
-
-export function useUsers() {
-  return useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
-  });
-}
-```
-
-### 4. Use in Component
-
-```typescript
-// components/user-list.tsx
-import { useUsers } from '@/hooks/users';
-
-export function UserList() {
-  const { data: users, isLoading, error } = useUsers();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading users</div>;
-
-  return (
-    <ul>
-      {users?.map(user => <li key={user.id}>{user.name}</li>)}
-    </ul>
-  );
-}
-```
+- Define Zod schemas in `schemas/` for response validation
+- Create fetch functions in `services/` that validate responses against schemas
+- Wrap service calls in TanStack Query hooks in `hooks/`
+- Components consume hooks, never call services directly
 
 ## Styling Guidelines
 
