@@ -16,3 +16,7 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+workshop/
+docs/
+.claude/agent-memory/
