@@ -29,12 +29,35 @@ For features with **3+ implementation tasks**, both the Product Manager's produc
 | **File structure maps to actual codebase** | Proposed paths match existing project layout — not an idealized structure |
 | **No TBDs in binding contracts** | If something is undefined, it must be flagged as an open question, not left as "TBD" |
 
+### Work Breakdown Review Checklist
+
+| Check | What to Look For |
+|-------|-----------------|
+| **Story-to-WU mapping is 1:1** | Every work unit from the TD maps to exactly one story. No scope drift in story descriptions -- they should be faithful to TD intent, not reinterpreted. |
+| **Dependencies are technically accurate** | Story dependencies match actual technical dependencies from the TD's dependency graph. Phase ordering is NOT the same as technical dependency -- flag over-strict chains that block parallelism unnecessarily. |
+| **Exit conditions are machine-verifiable** | Every story has a runnable command that returns pass/fail. No "implementation is complete", no "review by X agent", no manual verification. See `agent-workflow.md`. |
+| **Chunking heuristics respected** | Stories target 3-5 files, single concern. Stories exceeding these limits should be flagged for splitting. |
+| **No methodology or estimation assumptions** | No sprints, velocity, capacity planning, or effort estimates. Work breakdowns organize by dependency order and parallelism. Sprint planning requires a defined team. Effort estimation requires knowledge of who is doing the work. Agents must not fabricate either. |
+
 ### When to Skip Plan Review
 
 Plan review can be skipped when:
 - The feature has 1–2 implementation tasks (single-concern, single-implementer)
 - The work is a bug fix with a clear root cause
 - The change is purely additive (new test, new documentation) with no interface changes
+
+### Anti-Self-Approval Principle
+
+The creating agent must not be the sole reviewer of its own planning artifacts. Each planning phase has a designated reviewer with complementary expertise:
+
+| Artifact | Creator | Reviewer(s) |
+|----------|---------|-------------|
+| Product Plan | Product Manager | Architect, Security Engineer |
+| Architecture | Architect | Code Reviewer, Security Engineer |
+| Technical Design | Tech Lead | Code Reviewer, Security Engineer |
+| Work Breakdown | Project Manager | Tech Lead |
+
+This ensures every artifact is validated by an agent whose expertise covers the creator's blind spots. The PM lacks implementation depth to validate its own dependency chains and exit conditions. The Architect lacks security depth to validate its own threat surface. Skipping review for a planning artifact because "it doesn't introduce new interfaces" misses the point -- every planning artifact makes decisions that downstream agents must live with.
 
 ## Orchestrator Review
 

@@ -22,24 +22,27 @@ Phase 3: Design
   → @architect: System design and technology decisions
 
 Phase 4: Work Breakdown
-  → @project-manager: Epics, stories, and tasks with estimates and dependencies
+  → @project-manager: Epics, stories, and tasks with dependency mapping
 
-Phase 5: Contracts (parallel)
+Phase 5: Work Breakdown Review
+  → @tech-lead: Validate dependencies, exit conditions, and scope compliance
+
+Phase 6: Contracts (parallel)
   → @api-designer: API contract and OpenAPI spec
   → @database-engineer: Schema design and migrations
 
-Phase 6: Implementation (parallel)
+Phase 7: Implementation (parallel)
   → @backend-developer: API handlers and business logic
   → @frontend-developer: UI components and integration
 
-Phase 7: Testing
+Phase 8: Testing
   → @test-engineer: Unit, integration, and e2e tests
 
-Phase 8: Review (parallel)
+Phase 9: Review (parallel)
   → @code-reviewer: Code quality review
   → @security-engineer: Security audit
 
-Phase 9: Documentation
+Phase 10: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
 
@@ -211,24 +214,27 @@ Phase 3: Architecture
   → @architect: Technology selection, project structure, ADRs
 
 Phase 4: Work Breakdown
-  → @project-manager: Epics, stories, tasks with estimates — Jira/Linear export
+  → @project-manager: Epics, stories, tasks with dependency mapping
 
-Phase 5: Foundation (parallel)
+Phase 5: Work Breakdown Review
+  → @tech-lead: Validate dependencies, exit conditions, and scope compliance
+
+Phase 6: Foundation (parallel)
   → @devops-engineer: CI/CD pipeline, Docker setup, development environment
   → @database-engineer: Initial schema and migration framework
   → @api-designer: API contract foundation
 
-Phase 6: Scaffold (parallel)
+Phase 7: Scaffold (parallel)
   → @backend-developer: Project skeleton, middleware, error handling
   → @frontend-developer: Project skeleton, routing, layout
 
-Phase 7: Quality Gates
+Phase 8: Quality Gates
   → @test-engineer: Testing framework setup and example tests
 
-Phase 8: Operational Readiness
+Phase 9: Operational Readiness
   → @sre-engineer: SLOs, alerting, runbooks, incident response process
 
-Phase 9: Documentation
+Phase 10: Documentation
   → @technical-writer: README, contributing guide, architecture docs
 ```
 
@@ -267,7 +273,7 @@ This is the most important principle in the workflow. Each phase must stay withi
 | **Architecture** | System design, component boundaries, technology decisions, ADRs, integration patterns | Product scope changes, detailed API contracts, task breakdown, implementation details |
 | **Requirements** | User stories, acceptance criteria (Given/When/Then), edge cases, non-functional requirements | Architecture decisions, task sizing, implementation approach |
 | **Technical Design** | Interface contracts, data flow, error strategies, file structure, exit conditions | Product scope changes, architecture overrides, work breakdown, estimation |
-| **Work Breakdown** | Epics, stories, tasks, estimates, dependencies, agent assignments | Product decisions, architecture changes, interface contract changes |
+| **Work Breakdown** | Epics, stories, tasks, dependencies, agent assignments, parallelization maps | Product decisions, architecture changes, interface contract changes, effort estimates, sprint planning |
 
 **Why this matters:** When a product plan includes architecture decisions, the Architect is reduced to rubber-stamping rather than designing. When a technical design includes work breakdown, the Project Manager has no room to apply sizing constraints. Each agent's value comes from doing their analysis fresh — not from inheriting premature decisions from upstream.
 
@@ -403,31 +409,50 @@ Phase 11: Work Breakdown (per phase)
     - 3–5 file scope per task (agent-workflow.md constraint)
     - Machine-verifiable verification commands per task
     - Self-contained — all relevant context inlined, no "see document X"
-    - Estimates and dependency mapping
+    - Dependency mapping
     The TD's Context Package maps directly into WU shared context.
     SCOPE: No product decisions, no architecture changes,
       no interface contract changes.
     DOWNSTREAM VERIFICATION: Flag any TD inconsistencies
       discovered while breaking down work.
+    METHODOLOGY: Work breakdowns organize by dependency order and
+      parallelism opportunities, NOT by time-boxed containers (sprints,
+      iterations) or effort estimates. Sprint planning requires a defined
+      team with known capacity. Effort estimation requires knowledge of
+      who is doing the work. Agents must never fabricate team structure,
+      velocity, or effort estimates. Use phases, dependency-driven
+      execution order, and parallelization maps instead.
 
-Phase 12: Implementation (per phase, parallel where possible)
+Phase 12: Work Breakdown Review (per phase)
+  → @tech-lead: Review work breakdown against TD
+  → Review written to plans/reviews/work-breakdown-phase-N-review-tech-lead.md
+  REVIEW GATE: Tech lead validates:
+    (1) Story-to-WU mapping is 1:1 and faithful to TD intent
+    (2) Dependency chains match actual technical dependencies, not phase ordering
+    (3) All exit conditions are machine-verifiable commands
+    (4) Stories comply with chunking heuristics (3-5 files, single concern)
+    (5) No project management methodology assumptions (no sprints, no velocity, no effort estimates)
+  CONDITIONAL RE-REVIEW: Same rule as other phases — only re-engage
+    if changes involved new design decisions not already triaged.
+
+Phase 13: Implementation (per phase, parallel where possible)
   → Assigned implementers (@backend-developer, @frontend-developer, etc.)
   → Each task verified against its exit condition before marking complete
   → If a spec problem is discovered: STOP → revise TD → unblock
     (tech-lead's spec revision protocol)
 
-Phase 13: Review (per phase, parallel)
+Phase 14: Review (per phase, parallel)
   → @code-reviewer: Code quality review with anti-rubber-stamping (review-governance.md):
     - At least one finding per review (mandatory findings rule)
     - Test review is not optional — happy-path-only tests are a Warning
     - Scope matching — out-of-scope changes are themselves a finding
   → @security-engineer: Security audit (required for auth, crypto, data deletion code)
 
-Phase 14: Documentation
+Phase 15: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
 
-Phases 9–14 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined in the product plan.
+Phases 9–15 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined in the product plan.
 
 ### Artifact Map
 
@@ -442,6 +467,7 @@ Phases 9–14 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined
 | Technical Design | TD per phase | `plans/technical-design-phase-N.md` |
 | TD Review | Agent + orchestrator reviews | `plans/reviews/technical-design-phase-N-review-[agent-name\|orchestrator].md` |
 | Work Breakdown | Task plan per phase | `plans/work-breakdown-phase-N.md` |
+| Work Breakdown Review | Tech lead review | `plans/reviews/work-breakdown-phase-N-review-tech-lead.md` |
 
 ### When to Use SDD vs. Simpler Workflows
 

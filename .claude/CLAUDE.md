@@ -18,7 +18,7 @@ When the user's request matches keywords below, route to the corresponding agent
 | "security", "vulnerability", "OWASP", "CVE", "auth" | Security Engineer | — |
 | "performance", "slow", "profiling", "optimize", "latency" | Performance Engineer | — |
 | "deploy", "CI/CD", "Docker", "Kubernetes", "Terraform" | DevOps Engineer | — |
-| "epic", "story", "sprint", "Jira", "backlog", "work breakdown", "estimate" | Project Manager | — |
+| "epic", "story", "Jira", "backlog", "work breakdown" | Project Manager | — |
 | "SLO", "SLI", "runbook", "incident", "on-call", "error budget", "capacity" | SRE Engineer | DevOps Engineer |
 | "bug", "error", "crash", "debug", "broken", "not working" | Debug Specialist | — |
 | "docs", "README", "changelog", "documentation" | Technical Writer | — |
