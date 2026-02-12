@@ -55,7 +55,7 @@ If a task produces more than 400 lines of changes, the task was likely over-scop
 
 A review that produces zero findings and an APPROVE is suspicious. There is always at least one improvement — a clearer name, a missing edge case, a test that could be stronger, a comment that would help the next reader. Zero findings suggests the review was skimmed, not read.
 
-Acceptable minimum: at least one **Info** or **Suggestion** finding per review, even if the overall verdict is APPROVE.
+Acceptable minimum: at least one **Suggestion** or **Positive** finding per review, even if the overall verdict is APPROVE.
 
 ### Two-Agent Review
 

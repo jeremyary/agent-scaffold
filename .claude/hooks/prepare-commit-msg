@@ -36,8 +36,8 @@ COMMIT_SOURCE="${2:-}"
 DEFAULT_TRAILER="Assisted-by: Claude Code"
 TRAILER="${CLAUDE_COMMIT_TRAILER:-$DEFAULT_TRAILER}"
 
-# Skip for merge commits, squash messages, or commit templates
-if [ "$COMMIT_SOURCE" = "merge" ] || [ "$COMMIT_SOURCE" = "squash" ]; then
+# Skip for merge commits, squash messages, explicit -m messages, or commit templates
+if [ "$COMMIT_SOURCE" = "merge" ] || [ "$COMMIT_SOURCE" = "squash" ] || [ "$COMMIT_SOURCE" = "message" ]; then
     exit 0
 fi
 

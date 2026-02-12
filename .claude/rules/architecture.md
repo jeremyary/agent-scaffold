@@ -1,7 +1,8 @@
 # Project Architecture
 
-<!-- This rule describes the monorepo structure and inter-package dependencies. -->
-<!-- Update to match your actual project layout after running the setup wizard. -->
+<!-- TEMPLATE: This structure is created during /setup. Until then, the directory -->
+<!-- layout below is aspirational — verify against the actual project before relying -->
+<!-- on file paths described here. -->
 
 ## Monorepo Structure
 
@@ -30,25 +31,10 @@ project/
 
 ## Key Commands
 
-<!-- Update these commands to match your project's Makefile or scripts. -->
+<!-- The canonical command list is in the root CLAUDE.md "Project Commands" section. -->
+<!-- Update commands there; this section cross-references to avoid duplication. -->
 
-```bash
-# Setup
-make setup              # Install all dependencies (Node + Python)
-
-# Development
-make dev                # Start all dev servers (UI + API)
-make db-start           # Start database container
-make db-upgrade         # Run database migrations
-
-# Quality
-make lint               # Run linters across all packages
-make test               # Run tests across all packages
-
-# Containers
-make containers-build   # Build all container images
-make containers-up      # Start all services via compose
-```
+See **Project Commands** in the root `CLAUDE.md` for the full command reference.
 
 ## Development URLs
 

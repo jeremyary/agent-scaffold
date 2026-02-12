@@ -30,5 +30,4 @@
 
 ## Logging
 - Log security-relevant events: authentication, authorization failures, input validation failures
-- Never log secrets, tokens, passwords, or PII
-- Include correlation IDs for traceability
+- See `observability.md` for the full "What NEVER to Log" list and structured logging standards

@@ -101,14 +101,14 @@ Once you have enough information, apply ALL edits. Do not ask for confirmation b
 - Edit `.claude/skills/project-conventions/SKILL.md`: Replace the Technology Stack table with actual choices and versions
 
 **Style rules** — The scaffold ships with two style rule files:
-- `.claude/rules/code-style.md` (global) — Merged TypeScript + Python conventions. Default for full-stack projects.
-- `.claude/rules/python-style.md` (scoped to `**/*.py`) — Python-only alternative.
+- `.claude/rules/code-style.md` (globally imported) — Merged TypeScript + Python conventions. Default for full-stack projects.
+- `.claude/rules/python-style.md` (auto-loads via glob for `**/*.py`) — Python-only alternative. Not globally imported.
 
 Based on their stack:
-- **Python + JS/TS:** Keep `code-style.md` (the merged version). Remove `python-style.md` and its `@` import from `CLAUDE.md`.
+- **Python + JS/TS:** Keep `code-style.md` (the merged version). Delete `python-style.md` entirely since `code-style.md` covers Python.
 - **Python-only:** Keep `python-style.md`. Remove `code-style.md` and its `@` import from `CLAUDE.md`.
-- **JS/TS-only:** Keep `code-style.md`. Remove `python-style.md` and its `@` import from `CLAUDE.md`.
-- **Other language (Go, Rust, Java, etc.):** Delete both style files and create a new one (e.g., `go-style.md` with `globs: "**/*.go"`). Add its `@` import to `CLAUDE.md` and remove the old imports.
+- **JS/TS-only:** Keep `code-style.md`. Delete `python-style.md`.
+- **Other language (Go, Rust, Java, etc.):** Delete both style files and create a new one (e.g., `go-style.md` with `globs: "**/*.go"`). Add its `@` import to `CLAUDE.md`.
 
 **Bash permissions** — `settings.json` already includes commands for both Python and Node.js toolchains. Based on their stack:
 - **Python + JS/TS:** No changes needed.
@@ -172,7 +172,7 @@ If the user mentioned domain-specific concerns (HIPAA, financial precision, acce
 
 - Copy `.claude/settings.local.json.template` to `.claude/settings.local.json` if it doesn't exist
 - Default behavior: remove Red Hat / OpenShift org-specific domains (listed in `_template.org_domains`) unless the user indicated they work in that ecosystem
-- Remove the `_template` key from `settings.local.json`
+- Remove the `_template` key from `settings.local.json` if present
 - If the user mentioned their organization's documentation domains, add those
 
 ### 5k. Secrets & Environment Protection

@@ -1,5 +1,9 @@
 # Project Name
 
+<!-- SETUP REQUIRED: If you see placeholder values below (HTML comments with examples, -->
+<!-- unfilled tables), run the /setup skill to configure this project. Placeholder text -->
+<!-- wastes context tokens in every agent session until filled in or removed. -->
+
 <!-- Replace with your project name and a one-line description -->
 > **One-line description of what this project does and who it serves.**
 
@@ -133,7 +137,7 @@ This project uses a multi-agent system with specialized Claude Code agents. The 
 
 1. **Describe what you need** — for non-trivial tasks, the main session uses the routing matrix and workflow-patterns skill to select agents and sequence work.
 2. **Use a specialist directly** when you know exactly which agent you need (e.g., `@backend-developer`).
-3. **Rules files** (imported below) enforce project conventions automatically across all agents.
+3. **Rules files** enforce project conventions automatically — global rules are imported below, and path-scoped rules (API, UI, database development) load automatically for matching files.
 4. **Spec-Driven Development** is the default for non-trivial features — plan review before code review, machine-verifiable exit conditions, and anti-rubber-stamping governance.
 5. **Skills** provide workflow templates and project convention references.
 
@@ -141,7 +145,6 @@ This project uses a multi-agent system with specialized Claude Code agents. The 
 
 @.claude/rules/ai-compliance.md
 @.claude/rules/code-style.md
-@.claude/rules/python-style.md
 @.claude/rules/git-workflow.md
 @.claude/rules/testing.md
 @.claude/rules/security.md
@@ -151,42 +154,23 @@ This project uses a multi-agent system with specialized Claude Code agents. The 
 @.claude/rules/agent-workflow.md
 @.claude/rules/review-governance.md
 @.claude/rules/architecture.md
-@.claude/rules/api-development.md
-@.claude/rules/ui-development.md
-@.claude/rules/database-development.md
 
 ## Project Commands
 
 <!-- Uncomment and fill in the actual commands for your project. -->
 <!-- The defaults below assume a Makefile-based workflow with Turborepo. -->
+<!-- This is the canonical location for project commands. architecture.md -->
+<!-- cross-references this section rather than duplicating it. -->
 
-### Build
 ```bash
-# make build
-```
-
-### Test
-```bash
-# make test
-```
-
-### Lint
-```bash
-# make lint
-```
-
-### Type Check
-```bash
-# pnpm type-check
-```
-
-### Database
-```bash
-# make db-start
-# make db-upgrade
-```
-
-### Dev Server
-```bash
-# make dev
+# make setup              # Install all dependencies (Node + Python)
+# make build              # Build all packages
+# make dev                # Start all dev servers (UI + API)
+# make test               # Run tests across all packages
+# make lint               # Run linters across all packages
+# pnpm type-check         # TypeScript type checking
+# make db-start           # Start database container
+# make db-upgrade         # Run database migrations
+# make containers-build   # Build all container images
+# make containers-up      # Start all services via compose
 ```

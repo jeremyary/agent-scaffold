@@ -15,7 +15,7 @@ Instead of following this guide manually, open Claude Code in your new project a
 
 The setup wizard will walk you through each step interactively — asking questions, gathering your answers, and making all the file edits for you. It covers everything in this guide (the wizard's 13 interactive steps correspond to the 11 steps below, broken into a more granular sequence).
 
-**This document serves as a detailed reference** if you want to understand what each step does, make manual edits later, or customize beyond what the wizard covers. The manual guide has 11 steps covering project identity, tech stack, code style, permissions, agents, domain rules, other rules, personal settings, secrets, AI compliance, and AI-native workflow practices. The scaffold ships with 15 convention rules covering both general practices and stack-specific development patterns.
+**This document serves as a detailed reference** if you want to understand what each step does, make manual edits later, or customize beyond what the wizard covers. The manual guide has 11 steps covering project identity, tech stack, code style, permissions, agents, domain rules, other rules, personal settings, secrets, AI compliance, and AI-native workflow practices. The scaffold ships with 15 convention rules (11 loaded globally, 4 path-scoped to specific directories) covering both general practices and stack-specific development patterns.
 
 ## Prerequisites
 
@@ -205,9 +205,9 @@ List the actual environment variables your project needs:
 
 ### 3a. Keep, Modify, or Remove
 
-- **Full-stack project (Python + React):** Use `code-style.md` (the merged version). Remove `python-style.md` and its `@` import from `CLAUDE.md` to avoid duplicate guidance.
+- **Full-stack project (Python + React):** Use `code-style.md` (the merged version, globally imported). Delete `python-style.md` entirely since `code-style.md` covers Python.
 - **Python-only project:** Use `python-style.md`. Remove `code-style.md` and its `@` import from `CLAUDE.md`.
-- **JS/TS-only project:** Use `code-style.md` (ignore the Python section). Remove `python-style.md` and its `@` import from `CLAUDE.md`.
+- **JS/TS-only project:** Use `code-style.md` (ignore the Python section). Delete `python-style.md`.
 - **Other language:** Delete both and create your own (e.g., `go-style.md` with `globs: "**/*.go"`). Import it from `CLAUDE.md`.
 
 ### 3b. Adjust Glob Patterns
@@ -423,7 +423,7 @@ cp .claude/settings.local.json.template .claude/settings.local.json
 
 ### 8b. Replace Organization-Specific Domains
 
-The template ships with **Red Hat / OpenShift defaults** for the scaffold author's workflow. These are listed in the `_template.org_domains` key at the top of the template file for easy identification.
+The template ships with **Red Hat / OpenShift defaults** for the scaffold author's workflow. These are listed in the `_template.org_domains` key in `settings.local.json.template` for easy identification.
 
 **If you're in the Red Hat ecosystem:** The defaults are ready to use as-is.
 
