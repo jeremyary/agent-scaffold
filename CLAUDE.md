@@ -73,6 +73,7 @@
 | Technology biases | <!-- e.g., "Strongly prefers Python over Node.js for backend services" --> |
 | Testing expectations | <!-- e.g., "Expects integration tests for every API endpoint, not just unit tests" --> |
 | Documentation level | <!-- e.g., "Wants ADRs for every significant decision, even in PoC" --> |
+| Project methodology | <!-- e.g., "No sprints -- organize by dependency order and parallelism, not time boxes"; "No effort estimates without a defined team" --> |
 
 <!-- Add rows as patterns emerge. Agents with project memory should update this section -->
 <!-- when they observe consistent preferences across multiple interactions. -->
