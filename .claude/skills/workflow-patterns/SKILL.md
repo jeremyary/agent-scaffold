@@ -294,6 +294,36 @@ This prevents unnecessary review cycles while still catching problems. Each down
 
 If a downstream agent discovers an inconsistency, pause and resolve it before continuing — don't work around it. This is cheaper than discovering the problem during implementation.
 
+### SDD State Tracking
+
+The SDD workflow is stateful — each phase depends on prior phases. To survive session boundaries and context compaction, the orchestrator maintains a persistent state file at `plans/sdd-state.md`.
+
+**Create this file when starting Phase 1.** Update it at each phase transition (completion, review gate pass, consensus gate). Read it at the start of any new or continued session to resume state.
+
+Template:
+
+```markdown
+# SDD Progress
+
+**Current Phase:** 1 — Product Plan
+**Delivery Phase:** —
+**Status:** In progress
+
+## Completed Phases
+
+| Phase | Label | Artifact | Status |
+|-------|-------|----------|--------|
+
+## Consensus Gates
+
+- [ ] Post-Phase 8: Product plan, architecture, and requirements agreed
+
+## Notes
+
+```
+
+Phase transition updates should be minimal — one line change to Current Phase/Status, one row added to Completed Phases. This keeps the file under 2KB even for long workflows.
+
 ### Lifecycle
 
 ```
@@ -320,9 +350,9 @@ Phase 2: Product Plan Review (parallel)
     Claude Code and makes decisions on how to handle them.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
 Phase 3: Product Plan Validation
   → @product-manager: Re-reviews the product plan after changes from
@@ -353,9 +383,9 @@ Phase 5: Architecture Review (parallel)
   REVIEW GATE: User steps through review recommendations with Claude Code.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
 Phase 6: Architecture Validation
   → @architect: Final review of architecture document after changes.
@@ -371,11 +401,14 @@ Phase 7: Requirements
       no implementation approach.
     DOWNSTREAM VERIFICATION: Flag any architecture inconsistencies
       discovered while writing requirements.
-    LARGE PROJECTS: If upstream documents are very thorough (5+ Must-Have
-      features, lengthy product plan + architecture), use the two-pass
-      approach: (1) requirements skeleton with story map, cross-cutting
-      concerns, and cross-feature dependencies, then (2) detailed specs
-      chunked by feature area. See requirements-analyst agent for details.
+    LARGE PROJECTS: If upstream documents are thorough (5+ Must-Have
+      features, or 3-4 with complex architecture), use the hub/index
+      pattern: (1) master document (plans/requirements.md, ~300-600 lines)
+      with story map, cross-cutting concerns, and dependency map, then
+      (2) chunk files (plans/requirements-chunk-{N}-{area}.md, ~800-1300
+      lines each) with full Given/When/Then criteria. A single monolithic
+      document will exceed output limits at ~2000 lines. See the
+      requirements-analyst agent's Large Document Strategy for details.
 
 Phase 8: Requirements Review (parallel)
   → @product-manager: Review for completeness against product plan
@@ -387,9 +420,9 @@ Phase 8: Requirements Review (parallel)
     changes involved new design decisions.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
   ** CONSENSUS GATE: Pause here. Product plan, architecture, and
      requirements must be thorough, well-documented, accurate, and
@@ -440,9 +473,9 @@ Phase 10: Technical Design Review (parallel)
     changes involved new design decisions.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
 Phase 11: Work Breakdown (per phase)
   → @project-manager: Epics, stories, Work Units, and tasks with:
@@ -504,6 +537,8 @@ Phase 15: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
 
+**STATE TRACKING:** Update `plans/sdd-state.md` at every phase transition — when completing a phase, passing a review gate, or reaching a consensus gate. This is the authoritative record of SDD progress that survives session boundaries.
+
 The per-phase cycle (TD -> TD Review -> WB -> WB Review -> Implementation -> Code Review -> Documentation) repeats for each delivery phase defined in the product plan. Always complete one phase's full cycle before starting the next phase's TD. This ensures each phase's design benefits from the previous phase's implementation learnings.
 
 ### Artifact Map
@@ -520,6 +555,8 @@ The per-phase cycle (TD -> TD Review -> WB -> WB Review -> Implementation -> Cod
 | TD Review | Agent + orchestrator reviews | `plans/reviews/technical-design-phase-N-review-[agent-name\|orchestrator].md` |
 | Work Breakdown | Task plan per phase | `plans/work-breakdown-phase-N.md` |
 | Work Breakdown Review | Tech lead review | `plans/reviews/work-breakdown-phase-N-review-tech-lead.md` |
+| Review Consolidation | De-duplicated triage table | `plans/reviews/<artifact>-review-consolidated.md` |
+| SDD State | Phase progress tracker | `plans/sdd-state.md` |
 
 ### When to Use SDD vs. Simpler Workflows
 
