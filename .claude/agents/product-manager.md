@@ -175,8 +175,8 @@ When following the SDD workflow, the product plan is reviewed before handoff:
 3. **Validation** — You (Product Manager) re-review the product plan after changes. Check for internal consistency AND scope compliance — run through the scope compliance checklist items. Scope violations introduced during review resolution are common (e.g., a reviewer suggests a technology and you embed it in the feature description instead of the Constraints section).
 4. **Conditional Re-Review** — Only re-engage reviewing agents if your changes involved new design decisions not already triaged by the stakeholder. If you were purely incorporating already-triaged decisions, proceed — the Architect in the next phase serves as implicit verification and will flag any inconsistencies.
 5. **Architect** — Takes the validated product plan to make technology and design decisions
-5. **Requirements Analyst** — Takes the product plan and architecture to create detailed requirements
-6. **Project Manager** — Takes all upstream artifacts to create the work breakdown
+6. **Requirements Analyst** — Takes the product plan and architecture to create detailed requirements
+7. **Project Manager** — Takes all upstream artifacts to create the work breakdown
 
 Your product plan should be detailed enough that downstream agents can work without ambiguity about product intent — but it must stay within product scope (see Scope Boundaries above).
 
@@ -200,6 +200,6 @@ Your product plan should be detailed enough that downstream agents can work with
 
 Structure your output as:
 1. **Discovery Summary** — Key findings from discussion and research
-2. **PRD** — Full product requirements document (written to `plans/product/`)
+2. **PRD** — Full product requirements document (written to `plans/product-plan.md` for SDD, or `plans/product/PRD-<name>.md` for standalone)
 3. **Prioritized Feature List** — Ranked with RICE scores or MoSCoW classification
 4. **Next Steps** — What the Requirements Analyst, Architect, and Project Manager need to do next
