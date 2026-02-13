@@ -29,12 +29,61 @@ For features with **3+ implementation tasks**, both the Product Manager's produc
 | **File structure maps to actual codebase** | Proposed paths match existing project layout — not an idealized structure |
 | **No TBDs in binding contracts** | If something is undefined, it must be flagged as an open question, not left as "TBD" |
 
+### Work Breakdown Review Checklist
+
+| Check | What to Look For |
+|-------|-----------------|
+| **Story-to-WU mapping is 1:1** | Every work unit from the TD maps to exactly one story. No scope drift in story descriptions -- they should be faithful to TD intent, not reinterpreted. |
+| **Dependencies are technically accurate** | Story dependencies match actual technical dependencies from the TD's dependency graph. Phase ordering is NOT the same as technical dependency -- flag over-strict chains that block parallelism unnecessarily. |
+| **Exit conditions are machine-verifiable** | Every story has a runnable command that returns pass/fail. No "implementation is complete", no "review by X agent", no manual verification. See `agent-workflow.md`. |
+| **Chunking heuristics respected** | Stories target 3-5 files, single concern. Stories exceeding these limits should be flagged for splitting. |
+| **No methodology or effort estimation assumptions** | No sprints, velocity, capacity planning, or effort/time estimates (hours, person-days). Work breakdowns organize by dependency order and parallelism. Sprint planning requires a defined team. Effort estimation requires knowledge of who is doing the work. Agents must not fabricate either. Relative complexity sizing (story points, T-shirt sizes) is allowed -- it measures difficulty, not duration. |
+
 ### When to Skip Plan Review
 
 Plan review can be skipped when:
 - The feature has 1–2 implementation tasks (single-concern, single-implementer)
 - The work is a bug fix with a clear root cause
 - The change is purely additive (new test, new documentation) with no interface changes
+
+### Anti-Self-Approval Principle
+
+The creating agent must not be the sole reviewer of its own planning artifacts. Each planning phase has a designated reviewer with complementary expertise:
+
+| Artifact | Creator | Reviewer(s) |
+|----------|---------|-------------|
+| Product Plan | Product Manager | Architect, Security Engineer |
+| Architecture | Architect | Code Reviewer, Security Engineer |
+| Technical Design | Tech Lead | Code Reviewer, Security Engineer |
+| Work Breakdown | Project Manager | Tech Lead |
+
+This ensures every artifact is validated by an agent whose expertise covers the creator's blind spots. The PM lacks implementation depth to validate its own dependency chains and exit conditions. The Architect lacks security depth to validate its own threat surface. Skipping review for a planning artifact because "it doesn't introduce new interfaces" misses the point -- every planning artifact makes decisions that downstream agents must live with.
+
+## Orchestrator Review
+
+At each SDD plan review gate (Phases 2, 5, 8, 10), the main session performs its own review **in parallel** with the specialist agents. The orchestrator acts as a safety net for cross-cutting issues that fall between specialist scopes.
+
+### Focus Areas
+
+| Area | What to Look For |
+|------|-----------------|
+| **Cross-cutting coherence** | Do the parts of this artifact tell a consistent story, or do sections contradict each other? |
+| **Scope discipline** | Does the artifact stay within its phase's scope boundaries (see `workflow-patterns` SDD Scope Discipline table), or does it make decisions that belong to a downstream phase? |
+| **Assumption gaps** | Are there unstated assumptions that two specialists might interpret differently? |
+| **Compounding scope creep** | Has the cumulative scope grown beyond what the product plan authorized? Compare the artifact against the original feature set. |
+| **Downstream feasibility** | Will downstream agents (implementers, testers, project manager) be able to act on this artifact without ambiguity? |
+| **Review coverage gaps** | Is there a concern that no specialist reviewer is scoped to catch? Flag it explicitly. |
+
+### How It Differs from Specialist Reviews
+
+The orchestrator does **not** duplicate specialist work. It reads with the question: *"What would I miss if I only read the specialist reviews?"* Specialists evaluate depth within their domain; the orchestrator evaluates breadth across domains.
+
+### Output Format
+
+- Same severity levels as specialist reviews: **Critical**, **Warning**, **Suggestion**, **Positive**
+- Same verdict options: APPROVE, REQUEST_CHANGES, or NEEDS_DISCUSSION
+- The **Mandatory Findings Rule** applies — at least one Suggestion or Positive finding per review
+- Output path: `plans/reviews/<artifact>-review-orchestrator.md`
 
 ## Code Review Anti-Rubber-Stamping
 
@@ -107,3 +156,36 @@ If `@code-reviewer` flags the **same pattern** 3+ times across different reviews
 3. Future reviews can reference the rule instead of re-explaining
 
 This prevents review fatigue from repeatedly flagging the same issue and ensures institutional knowledge is captured.
+
+## Review Resolution Process
+
+After reviews complete at any review gate, the orchestrator follows this process to resolve findings:
+
+### 1. Parallel Reviews + Orchestrator Assessment
+
+Launch designated reviewers in parallel. While reviews run, the orchestrator (main session) reads the artifact independently and prepares its own assessment. The orchestrator assessment catches issues that specialist reviewers miss and provides a generalist perspective.
+
+### 2. Consolidate into Triage Table
+
+Merge all findings (from every reviewer plus the orchestrator) into a single triage table, classified by disposition:
+
+| Disposition | Meaning |
+|-------------|---------|
+| **Fix** | Must be addressed before proceeding. Incorrect, inconsistent, or violates a project rule. |
+| **Improvement** | Would make the artifact better but not blocking. Apply if approved. |
+| **Defer** | Valid concern but out of scope for this artifact. Track for future work. |
+| **Positive** | Something done well. Noted for pattern reinforcement. |
+
+Each row includes: source (which reviewer), finding ID, severity, disposition, and a concise description of both the problem and the recommended change.
+
+### 3. User Approval
+
+Present the full triage table to the user. The user approves, modifies, or rejects individual items. No changes are applied without explicit user approval.
+
+### 4. Batch Application
+
+Launch the appropriate agent to apply all approved changes in a single pass. This is more efficient and consistent than applying changes one at a time.
+
+### 5. Spot-Check and Commit
+
+Verify key changes with targeted searches (grep for removed patterns, check critical edits). Then commit, push, and create PR.

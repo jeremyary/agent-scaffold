@@ -22,24 +22,27 @@ Phase 3: Design
   → @architect: System design and technology decisions
 
 Phase 4: Work Breakdown
-  → @project-manager: Epics, stories, and tasks with estimates and dependencies
+  → @project-manager: Epics, stories, and tasks with dependency mapping
 
-Phase 5: Contracts (parallel)
+Phase 5: Work Breakdown Review
+  → @tech-lead: Validate dependencies, exit conditions, and scope compliance
+
+Phase 6: Contracts (parallel)
   → @api-designer: API contract and OpenAPI spec
   → @database-engineer: Schema design and migrations
 
-Phase 6: Implementation (parallel)
+Phase 7: Implementation (parallel)
   → @backend-developer: API handlers and business logic
   → @frontend-developer: UI components and integration
 
-Phase 7: Testing
+Phase 8: Testing
   → @test-engineer: Unit, integration, and e2e tests
 
-Phase 8: Review (parallel)
+Phase 9: Review (parallel)
   → @code-reviewer: Code quality review
   → @security-engineer: Security audit
 
-Phase 9: Documentation
+Phase 10: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
 
@@ -211,24 +214,27 @@ Phase 3: Architecture
   → @architect: Technology selection, project structure, ADRs
 
 Phase 4: Work Breakdown
-  → @project-manager: Epics, stories, tasks with estimates — Jira/Linear export
+  → @project-manager: Epics, stories, tasks with dependency mapping
 
-Phase 5: Foundation (parallel)
+Phase 5: Work Breakdown Review
+  → @tech-lead: Validate dependencies, exit conditions, and scope compliance
+
+Phase 6: Foundation (parallel)
   → @devops-engineer: CI/CD pipeline, Docker setup, development environment
   → @database-engineer: Initial schema and migration framework
   → @api-designer: API contract foundation
 
-Phase 6: Scaffold (parallel)
+Phase 7: Scaffold (parallel)
   → @backend-developer: Project skeleton, middleware, error handling
   → @frontend-developer: Project skeleton, routing, layout
 
-Phase 7: Quality Gates
+Phase 8: Quality Gates
   → @test-engineer: Testing framework setup and example tests
 
-Phase 8: Operational Readiness
+Phase 9: Operational Readiness
   → @sre-engineer: SLOs, alerting, runbooks, incident response process
 
-Phase 9: Documentation
+Phase 10: Documentation
   → @technical-writer: README, contributing guide, architecture docs
 ```
 
@@ -267,7 +273,7 @@ This is the most important principle in the workflow. Each phase must stay withi
 | **Architecture** | System design, component boundaries, technology decisions, ADRs, integration patterns | Product scope changes, detailed API contracts, task breakdown, implementation details |
 | **Requirements** | User stories, acceptance criteria (Given/When/Then), edge cases, non-functional requirements | Architecture decisions, task sizing, implementation approach |
 | **Technical Design** | Interface contracts, data flow, error strategies, file structure, exit conditions | Product scope changes, architecture overrides, work breakdown, estimation |
-| **Work Breakdown** | Epics, stories, tasks, estimates, dependencies, agent assignments | Product decisions, architecture changes, interface contract changes |
+| **Work Breakdown** | Epics, stories, tasks, dependencies, agent assignments, parallelization maps | Product decisions, architecture changes, interface contract changes, effort estimates, sprint planning |
 
 **Why this matters:** When a product plan includes architecture decisions, the Architect is reduced to rubber-stamping rather than designing. When a technical design includes work breakdown, the Project Manager has no room to apply sizing constraints. Each agent's value comes from doing their analysis fresh — not from inheriting premature decisions from upstream.
 
@@ -304,6 +310,7 @@ Phase 2: Product Plan Review (parallel)
   → @architect: Review from architecture feasibility perspective
   → @api-designer: Review from API design perspective
   → @security-engineer: Review from security/compliance perspective
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/product-plan-review-[agent-name].md
   SCOPE CHECK: All reviewers also check for scope violations per the
     Product Plan Review Checklist in review-governance.md (technology
@@ -311,6 +318,11 @@ Phase 2: Product Plan Review (parallel)
     The Architect reviewer is the primary scope checker.
   REVIEW GATE: User steps through each review's recommendations with
     Claude Code and makes decisions on how to handle them.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
 Phase 3: Product Plan Validation
   → @product-manager: Re-reviews the product plan after changes from
@@ -336,8 +348,14 @@ Phase 4: Architecture
 Phase 5: Architecture Review (parallel)
   → Relevant agents review from their perspectives
     (e.g., @security-engineer, @api-designer, @backend-developer, @sre-engineer)
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/architecture-review-[agent-name].md
   REVIEW GATE: User steps through review recommendations with Claude Code.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
 Phase 6: Architecture Validation
   → @architect: Final review of architecture document after changes.
@@ -362,14 +380,42 @@ Phase 7: Requirements
 Phase 8: Requirements Review (parallel)
   → @product-manager: Review for completeness against product plan
   → @architect: Review for alignment with architecture
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/requirements-review-[agent-name].md
   REVIEW GATE: User steps through review recommendations with Claude Code.
   CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
     changes involved new design decisions.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
   ** CONSENSUS GATE: Pause here. Product plan, architecture, and
      requirements must be thorough, well-documented, accurate, and
      agreed upon by all parties (including the user) before proceeding.
+
+--- Per-Phase Design Boundary ---
+
+  Phases 9 onward execute ONE DELIVERY PHASE AT A TIME. Do not design
+  multiple delivery phases in a single document. Each delivery phase gets
+  its own TD and WB files:
+    - plans/technical-design-phase-1.md, plans/technical-design-phase-2.md, etc.
+    - plans/work-breakdown-phase-1.md, plans/work-breakdown-phase-2.md, etc.
+
+  After a phase's WB is reviewed and approved, the user decides:
+    (a) Implement this phase (recommended -- real implementation informs
+        better design for the next phase)
+    (b) Continue to the next phase's TD before implementing
+
+  There is no option to design all phases at once. Even if the user
+  wants full design approval before implementation, they proceed through
+  the per-phase cycle for each phase sequentially. This ensures:
+    - Reviewable artifact sizes (~700 lines per TD, not 2,800)
+    - Context-window-friendly sessions (one phase per session)
+    - Implementation-informed design (Phase 2 TD benefits from Phase 1
+      implementation learnings)
+    - Natural file naming (phase-N suffix, no ambiguity)
 
 Phase 9: Technical Design (per phase)
   → @tech-lead: Technical Design Document (plans/technical-design-phase-N.md)
@@ -383,14 +429,20 @@ Phase 9: Technical Design (per phase)
     DOWNSTREAM VERIFICATION: Flag any requirements inconsistencies
       discovered while designing.
 
-Phase 10: Technical Design Review
+Phase 10: Technical Design Review (parallel)
   → Relevant agents review the TD
+  → Orchestrator: Cross-cutting review (see review-governance.md § Orchestrator Review)
   → Reviews written to plans/reviews/technical-design-phase-N-review-[agent-name].md
   REVIEW GATE: Plan review per review-governance.md checklist:
     (1) Contracts concrete, (2) Error paths covered, (3) Exit conditions verifiable,
     (4) File structure maps to codebase, (5) No TBDs in binding contracts
   CONDITIONAL RE-REVIEW: Same rule — only re-engage reviewers if
     changes involved new design decisions.
+  ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
+    reads the artifact independently and prepares its own assessment.
+    All findings (agent reviews + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
 
 Phase 11: Work Breakdown (per phase)
   → @project-manager: Epics, stories, Work Units, and tasks with:
@@ -399,45 +451,75 @@ Phase 11: Work Breakdown (per phase)
     - 3–5 file scope per task (agent-workflow.md constraint)
     - Machine-verifiable verification commands per task
     - Self-contained — all relevant context inlined, no "see document X"
-    - Estimates and dependency mapping
+    - Dependency mapping
     The TD's Context Package maps directly into WU shared context.
     SCOPE: No product decisions, no architecture changes,
       no interface contract changes.
     DOWNSTREAM VERIFICATION: Flag any TD inconsistencies
       discovered while breaking down work.
+    METHODOLOGY: Work breakdowns organize by dependency order and
+      parallelism opportunities, NOT by time-boxed containers (sprints,
+      iterations) or effort estimates (hours, person-days). Sprint
+      planning requires a defined team with known capacity. Effort
+      estimation requires knowledge of who is doing the work. Agents
+      must never fabricate team structure, velocity, or effort/time
+      estimates. Use phases, dependency-driven execution order, and
+      parallelization maps instead.
+      COMPLEXITY SIZING IS ALLOWED: Relative complexity sizing (story
+      points, T-shirt sizes) measures difficulty, not duration. This is
+      permitted because it does not require team knowledge. Effort/time
+      estimates (hours, person-days, sprint velocity) are prohibited.
 
-Phase 12: Implementation (per phase, parallel where possible)
+Phase 12: Work Breakdown Review (per phase)
+  → @tech-lead: Review work breakdown against TD
+  → Review written to plans/reviews/work-breakdown-phase-N-review-tech-lead.md
+  REVIEW GATE: Tech lead validates:
+    (1) Story-to-WU mapping is 1:1 and faithful to TD intent
+    (2) Dependency chains match actual technical dependencies, not phase ordering
+    (3) All exit conditions are machine-verifiable commands
+    (4) Stories comply with chunking heuristics (3-5 files, single concern)
+    (5) No methodology assumptions (no sprints, no velocity, no effort/time estimates — complexity sizing via story points and T-shirt sizes is allowed)
+  CONDITIONAL RE-REVIEW: Same rule as other phases — only re-engage
+    if changes involved new design decisions not already triaged.
+  ORCHESTRATOR ASSESSMENT: While the tech lead reviews, the main session
+    reads the work breakdown independently and prepares its own assessment.
+    All findings (tech lead review + orchestrator assessment) are
+    consolidated into a single triage table per the Review Resolution
+    Process in review-governance.md.
+
+Phase 13: Implementation (per phase, parallel where possible)
   → Assigned implementers (@backend-developer, @frontend-developer, etc.)
   → Each task verified against its exit condition before marking complete
   → If a spec problem is discovered: STOP → revise TD → unblock
     (tech-lead's spec revision protocol)
 
-Phase 13: Review (per phase, parallel)
+Phase 14: Review (per phase, parallel)
   → @code-reviewer: Code quality review with anti-rubber-stamping (review-governance.md):
     - At least one finding per review (mandatory findings rule)
     - Test review is not optional — happy-path-only tests are a Warning
     - Scope matching — out-of-scope changes are themselves a finding
   → @security-engineer: Security audit (required for auth, crypto, data deletion code)
 
-Phase 14: Documentation
+Phase 15: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
 
-Phases 9–14 repeat for each delivery phase (Phase 1, Phase 2, etc.) as defined in the product plan.
+The per-phase cycle (TD -> TD Review -> WB -> WB Review -> Implementation -> Code Review -> Documentation) repeats for each delivery phase defined in the product plan. Always complete one phase's full cycle before starting the next phase's TD. This ensures each phase's design benefits from the previous phase's implementation learnings.
 
 ### Artifact Map
 
 | Phase | Output | Path |
 |-------|--------|------|
 | Product Plan | Product plan | `plans/product-plan.md` |
-| Product Plan Review | Agent reviews | `plans/reviews/product-plan-review-[agent-name].md` |
+| Product Plan Review | Agent + orchestrator reviews | `plans/reviews/product-plan-review-[agent-name\|orchestrator].md` |
 | Architecture | Architecture design | `plans/architecture.md` |
-| Architecture Review | Agent reviews | `plans/reviews/architecture-review-[agent-name].md` |
+| Architecture Review | Agent + orchestrator reviews | `plans/reviews/architecture-review-[agent-name\|orchestrator].md` |
 | Requirements | Requirements document | `plans/requirements.md` |
-| Requirements Review | Agent reviews | `plans/reviews/requirements-review-[agent-name].md` |
+| Requirements Review | Agent + orchestrator reviews | `plans/reviews/requirements-review-[agent-name\|orchestrator].md` |
 | Technical Design | TD per phase | `plans/technical-design-phase-N.md` |
-| TD Review | Agent reviews | `plans/reviews/technical-design-phase-N-review-[agent-name].md` |
+| TD Review | Agent + orchestrator reviews | `plans/reviews/technical-design-phase-N-review-[agent-name\|orchestrator].md` |
 | Work Breakdown | Task plan per phase | `plans/work-breakdown-phase-N.md` |
+| Work Breakdown Review | Tech lead review | `plans/reviews/work-breakdown-phase-N-review-tech-lead.md` |
 
 ### When to Use SDD vs. Simpler Workflows
 
