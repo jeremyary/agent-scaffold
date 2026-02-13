@@ -87,17 +87,23 @@ Once you have enough information, apply ALL edits. Do not ask for confirmation b
 - Edit `CLAUDE.md`: Replace `# Project Name` with `# <project name>`
 - Edit `CLAUDE.md`: Replace the placeholder description line with their description
 - Edit `CLAUDE.md`: Fill in the Project Context table (Maturity, Domain, Primary Users, Compliance)
-- Edit `CLAUDE.md`: In the Maturity Expectations table, **keep only the column for the selected maturity level** and delete the other two columns. Keep the Concern column.
+- Edit `.claude/rules/maturity-expectations.md`: **Keep only the column for the selected maturity level** and delete the other two columns. Keep the Concern column. Then update `CLAUDE.md`'s Maturity Expectations section to reference the selected level.
 
 ### 5b. Goals, Non-Goals, Constraints
 
-- Edit `CLAUDE.md`: Replace the Goals placeholder list with actual goals (numbered)
-- Edit `CLAUDE.md`: Replace the Non-Goals placeholder list with actual non-goals (bulleted), or `- None identified yet` if none provided
-- Edit `CLAUDE.md`: Replace the Constraints placeholder list with actual constraints, or `- None identified yet`
+- Edit `CLAUDE.md`: Replace the `## Goals` stub (`<!-- Run /setup to configure. -->`) with actual goals (numbered list)
+- Edit `CLAUDE.md`: Replace the `## Non-Goals` stub with actual non-goals (bulleted), or `- None identified yet` if none provided
+- Edit `CLAUDE.md`: Replace the `## Constraints` stub with actual constraints, or `- None identified yet`
 
 ### 5c. Technology Stack
 
-- Edit `CLAUDE.md`: Fill in the Key Decisions section with their stack choices
+- Edit `CLAUDE.md`: Replace the `## Key Decisions` stub with their stack choices in this format:
+  ```markdown
+  ## Key Decisions
+  - **Language:** TypeScript 5.x
+  - **Runtime:** Node.js 22 LTS
+  ...
+  ```
 - Edit `.claude/skills/project-conventions/SKILL.md`: Replace the Technology Stack table with actual choices and versions
 
 **Style rules** — The scaffold ships with two style rule files:
@@ -118,8 +124,16 @@ Based on their stack:
 
 ### 5d. Project Commands
 
-- Edit `CLAUDE.md`: Replace the commented-out commands in the Project Commands section with actual commands (uncommented)
-- If not provided, leave defaults
+- Edit `CLAUDE.md`: Replace the `## Project Commands` stub with actual commands in a fenced code block:
+  ```markdown
+  ## Project Commands
+  ```bash
+  make setup              # Install all dependencies
+  make test               # Run tests across all packages
+  ...
+  ```
+  ```
+- If not provided, leave the stub
 
 ### 5e. Project Structure
 
