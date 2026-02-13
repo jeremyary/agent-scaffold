@@ -1,3 +1,9 @@
+---
+paths:
+  - "packages/api/**/*"
+  - "packages/db/**/*"
+---
+
 # Error Handling
 
 ## Error Response Format (RFC 7807)

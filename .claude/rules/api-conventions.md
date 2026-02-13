@@ -1,3 +1,8 @@
+---
+paths:
+  - "packages/api/**/*"
+---
+
 # API Conventions
 
 ## Resource Design

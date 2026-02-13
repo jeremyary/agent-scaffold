@@ -87,17 +87,26 @@ This project uses a multi-agent system with specialized Claude Code agents. The 
 
 ## Project Conventions
 
+### Always-loaded rules (all sessions)
+
 @.claude/rules/ai-compliance.md
 @.claude/rules/code-style.md
 @.claude/rules/git-workflow.md
 @.claude/rules/testing.md
 @.claude/rules/security.md
-@.claude/rules/error-handling.md
-@.claude/rules/observability.md
-@.claude/rules/api-conventions.md
 @.claude/rules/agent-workflow.md
 @.claude/rules/review-governance.md
-@.claude/rules/architecture.md
+
+### Path-scoped rules (load automatically when editing matching files)
+
+<!-- These rules are NOT @-imported to reduce context pressure on orchestrator sessions. -->
+<!-- They load automatically via path-scoping when agents work on files in packages/. -->
+<!-- See each rule file's frontmatter for its path scope. -->
+<!-- - .claude/rules/error-handling.md      → packages/api/**, packages/db/** -->
+<!-- - .claude/rules/observability.md       → packages/api/**, packages/db/** -->
+<!-- - .claude/rules/api-conventions.md     → packages/api/** -->
+<!-- - .claude/rules/architecture.md        → packages/** -->
+<!-- - .claude/rules/maturity-expectations.md (no path scope — loaded on demand) -->
 
 ## Project Commands
 <!-- Run /setup to configure. -->

@@ -1,3 +1,8 @@
+---
+paths:
+  - "packages/**/*"
+---
+
 # Project Architecture
 
 <!-- TEMPLATE: This structure is created during /setup. Until then, the directory -->
