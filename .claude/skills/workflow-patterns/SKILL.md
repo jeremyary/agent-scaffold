@@ -294,6 +294,36 @@ This prevents unnecessary review cycles while still catching problems. Each down
 
 If a downstream agent discovers an inconsistency, pause and resolve it before continuing — don't work around it. This is cheaper than discovering the problem during implementation.
 
+### SDD State Tracking
+
+The SDD workflow is stateful — each phase depends on prior phases. To survive session boundaries and context compaction, the orchestrator maintains a persistent state file at `plans/sdd-state.md`.
+
+**Create this file when starting Phase 1.** Update it at each phase transition (completion, review gate pass, consensus gate). Read it at the start of any new or continued session to resume state.
+
+Template:
+
+```markdown
+# SDD Progress
+
+**Current Phase:** 1 — Product Plan
+**Delivery Phase:** —
+**Status:** In progress
+
+## Completed Phases
+
+| Phase | Label | Artifact | Status |
+|-------|-------|----------|--------|
+
+## Consensus Gates
+
+- [ ] Post-Phase 8: Product plan, architecture, and requirements agreed
+
+## Notes
+
+```
+
+Phase transition updates should be minimal — one line change to Current Phase/Status, one row added to Completed Phases. This keeps the file under 2KB even for long workflows.
+
 ### Lifecycle
 
 ```
@@ -507,6 +537,8 @@ Phase 15: Documentation
   → @technical-writer: User docs, API docs, changelog
 ```
 
+**STATE TRACKING:** Update `plans/sdd-state.md` at every phase transition — when completing a phase, passing a review gate, or reaching a consensus gate. This is the authoritative record of SDD progress that survives session boundaries.
+
 The per-phase cycle (TD -> TD Review -> WB -> WB Review -> Implementation -> Code Review -> Documentation) repeats for each delivery phase defined in the product plan. Always complete one phase's full cycle before starting the next phase's TD. This ensures each phase's design benefits from the previous phase's implementation learnings.
 
 ### Artifact Map
@@ -523,6 +555,8 @@ The per-phase cycle (TD -> TD Review -> WB -> WB Review -> Implementation -> Cod
 | TD Review | Agent + orchestrator reviews | `plans/reviews/technical-design-phase-N-review-[agent-name\|orchestrator].md` |
 | Work Breakdown | Task plan per phase | `plans/work-breakdown-phase-N.md` |
 | Work Breakdown Review | Tech lead review | `plans/reviews/work-breakdown-phase-N-review-tech-lead.md` |
+| Review Consolidation | De-duplicated triage table | `plans/reviews/<artifact>-review-consolidated.md` |
+| SDD State | Phase progress tracker | `plans/sdd-state.md` |
 
 ### When to Use SDD vs. Simpler Workflows
 
