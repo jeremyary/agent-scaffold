@@ -371,11 +371,14 @@ Phase 7: Requirements
       no implementation approach.
     DOWNSTREAM VERIFICATION: Flag any architecture inconsistencies
       discovered while writing requirements.
-    LARGE PROJECTS: If upstream documents are very thorough (5+ Must-Have
-      features, lengthy product plan + architecture), use the two-pass
-      approach: (1) requirements skeleton with story map, cross-cutting
-      concerns, and cross-feature dependencies, then (2) detailed specs
-      chunked by feature area. See requirements-analyst agent for details.
+    LARGE PROJECTS: If upstream documents are thorough (5+ Must-Have
+      features, or 3-4 with complex architecture), use the hub/index
+      pattern: (1) master document (plans/requirements.md, ~300-600 lines)
+      with story map, cross-cutting concerns, and dependency map, then
+      (2) chunk files (plans/requirements-chunk-{N}-{area}.md, ~800-1300
+      lines each) with full Given/When/Then criteria. A single monolithic
+      document will exceed output limits at ~2000 lines. See the
+      requirements-analyst agent's Large Document Strategy for details.
 
 Phase 8: Requirements Review (parallel)
   → @product-manager: Review for completeness against product plan
