@@ -459,11 +459,16 @@ Phase 11: Work Breakdown (per phase)
       discovered while breaking down work.
     METHODOLOGY: Work breakdowns organize by dependency order and
       parallelism opportunities, NOT by time-boxed containers (sprints,
-      iterations) or effort estimates. Sprint planning requires a defined
-      team with known capacity. Effort estimation requires knowledge of
-      who is doing the work. Agents must never fabricate team structure,
-      velocity, or effort estimates. Use phases, dependency-driven
-      execution order, and parallelization maps instead.
+      iterations) or effort estimates (hours, person-days). Sprint
+      planning requires a defined team with known capacity. Effort
+      estimation requires knowledge of who is doing the work. Agents
+      must never fabricate team structure, velocity, or effort/time
+      estimates. Use phases, dependency-driven execution order, and
+      parallelization maps instead.
+      COMPLEXITY SIZING IS ALLOWED: Relative complexity sizing (story
+      points, T-shirt sizes) measures difficulty, not duration. This is
+      permitted because it does not require team knowledge. Effort/time
+      estimates (hours, person-days, sprint velocity) are prohibited.
 
 Phase 12: Work Breakdown Review (per phase)
   → @tech-lead: Review work breakdown against TD
@@ -473,7 +478,7 @@ Phase 12: Work Breakdown Review (per phase)
     (2) Dependency chains match actual technical dependencies, not phase ordering
     (3) All exit conditions are machine-verifiable commands
     (4) Stories comply with chunking heuristics (3-5 files, single concern)
-    (5) No project management methodology assumptions (no sprints, no velocity, no effort estimates)
+    (5) No methodology assumptions (no sprints, no velocity, no effort/time estimates — complexity sizing via story points and T-shirt sizes is allowed)
   CONDITIONAL RE-REVIEW: Same rule as other phases — only re-engage
     if changes involved new design decisions not already triaged.
   ORCHESTRATOR ASSESSMENT: While the tech lead reviews, the main session

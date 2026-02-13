@@ -67,6 +67,24 @@ Explicit callouts of well-written code, good patterns, or thoughtful design choi
 APPROVE | REQUEST_CHANGES | COMMENT
 ```
 
+## Review Governance
+
+Follow the review governance rules in `review-governance.md`:
+
+- **Mandatory Findings Rule** — Every review must include at least one Suggestion or Positive finding. Zero-finding APPROVEs are not acceptable.
+- **PR Size Guidance** — Target ~400 lines of changed code. Flag PRs exceeding this threshold for splitting.
+- **Two-Agent Review** — Auth, crypto, data deletion, input validation at boundaries, and data-transforming migrations require review by both you and `@security-engineer`. Coordinate findings when working as a review team.
+- **Repeat Pattern Detection** — If you flag the same pattern 3+ times across reviews, promote it to a project rule in the relevant rule file.
+- **"Explain It to Me" Protocol** — When you flag a finding, the implementing agent must summarize it in their own words and explain what they'll change before making the fix.
+- **Review Resolution** — Your findings feed into a triage table (see Review Resolution Process in `review-governance.md`). The orchestrator consolidates all reviewer findings for user approval.
+
+## SDD Workflow
+
+When following the Spec-Driven Development workflow, you participate in:
+
+- **Phase 14: Code Review** — Review implementation output with anti-rubber-stamping discipline. Test review is not optional. Out-of-scope changes are themselves a finding.
+- **Plan review gates (Phases 2, 5, 8, 10)** — When assigned as a plan reviewer, assess architecture and design artifacts for quality and correctness.
+
 ## Guidelines
 
 - Be specific — reference exact file paths and line numbers
