@@ -6,7 +6,7 @@ This rule establishes review discipline for AI-native development. It prevents r
 
 > Correcting a plan takes minutes; refactoring bad code takes days.
 
-For features with **3+ implementation tasks**, both the Product Manager's product plan and the Tech Lead's Technical Design Document must be reviewed before downstream work begins. Use the Product Plan Review Checklist for product plans and the Technical Design Review Checklist for TDs. These are the highest-leverage reviews in the entire workflow.
+For features with **3+ implementation tasks**, all planning artifacts must be reviewed before downstream work begins: Product Plan, Architecture, Requirements, Technical Design, and Work Breakdown. Each has a review checklist below. These are the highest-leverage reviews in the entire workflow — catching a spec error is always cheaper than refactoring the implementation.
 
 ### Product Plan Review Checklist
 
@@ -18,6 +18,30 @@ For features with **3+ implementation tasks**, both the Product Manager's produc
 | **NFRs are user-facing** | Quality expectations framed as user outcomes ("feels responsive"), not implementation targets ("< 200ms Redis cache hit") |
 | **User flows present** | Key persona journeys through the system are documented — not just feature lists |
 | **Phasing describes capability milestones** | Each phase describes what the system can do, not which epics/stories are included |
+
+### Architecture Review Checklist
+
+| Check | What to Look For |
+|-------|-----------------|
+| **Component boundaries are clear** | Each component has a defined responsibility and interface surface. No overlapping concerns or ambiguous ownership. |
+| **Technology decisions include trade-off analysis** | Each technology choice documents alternatives considered, why it was selected, and known risks. No unjustified choices. |
+| **Integration patterns are explicit** | How components communicate (sync/async, protocols, data formats) is documented, not assumed. |
+| **Deployment model addresses operational concerns** | Scaling, failover, data persistence, and environment strategy are addressed — not deferred to "later". |
+| **ADRs present for significant decisions** | Architectural Decision Records exist for choices that constrain downstream work or are hard to reverse. |
+| **No product scope changes** | Architecture stays within the feature set defined by the product plan. New capabilities or features are not introduced. |
+| **No detailed API contracts or implementation details** | Component interfaces are described at the boundary level. Full API specs, handler logic, and task breakdown belong to downstream phases. |
+
+### Requirements Review Checklist
+
+| Check | What to Look For |
+|-------|-----------------|
+| **Stories trace to product plan features** | Every user story maps to a feature from the product plan. No orphan stories that introduce unplanned scope. |
+| **Given/When/Then acceptance criteria present** | Every story has concrete, testable acceptance criteria — not vague descriptions like "user can manage items". |
+| **Edge cases and error paths documented** | Not just happy paths. Negative scenarios, boundary conditions, invalid input, and concurrent operation cases are covered. |
+| **NFRs are measurable** | Non-functional requirements have concrete thresholds ("page load < 2s"), not vague qualities ("fast", "secure"). |
+| **Consistent with architecture boundaries** | Stories don't assume component interactions or data flows that contradict the architecture document. |
+| **No architecture decisions embedded** | Requirements describe WHAT the system does, not HOW. No technology choices, component assignments, or data model decisions. |
+| **No task breakdown or implementation approach** | Requirements don't size work, assign agents, or prescribe implementation steps. That scope belongs to Technical Design and Work Breakdown. |
 
 ### Technical Design Review Checklist
 
@@ -54,6 +78,7 @@ The creating agent must not be the sole reviewer of its own planning artifacts. 
 |----------|---------|-------------|
 | Product Plan | Product Manager | Architect, Security Engineer |
 | Architecture | Architect | Code Reviewer, Security Engineer |
+| Requirements | Requirements Analyst | Product Manager, Architect |
 | Technical Design | Tech Lead | Code Reviewer, Security Engineer |
 | Work Breakdown | Project Manager | Tech Lead |
 
