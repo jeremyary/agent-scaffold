@@ -320,9 +320,9 @@ Phase 2: Product Plan Review (parallel)
     Claude Code and makes decisions on how to handle them.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
 Phase 3: Product Plan Validation
   → @product-manager: Re-reviews the product plan after changes from
@@ -353,9 +353,9 @@ Phase 5: Architecture Review (parallel)
   REVIEW GATE: User steps through review recommendations with Claude Code.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
 Phase 6: Architecture Validation
   → @architect: Final review of architecture document after changes.
@@ -387,9 +387,9 @@ Phase 8: Requirements Review (parallel)
     changes involved new design decisions.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
   ** CONSENSUS GATE: Pause here. Product plan, architecture, and
      requirements must be thorough, well-documented, accurate, and
@@ -440,9 +440,9 @@ Phase 10: Technical Design Review (parallel)
     changes involved new design decisions.
   ORCHESTRATOR ASSESSMENT: While agent reviews run, the main session
     reads the artifact independently and prepares its own assessment.
-    All findings (agent reviews + orchestrator assessment) are
-    consolidated into a single triage table per the Review Resolution
-    Process in review-governance.md.
+    Use /consolidate-reviews to merge all review files into a
+    de-duplicated triage table (see review-governance.md § Review
+    Resolution Process).
 
 Phase 11: Work Breakdown (per phase)
   → @project-manager: Epics, stories, Work Units, and tasks with:
