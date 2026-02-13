@@ -80,49 +80,54 @@ When following the Spec-Driven Development workflow:
 6. **Conditional Re-Review** — Only re-engage reviewers if changes involved new design decisions not already triaged. If purely incorporating triaged decisions, proceed — the Tech Lead serves as implicit verification.
 7. **Consensus Gate** — Product plan, architecture, and requirements must all be agreed upon before proceeding to technical design
 
-### Large Project Decomposition (Two-Pass)
+### Large Document Strategy (Hub/Index Pattern)
 
-When both upstream documents are very thorough — many features, detailed architecture, complex domain — a single-pass requirements effort can hit context limits or produce inconsistent results due to the volume of material being synthesized.
+When both upstream documents are thorough — many features, detailed architecture, complex domain — a single monolithic requirements document will exceed output token limits. At ~2000 lines of structured Given/When/Then content, assembly fails. Use the two-pass hub/index approach.
 
-**When to use two-pass:** The product plan has 5+ Must-Have features, or the combined product plan + architecture exceeds what you can comfortably hold in context while writing detailed acceptance criteria.
+**When to chunk:**
 
-**Pass 1 — Requirements Skeleton** (must see everything):
+| Upstream Complexity | Approach |
+|---------------------|----------|
+| Product plan has 5+ Must-Have features | Always chunk |
+| Product plan has 3-4 Must-Have features | Chunk if architecture is complex |
+| Product plan has 1-2 Must-Have features | Single document is fine |
 
-Read both upstream documents in full. Produce a structured outline:
+**Pass 1 — Master Document (Hub)**
 
-```markdown
-## Requirements Skeleton
+Read both upstream documents in full. Write `plans/requirements.md` containing:
 
-### Story Map
-- US-001: [Title] — [one-line summary]
-  Acceptance themes: [high-level criteria, not full Given/When/Then]
-  Depends on: [other stories]
-- US-002: ...
+- Document structure guide ("How to Use This Document" — explains hub/chunk layout)
+- Story map table (all story IDs, titles, priorities, phases, chunk file references)
+- Application state machine (if applicable)
+- Cross-cutting concerns (merged NFRs, conventions, shared constraints)
+- Routing rules and decision logic (which chunk covers what)
+- Inter-feature dependency map
+- Phase breakdown with story counts per chunk
+- Open questions and assumptions
+- Coverage validation table
 
-### Cross-Cutting Requirements
-- Authentication: applies to US-001, US-003, US-007
-- Performance: applies to US-002, US-005
-- Accessibility: applies to all UI stories
+Target: **~300-600 lines.** This is the index that downstream agents (Tech Lead, Project Manager) consult for planning and sequencing. It must see the full picture — do not chunk Pass 1.
 
-### Cross-Feature Dependencies
-- US-003 and US-007 share the same notification model
-- US-002's batch processing conflicts with US-005's real-time constraint — needs resolution
-```
+**Pass 2 — Chunk Files (Spokes)**
 
-This is the integration work — it validates coverage, catches cross-feature interactions, and maps dependencies. It's a smaller output and must see the full picture.
+Use the master document as a roadmap. Write `plans/requirements-chunk-{N}-{feature-area}.md` files, each containing:
 
-**Pass 2 — Detailed Specification** (can be chunked):
+- 15-30 stories with full Given/When/Then acceptance criteria
+- Feature-area-specific NFRs, assumptions, and open questions
+- Architecture consistency notes for that area
+- Cross-references to stories in other chunks (by story ID)
 
-Use the skeleton as a roadmap. Flesh out each section with full Given/When/Then acceptance criteria, edge cases, and NFRs. This work CAN be done in chunks (by feature area or product phase) because the skeleton ensures nothing is missed — the integration map already exists.
+Target: **~800-1300 lines per chunk.** Chunk boundaries should follow natural feature groupings from the product plan:
+- Chunk 1: Foundation / authentication / core infrastructure
+- Chunk 2: Primary workflow / core business logic
+- Chunk 3: Secondary features / integrations
+- Chunk 4: Admin / extensions / advanced features
 
-Chunk boundaries should align with the product plan's feature groupings or MoSCoW tiers:
-- Chunk A: Must-Have features (P0)
-- Chunk B: Should-Have features (P1)
-- Chunk C: Could-Have features (P2) + cross-cutting NFRs
+After all chunks are complete, do a final consistency pass: verify the cross-feature dependencies and cross-cutting requirements identified in the master document are fully addressed across chunks.
 
-After all chunks are complete, do a final consistency pass: verify the cross-feature dependencies and cross-cutting requirements identified in the skeleton are fully addressed.
+**Parallel chunk execution:** When Pass 2 has 3+ chunks with cross-feature dependencies, execute chunks as parallel agents so they can flag inter-chunk inconsistencies. For 1-2 chunks, sequential execution is fine.
 
-**Default behavior:** Use a single pass unless the upstream documents are large enough to warrant splitting. The two-pass approach adds overhead — don't use it for projects where a single pass is comfortable.
+**Default behavior:** Use a single pass unless the upstream documents are large enough to warrant splitting. The hub/index approach adds overhead — don't use it for projects where a single pass is comfortable.
 
 ## Guidelines
 

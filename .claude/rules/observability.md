@@ -1,3 +1,9 @@
+---
+paths:
+  - "packages/api/**/*"
+  - "packages/db/**/*"
+---
+
 # Observability
 
 ## Structured Logging

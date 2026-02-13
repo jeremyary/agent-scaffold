@@ -167,7 +167,9 @@ Launch designated reviewers in parallel. While reviews run, the orchestrator (ma
 
 ### 2. Consolidate into Triage Table
 
-Merge all findings (from every reviewer plus the orchestrator) into a single triage table, classified by disposition:
+Use `/consolidate-reviews` to merge all review files into a single de-duplicated triage table. Example: `/consolidate-reviews plans/reviews/requirements-review-*.md`. The skill reads all matching review files, de-duplicates findings, surfaces disagreements, and outputs a structured triage document.
+
+Findings are classified by disposition:
 
 | Disposition | Meaning |
 |-------------|---------|

@@ -20,3 +20,6 @@ Thumbs.db
 workshop/
 docs/
 .claude/agent-memory/
+
+# SDD state file — uncomment if you don't want SDD progress tracked in version control
+# plans/sdd-state.md

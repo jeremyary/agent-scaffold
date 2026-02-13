@@ -93,6 +93,12 @@ When orchestrating multi-agent work, apply these principles:
 - **Every task needs a verifiable exit condition** in its description (test command, type-check, endpoint assertion). "Implementation complete" is not verifiable.
 - **Prefer spec-first** for work involving new data shapes, APIs, or integration points — the cost of specifying before building is always less than the cost of reworking after.
 
+## Session Continuity
+
+At the start of any session, check for `plans/sdd-state.md`. If it exists, read it to understand current SDD progress before asking the user what to do next. This file is the authoritative record of which SDD phase the project is in and what has been completed.
+
+Update `plans/sdd-state.md` at every phase transition — phase completion, review gate pass, consensus gate. See `workflow-patterns` skill § SDD State Tracking for the template and update protocol.
+
 ## Cost Tiers
 
 | Tier | Model | Agents | Use When |
