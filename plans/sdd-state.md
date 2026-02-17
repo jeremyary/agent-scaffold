@@ -2,7 +2,7 @@
 
 **Current Phase:** 12 -- Work Breakdown Review (triage complete)
 **Delivery Phase:** Phase 1 (Foundation)
-**Status:** Phase 1 WB review triage complete. All approved fixes applied. Ready for commit and implementation.
+**Status:** Phase 1 WB review triage complete. All approved fixes applied. Post-review structural improvements applied (see notes). Ready for commit and implementation.
 
 ## Completed Phases
 
@@ -18,7 +18,7 @@
 | 8 | Requirements Review | `plans/reviews/requirements-review-*.md` | Reviewed (PM: REQUEST_CHANGES, Architect: APPROVE, Orchestrator: REQUEST_CHANGES). Triage complete -- 3 Critical, 5 Warning (1 dismissed), 5 Suggestion fixes applied. |
 | 9 | Technical Design (Phase 1) | `plans/technical-design-phase-1.md` + 4 chunks | Complete (hub + 4 chunks, ~4700 lines, 10 Work Units: WU-0 through WU-9) |
 | 10 | Technical Design Review (Phase 1) | `plans/reviews/technical-design-phase-1-review-*.md` | Reviewed (CR: REQUEST_CHANGES, SE: REQUEST_CHANGES, Orch: REQUEST_CHANGES). Triage complete -- 5 Critical, 11 Warning, 7 Suggestion fixes applied. 3 deferred items tracked (SE-W6, SE-W7 in ideas backlog; SE-S3 created). 8 PoC-acceptable items dismissed. |
-| 11 | Work Breakdown (Phase 1) | `plans/work-breakdown-phase-1.md` + 4 chunks | Complete (hub + 4 chunks, 32 stories + 4 bootstrap tasks, all with implementation prompts) |
+| 11 | Work Breakdown (Phase 1) | `plans/work-breakdown-phase-1.md` + 4 chunks | Complete (hub + 4 chunks, 29 stories + 6 bootstrap tasks, 11 WUs, all with implementation prompts) |
 | 12 | Work Breakdown Review (Phase 1) | `plans/reviews/work-breakdown-phase-1-review-tech-lead.md` | Reviewed (Tech Lead: REQUEST_CHANGES). Triage complete -- 3 Critical, 5 Warning (W-1/W-7 not requested), 2 Suggestion (S-2 deferred) fixes applied. |
 
 ## Consensus Gates
@@ -57,5 +57,6 @@ Total features: 39 (F1-F28 + F38-F39 = 30 P0, F29-F33 P1, F34-F37 P2), 7 deliver
 - Phase 1 TD review: 52 raw findings across 3 reviewers, de-duplicated to 30 (5 Critical, 11 Warning, 7 Suggestion, 7 Positive, 1 Disagreement). All Critical/Warning/Suggestion fixes applied. Key fixes: admin role added to UserRole enum, PII masking middleware handoff fixed, audit hash chain covers event content + uses ORM, hardcoded Keycloak passwords replaced with env vars, frontend token storage delegated to keycloak-js, UUID type annotations corrected, DataScope typed model, stale closure fix, LangFuse DB creation, health endpoint includes Keycloak
 - Security hardening deferred: SE-W6 (rate limiting) to Phase 4b, SE-W7 (config-driven tool auth) to Phase 2 (both in ideas backlog). SE-S3 (security review checklist) created at docs/security-review-checklist.md. 8 other PoC-acceptable items dismissed.
 - Hub AuthUser interface updated to remove raw token fields (C-5 consistency fix)
-- Phase 1 WB: 32 stories + 4 bootstrap tasks across 10 Work Units, organized in hub/chunk pattern (infra, auth, data, ui). 4 parallel PM agents produced chunks simultaneously.
+- Phase 1 WB: 29 stories + 6 bootstrap tasks across 11 Work Units, organized in hub/chunk pattern (infra, auth, data, ui). 4 parallel PM agents produced chunks simultaneously.
 - Phase 1 WB review: Single reviewer (Tech Lead), 18 findings (3 Critical, 7 Warning, 4 Suggestion, 4 Positive). Key fixes: C-1 (hour estimates removed from sizing key), C-2/C-3 (20 dangling TD line-number references inlined into self-contained prompts), W-2 (programmatic timing assertion), W-3 (manual verification separated from exit condition), W-4 (DemographicFilterResult contract fixed in WU-7), W-5 (multi-line exit conditions consolidated), W-6 (misleading "you will create this" note removed), S-1 (--check flag for seed command), S-3 (all paths standardized to absolute), S-4 (default vs full profile semantics clarified). W-1 (splitting WU-8) and W-7 (WU-0 file count) not requested. S-2 (conftest.py) deferred.
+- Post-review structural fixes (stakeholder-requested): (1) T-0-05 (config/settings.py) and T-0-06 (main.py + health + public routes) added to WU-0 -- these backend files were designed in TD but never assigned to any WU. (2) WU-8 split into WU-8a (scaffold+auth+route guards, 12 files) and WU-8b (landing page+calculator, 11 files) -- original WU-8 was 15 files across 3 features. (3) WU-5 verification-only stories (S-1-F18-02, S-1-F21-02, S-1-F21-03) merged into parent implementation stories, reducing total from 32 to 29 unique stories. (4) Audit service ownership clarified: WU-1 creates audit_events table, WU-3/S-1-F25-01 owns services/audit.py. (5) Demo data seeding switched from random to fixed static data (20 historical loans, deterministic). (6) Keycloak compose health check changed from TCP socket hack to curl. (7) WU-7 test infrastructure requirements documented (conftest.py, requires_postgres marker).

@@ -682,7 +682,7 @@ services:
     volumes:
       - ./config/keycloak/summit-cap-realm.json:/opt/keycloak/data/import/summit-cap-realm.json:ro
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3 && cat <&3 | grep -q '200'"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health/live || exit 1"]
       interval: 10s
       timeout: 10s
       retries: 15

@@ -269,7 +269,7 @@ cd /home/jary/git/agent-scaffold/packages/api && uv run pytest tests/test_auth.p
 
 #### Files
 
-(Backend only -- frontend route guards are WU-8. This story validates that the backend correctly extracts role from token.)
+(Backend only -- frontend route guards are WU-8a. This story validates that the backend correctly extracts role from token.)
 
 - `packages/api/src/summit_cap/middleware/auth.py` (modify)
 - `packages/api/tests/test_auth.py` (add test cases)
@@ -338,7 +338,7 @@ cd /home/jary/git/agent-scaffold/packages/api && uv run pytest tests/test_auth.p
 
 #### Files
 
-(Backend portion only -- frontend TanStack Query interceptor is WU-8. This story ensures the backend returns 401 for expired tokens.)
+(Backend portion only -- frontend TanStack Query interceptor is WU-8a. This story ensures the backend returns 401 for expired tokens.)
 
 - `packages/api/src/summit_cap/middleware/auth.py` (already implemented in S-1-F2-01)
 - `packages/api/tests/test_auth.py` (add test case)
@@ -774,6 +774,50 @@ cd /home/jary/git/agent-scaffold/packages/api && uv run pytest tests/test_tool_a
 ---
 
 ## WU-7: RBAC Integration Tests
+
+### Test Infrastructure Requirements
+
+WU-7 integration tests have two categories with different infrastructure needs:
+
+**Category 1: In-memory tests (no external services needed)**
+- RBAC pipeline tests (`test_rbac_integration.py`) -- use `httpx.AsyncClient` with `ASGITransport(app=app)` and mocked JWKS. No running database or Keycloak required.
+- Demographic filter tests (`test_demographic_filter.py`) -- pure Python, no I/O.
+
+**Category 2: Database-dependent tests (require running PostgreSQL with dual roles)**
+- HMDA isolation tests (`test_hmda_isolation.py`) -- require a real PostgreSQL instance with `lending_app` and `compliance_app` roles configured, because they verify that role-level `GRANT`/`REVOKE` permissions work correctly. These cannot be meaningfully tested with SQLite or mocked sessions.
+
+**How to set up the test database:**
+- Option A: `podman-compose up postgres` (starts only PostgreSQL from compose.yml, runs `packages/db/init/01-roles.sql` via docker-entrypoint-initdb.d)
+- Option B: Use a local PostgreSQL with `packages/db/init/01-roles.sql` applied manually
+
+The conftest.py fixture should detect whether PostgreSQL is available and skip database-dependent tests with `pytest.mark.skipif` when it is not. This allows the in-memory tests to run in CI without infrastructure, while database-dependent tests run in the full-stack environment.
+
+```python
+# packages/api/tests/integration/conftest.py (infrastructure detection pattern)
+import asyncio
+import pytest
+from sqlalchemy import text
+from summit_cap_db.database import lending_engine
+
+@pytest.fixture(scope="session")
+def has_postgres():
+    """Check if PostgreSQL is available for integration tests."""
+    try:
+        async def check():
+            async with lending_engine.connect() as conn:
+                await conn.execute(text("SELECT 1"))
+        asyncio.get_event_loop().run_until_complete(check())
+        return True
+    except Exception:
+        return False
+
+requires_postgres = pytest.mark.skipif(
+    "not config.getoption('--postgres')",
+    reason="Requires running PostgreSQL (use --postgres flag or start via compose)"
+)
+```
+
+---
 
 ### Story: S-1-F14-01 to S-1-F14-05 (Integration) -- Full RBAC pipeline validation
 

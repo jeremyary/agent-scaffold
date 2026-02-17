@@ -24,6 +24,8 @@
 
 **Description:** Create all SQLAlchemy models for Phase 1 tables, the initial Alembic migration, PostgreSQL role setup, dual connection pool configuration, and the audit trail immutability trigger. This WU establishes the foundation for all data layer work.
 
+**Ownership note:** WU-1 creates the `audit_events` table, the immutability trigger, and the `AuditEvent` SQLAlchemy model. The audit *service* (`packages/api/src/summit_cap/services/audit.py` with `write_audit_event()`) is created by WU-3/S-1-F25-01, which is its first consumer. If WU-1 and WU-3 run in parallel streams, WU-3 must not start `services/audit.py` until WU-1's migration has created the underlying table.
+
 ---
 
 ### Story: S-1-F25-02 -- PostgreSQL role separation (lending_app / compliance_app)
@@ -421,7 +423,7 @@ Per the acceptance criteria above, you must:
        status: str = "collected"
    ```
 
-2. **Create `packages/api/src/summit_cap/services/audit.py`** with the `write_audit_event` function per the TD hub contract (see below)
+2. **Create `packages/api/src/summit_cap/services/audit.py`** with the `write_audit_event` function per the TD hub contract (see below). **This WU (WU-3) is the definitive owner of this file** -- WU-1 creates the underlying table and model, but the service module is created here as its first consumer.
 
 3. **Create `packages/api/src/summit_cap/services/compliance/hmda.py`** with:
    ```python
@@ -1276,45 +1278,45 @@ Per the acceptance criteria above, you must ensure the `historical.py` module co
 
 **Steps:**
 
-1. **Define historical loan data in `historical.py`** with:
+1. **Define historical loan data in `historical.py`** as a fixed static list. **Do NOT use `random`** -- demo data must be deterministic so every `seed` invocation produces identical, reproducible data for consistent showcase demos.
+
    ```python
-   import random
-   from datetime import datetime, timedelta
+   from datetime import datetime, timezone
 
-   HISTORICAL_LOANS = []
+   # Fixed historical loans -- deterministic for reproducible demos.
+   # Distribution: 17 closed, 3 denied. ~35% protected class representation.
+   # Decision dates use fixed offsets from a reference date, not datetime.now().
+   REFERENCE_DATE = datetime(2025, 1, 15, tzinfo=timezone.utc)
 
-   # Generate 17 closed loans
-   for i in range(17):
-       decision_date = datetime.now() - timedelta(days=random.randint(30, 180))
-       HISTORICAL_LOANS.append({
-           "borrower": f"historical_borrower_{i}",
-           "stage": "closed",
-           "loan_type": random.choice(["30yr_fixed", "15yr_fixed", "arm", "jumbo", "fha", "va"]),
-           "loan_amount": random.randint(150000, 800000),
-           "credit_score": random.randint(650, 780),
-           "decision_date": decision_date,
-           "hmda_race": random.choice(["White", "Black or African American", "Asian", "Prefer not to answer"]),
-           "hmda_ethnicity": random.choice(["Not Hispanic or Latino", "Hispanic or Latino", "Prefer not to answer"]),
-       })
-
-   # Generate 3 denials
-   for i in range(3):
-       decision_date = datetime.now() - timedelta(days=random.randint(30, 180))
-       HISTORICAL_LOANS.append({
-           "borrower": f"denied_borrower_{i}",
-           "stage": "denied",
-           "loan_type": random.choice(["30yr_fixed", "fha"]),
-           "loan_amount": random.randint(150000, 400000),
-           "credit_score": random.randint(580, 640),
-           "decision_date": decision_date,
-           "denial_reason": random.choice(["high_dti", "low_credit_score", "insufficient_income"]),
-           "hmda_race": random.choice(["White", "Black or African American", "Asian"]),
-           "hmda_ethnicity": random.choice(["Not Hispanic or Latino", "Hispanic or Latino"]),
-       })
+   HISTORICAL_LOANS = [
+       # Closed loans (17)
+       {"borrower": "historical_borrower_01", "stage": "closed", "loan_type": "30yr_fixed", "loan_amount": 285000, "credit_score": 740, "decision_days_ago": 30, "hmda_race": "White", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_02", "stage": "closed", "loan_type": "15yr_fixed", "loan_amount": 420000, "credit_score": 760, "decision_days_ago": 45, "hmda_race": "Asian", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_03", "stage": "closed", "loan_type": "30yr_fixed", "loan_amount": 195000, "credit_score": 680, "decision_days_ago": 60, "hmda_race": "Black or African American", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_04", "stage": "closed", "loan_type": "fha", "loan_amount": 175000, "credit_score": 650, "decision_days_ago": 75, "hmda_race": "White", "hmda_ethnicity": "Hispanic or Latino"},
+       {"borrower": "historical_borrower_05", "stage": "closed", "loan_type": "va", "loan_amount": 310000, "credit_score": 720, "decision_days_ago": 80, "hmda_race": "White", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_06", "stage": "closed", "loan_type": "arm", "loan_amount": 525000, "credit_score": 755, "decision_days_ago": 90, "hmda_race": "Asian", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_07", "stage": "closed", "loan_type": "jumbo", "loan_amount": 780000, "credit_score": 770, "decision_days_ago": 95, "hmda_race": "White", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_08", "stage": "closed", "loan_type": "30yr_fixed", "loan_amount": 245000, "credit_score": 690, "decision_days_ago": 100, "hmda_race": "Black or African American", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_09", "stage": "closed", "loan_type": "fha", "loan_amount": 165000, "credit_score": 660, "decision_days_ago": 110, "hmda_race": "White", "hmda_ethnicity": "Hispanic or Latino"},
+       {"borrower": "historical_borrower_10", "stage": "closed", "loan_type": "30yr_fixed", "loan_amount": 350000, "credit_score": 735, "decision_days_ago": 120, "hmda_race": "White", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_11", "stage": "closed", "loan_type": "15yr_fixed", "loan_amount": 290000, "credit_score": 745, "decision_days_ago": 130, "hmda_race": "Native Hawaiian or Pacific Islander", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_12", "stage": "closed", "loan_type": "30yr_fixed", "loan_amount": 410000, "credit_score": 710, "decision_days_ago": 140, "hmda_race": "Asian", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_13", "stage": "closed", "loan_type": "va", "loan_amount": 275000, "credit_score": 700, "decision_days_ago": 145, "hmda_race": "White", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_14", "stage": "closed", "loan_type": "30yr_fixed", "loan_amount": 320000, "credit_score": 725, "decision_days_ago": 150, "hmda_race": "Black or African American", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_15", "stage": "closed", "loan_type": "fha", "loan_amount": 185000, "credit_score": 655, "decision_days_ago": 160, "hmda_race": "White", "hmda_ethnicity": "Hispanic or Latino"},
+       {"borrower": "historical_borrower_16", "stage": "closed", "loan_type": "arm", "loan_amount": 475000, "credit_score": 750, "decision_days_ago": 170, "hmda_race": "White", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "historical_borrower_17", "stage": "closed", "loan_type": "30yr_fixed", "loan_amount": 230000, "credit_score": 695, "decision_days_ago": 180, "hmda_race": "American Indian or Alaska Native", "hmda_ethnicity": "Not Hispanic or Latino"},
+       # Denied loans (3)
+       {"borrower": "denied_borrower_01", "stage": "denied", "loan_type": "30yr_fixed", "loan_amount": 350000, "credit_score": 590, "decision_days_ago": 55, "denial_reason": "low_credit_score", "hmda_race": "White", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "denied_borrower_02", "stage": "denied", "loan_type": "fha", "loan_amount": 225000, "credit_score": 640, "decision_days_ago": 105, "denial_reason": "high_dti", "hmda_race": "Black or African American", "hmda_ethnicity": "Not Hispanic or Latino"},
+       {"borrower": "denied_borrower_03", "stage": "denied", "loan_type": "30yr_fixed", "loan_amount": 180000, "credit_score": 620, "decision_days_ago": 155, "denial_reason": "insufficient_income", "hmda_race": "White", "hmda_ethnicity": "Hispanic or Latino"},
+   ]
+   # Protected class representation: 7/20 = 35% (3 Black, 3 Asian, 1 Native Hawaiian/PI, 1 American Indian/AK Native)
+   # Hispanic/Latino: 4/20 = 20%
    ```
 
-2. **Ensure ~30% protected class representation** in the HMDA data:
-   - Adjust the random.choice weights to achieve ~30% for "Black or African American", "Asian", "Hispanic or Latino"
+2. **Compute decision dates** from `REFERENCE_DATE - timedelta(days=decision_days_ago)` in the seeder, not in the data module. This keeps dates relative and avoids drift.
 
 3. **No additional implementation needed** -- this story verifies that the data defined in S-1-F20-01 meets the detailed specs.
 

@@ -4,16 +4,16 @@
 
 Phase 1 establishes the foundational infrastructure for the Summit Cap Financial AI Banking Quickstart: monorepo scaffolding, database schema with dual-role HMDA isolation, Keycloak authentication, RBAC middleware, LangFuse observability plumbing, model routing configuration, Docker Compose orchestration, demo data seeding, and the public-facing prospect landing page with affordability calculator. This is a greenfield project -- all files are created from scratch.
 
-**Features covered (32 stories):**
+**Features covered (29 stories after WU-5 merge):**
 
 | Feature | Stories | Description |
 |---------|---------|-------------|
 | F1 | S-1-F1-01 to S-1-F1-03 (3) | Public landing page, affordability calculator, prequalification chat stub |
 | F2 | S-1-F2-01 to S-1-F2-03 (3) | Keycloak OIDC authentication, role-based route access, token refresh |
 | F14 | S-1-F14-01 to S-1-F14-05 (5) | API RBAC, data scope injection, PII masking, CEO doc restriction, agent tool auth |
-| F18 | S-1-F18-01 to S-1-F18-03 (3) | LangFuse callback integration, trace display, trace-to-audit correlation |
+| F18 | S-1-F18-01, S-1-F18-03 (2) | LangFuse callback integration, trace-to-audit correlation (S-1-F18-02 merged into S-1-F18-01) |
 | F20 | S-1-F20-01 to S-1-F20-05 (5) | Demo data seeding, active apps, historical loans, idempotency, empty states |
-| F21 | S-1-F21-01 to S-1-F21-04 (4) | Model routing classifier, fast/small routing, capable/large routing, YAML config |
+| F21 | S-1-F21-01, S-1-F21-04 (2) | Model routing with YAML config (S-1-F21-02, S-1-F21-03 merged into S-1-F21-01) |
 | F22 | S-1-F22-01 to S-1-F22-04 (4) | Single-command setup, health checks, 10-min target, Compose profiles |
 | F25 | S-1-F25-01 to S-1-F25-05 (5) | HMDA collection endpoint, PostgreSQL role separation, demographic filter, CI lint |
 
@@ -1031,9 +1031,11 @@ WU-0 (Bootstrap) ─────────────────────
   │                                                              │
   ├──> WU-5 (LangFuse + Model Routing)                           │
   │                                                              │
-  └──> WU-8 (Frontend Scaffolding + Landing Page)                │
+  └──> WU-8a (Frontend Scaffold + Auth + Route Guards)             │
          │                                                       │
-         └──> WU-9 (Docker Compose + Full Stack) ← needs all ────┘
+         └──> WU-8b (Public Landing Page + Calculator)            │
+                │                                                 │
+                └──> WU-9 (Docker Compose + Full Stack) ← needs all ─┘
 ```
 
 ---
@@ -1049,17 +1051,18 @@ Each WU groups 2-4 related tasks that can be assigned to a single implementer. E
 | WU-2 | Keycloak Auth Integration | WU-0 | S-1-F2-01, S-1-F2-02, S-1-F2-03 | `cd packages/api && uv run pytest tests/test_auth.py -v` | |
 | WU-3 | HMDA Collection Endpoint | WU-1 | S-1-F25-01, S-1-F25-04, S-1-F25-05 | `cd packages/api && uv run pytest tests/test_hmda.py -v` + `make lint-hmda` | Partial: demographic filter is standalone utility (extraction pipeline deferred to Phase 2, see TD-I-03) |
 | WU-4 | RBAC Middleware Pipeline | WU-1, WU-2 | S-1-F14-01 to S-1-F14-05 | `cd packages/api && uv run pytest tests/test_rbac.py -v` | Partial: tool auth is framework-only (no LangGraph agents until Phase 2, see TD-I-04) |
-| WU-5 | LangFuse + Model Routing Config | WU-0 | S-1-F18-01 to S-1-F18-03, S-1-F21-01 to S-1-F21-04 | See chunk-infra: pytest test_observability.py + test_model_routing.py | |
+| WU-5 | LangFuse + Model Routing Config | WU-0 | S-1-F18-01, S-1-F18-03, S-1-F21-01, S-1-F21-04 | See chunk-infra: pytest test_observability.py + test_model_routing.py | 3 verification-only stories merged into implementation stories |
 | WU-6 | Demo Data Seeding | WU-1 | S-1-F20-01, S-1-F20-02, S-1-F20-03 | `cd packages/api && uv run python -m summit_cap.seed --check` | |
 | WU-7 | RBAC Integration Tests | WU-4, WU-3 | S-1-F14-01 to S-1-F14-05, S-1-F25-03 | `cd packages/api && uv run pytest tests/integration/ -v` | |
-| WU-8 | Frontend Scaffolding + Landing Page | WU-0 | S-1-F1-01 to S-1-F1-03, S-1-F2-02 (route guards), S-1-F20-05 | `cd packages/ui && pnpm test -- --run` + `pnpm exec tsc --noEmit` | |
-| WU-9 | Docker Compose + Full Stack | WU-0 through WU-8 | S-1-F22-01 to S-1-F22-04 | `make run && curl -sf http://localhost:8000/health \| jq -e '.status == "healthy"'` | |
+| WU-8a | Frontend Scaffold + Auth + Route Guards | WU-0 | S-1-F2-02 (route guards), S-1-F20-05 (empty states) | `cd packages/ui && pnpm exec tsc --noEmit && pnpm test -- --run` | Creates shared types, API client, Keycloak auth, route guards |
+| WU-8b | Public Landing Page + Calculator | WU-8a | S-1-F1-01 to S-1-F1-03 | `cd packages/ui && pnpm exec tsc --noEmit && pnpm test -- --run` | Hero, product cards, calculator, chat stub |
+| WU-9 | Docker Compose + Full Stack | WU-0 through WU-8b | S-1-F22-01 to S-1-F22-04 | `make run && curl -sf http://localhost:8000/health \| jq -e '.status == "healthy"'` | |
 
 Detailed Work Unit specifications (task breakdown, file manifests, error paths) are in the chunk files:
 - WU-0, WU-5, WU-9: `technical-design-phase-1-chunk-infra.md`
 - WU-2, WU-4, WU-7: `technical-design-phase-1-chunk-auth.md`
 - WU-1, WU-3, WU-6: `technical-design-phase-1-chunk-data.md`
-- WU-8: `technical-design-phase-1-chunk-ui.md`
+- WU-8a, WU-8b: `technical-design-phase-1-chunk-ui.md`
 
 ---
 
@@ -1124,7 +1127,7 @@ Detailed Work Unit specifications (task breakdown, file manifests, error paths) 
 
 **Scope boundaries:** This group covers database setup, migrations, HMDA isolation enforcement, demo data seeding, and audit trail infrastructure. It does NOT include domain service business logic or agent layer data access.
 
-### Frontend (WU-8)
+### Frontend (WU-8a, WU-8b)
 
 **Files to read:** `packages/ui/src/`, `packages/ui/package.json`, `packages/ui/vite.config.ts`
 
@@ -1152,12 +1155,13 @@ Detailed Work Unit specifications (task breakdown, file manifests, error paths) 
 |----------|-------------|----------|
 | WU-0 (Bootstrap) | All WUs | Package structure, import paths, tooling config |
 | WU-1 (DB Schema) | WU-2, WU-3, WU-4, WU-6, WU-7 | SQLAlchemy models, Alembic migration, connection pools |
-| WU-2 (Keycloak Auth) | WU-4, WU-7, WU-8 | `UserContext`, `TokenPayload`, `get_current_user` dependency |
+| WU-2 (Keycloak Auth) | WU-4, WU-7, WU-8a | `UserContext`, `TokenPayload`, `get_current_user` dependency |
 | WU-3 (HMDA Endpoint) | WU-7 | HMDA collection route, compliance pool usage |
-| WU-4 (RBAC) | WU-7, WU-8 | `require_roles()`, `inject_data_scope()`, `mask_pii_for_ceo()` |
+| WU-4 (RBAC) | WU-7, WU-8a | `require_roles()`, `inject_data_scope()`, `mask_pii_for_ceo()` |
 | WU-5 (LangFuse + Routing) | WU-7 | `create_langfuse_handler()`, model routing config loader |
-| WU-8 (Frontend) | WU-9 | Built UI container image, Vite dev server |
-| WU-1 through WU-8 | WU-9 | All services ready for Compose orchestration |
+| WU-8a (Frontend Scaffold) | WU-8b, WU-9 | Shared types, API client, auth service, route guards |
+| WU-8b (Landing Page) | WU-9 | Landing page components, calculator |
+| WU-1 through WU-8b | WU-9 | All services ready for Compose orchestration |
 
 ---
 
@@ -1171,7 +1175,7 @@ During design, I identified the following issues:
 | TD-I-02 | The story map in requirements.md lists F1 as "Public Virtual Assistant with Guardrails" (suggesting chat + guardrails), but the product plan describes F1 as "Prospect Landing Page and Affordability Calculator" and F2 as just "Prospect Affordability and Pre-Qualification." The feature numbering between product plan and requirements is offset (product plan F1 = landing/calc, F2 = prequalification; requirements F1 covers all three). | Low | No design impact -- the Phase 1 stories are clear regardless of feature naming. Using requirements chunk as the source of truth for acceptance criteria. |
 | TD-I-03 | S-1-F25-03 (Demographic data filter in document extraction pipeline) is in Phase 1 scope, but document extraction itself (F5) is Phase 2. The demographic filter cannot be fully tested without the extraction pipeline. | Medium | Phase 1 implements the filter as a standalone utility module with unit tests against synthetic extraction output. Full integration testing occurs in Phase 2 when the extraction pipeline is built. |
 | TD-I-04 | S-1-F14-05 (Agent tool authorization) references LangGraph pre-tool nodes, but no agents exist in Phase 1 (agents are Phase 2+). | Medium | Phase 1 implements the authorization framework (the pre-tool node function and tool registry config) with unit tests. Integration with actual LangGraph agents occurs in Phase 2. |
-| TD-I-05 | S-1-F20-05 (Empty state handling in all UIs) references LO pipeline, CEO dashboard, underwriter queue, and borrower assistant -- UIs that do not exist in Phase 1. | Low | Phase 1 implements empty state handling for the landing page and any Phase 1 UI surfaces. Later phases add empty states for their respective UIs. WU-8 covers the landing page empty state. |
+| TD-I-05 | S-1-F20-05 (Empty state handling in all UIs) references LO pipeline, CEO dashboard, underwriter queue, and borrower assistant -- UIs that do not exist in Phase 1. | Low | Phase 1 implements empty state handling for the landing page and Phase 1 route stubs. Later phases add empty states for their respective UIs. WU-8a covers the empty state component and route stub placeholders. |
 | TD-I-06 | The requirements mention "S-1-F1-04" and "S-1-F1-05" and "S-1-F2-04"/"S-1-F2-05" in the task scope but these story IDs do not exist in the requirements document. | Info | These stories do not exist. The task scope description had inflated counts. All 32 actual stories are covered by this design. |
 
 ---

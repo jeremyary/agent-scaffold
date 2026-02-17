@@ -1,11 +1,11 @@
 # Technical Design Phase 1 -- Chunk: Frontend Scaffolding and Landing Page
 
-**Covers:** WU-8 (Frontend Scaffolding + Landing Page)
+**Covers:** WU-8a (Frontend Scaffold + Auth + Route Guards), WU-8b (Public Landing Page + Calculator)
 **Features:** F1 (Prospect Landing Page and Affordability Calculator), F2 (Route Guards), F20 (Empty States)
 
 ---
 
-## WU-8: Frontend Scaffolding + Landing Page
+## WU-8a / WU-8b: Frontend Scaffolding + Landing Page
 
 ### Description
 

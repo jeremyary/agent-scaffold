@@ -3,7 +3,7 @@
 
 **Covers:** WU-0 (Project Bootstrap), WU-5 (LangFuse + Model Routing), WU-9 (Docker Compose + Full Stack)
 **Features:** F18 (LangFuse Observability), F21 (Model Routing), F22 (Docker Compose)
-**Stories:** WU-0 has no requirement stories (prerequisite), WU-5 has 7 stories, WU-9 has 4 stories
+**Stories:** WU-0 has no requirement stories (6 bootstrap tasks including T-0-05/T-0-06), WU-5 has 4 stories (S-1-F18-02, S-1-F21-02, S-1-F21-03 merged into parent stories), WU-9 has 4 stories
 
 ---
 
@@ -491,6 +491,321 @@ cd /home/jary/git/agent-scaffold && \
 
 ---
 
+### Task: T-0-05 -- Create Core Configuration and Settings
+
+**WU:** WU-0
+**Complexity:** S
+
+#### Implementation Prompt
+
+**Role:** @backend-developer
+
+**Context files:**
+- `/home/jary/git/agent-scaffold/packages/api/pyproject.toml` -- API package dependencies (includes pydantic-settings)
+
+**Requirements:**
+- Create `packages/api/src/summit_cap/core/config.py` with Pydantic Settings class binding all environment variables
+- Create `packages/api/src/summit_cap/core/settings.py` as a convenience re-export
+- The Settings class is referenced by every WU from WU-2 onward -- this task must complete before any feature work begins
+
+**Steps:**
+1. Create `packages/api/src/summit_cap/core/config.py` with the Settings class below
+2. Create `packages/api/src/summit_cap/core/settings.py` that re-exports: `from summit_cap.core.config import settings`
+3. Verify import: `from summit_cap.core.config import settings`
+
+**Contracts:**
+
+```python
+# packages/api/src/summit_cap/core/config.py
+# This project was developed with assistance from AI tools.
+
+from pathlib import Path
+
+import yaml
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    """Application settings loaded from environment variables."""
+
+    model_config = {"env_prefix": "", "case_sensitive": False}
+
+    # Database
+    database_url_lending: str = "postgresql+asyncpg://lending_app:lending_pass@localhost:5432/summit_cap"
+    database_url_compliance: str = "postgresql+asyncpg://compliance_app:compliance_pass@localhost:5432/summit_cap"
+
+    # Keycloak
+    keycloak_url: str = "http://localhost:8080"
+    keycloak_realm: str = "summit-cap"
+    keycloak_client_id: str = "summit-cap-api"
+
+    # LangFuse
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    langfuse_host: str = "http://localhost:3001"
+
+    # LlamaStack
+    llamastack_url: str = "http://localhost:8321"
+
+    # Application
+    app_name: str = "Summit Cap Financial"
+    app_version: str = "0.1.0"
+    debug: bool = False
+    seed_demo_data: bool = True
+
+
+settings = Settings()
+
+
+def load_model_config(path: str = "config/models.yaml") -> dict:
+    """Load model routing configuration from YAML."""
+    config_path = Path(path)
+    if not config_path.exists():
+        raise FileNotFoundError(f"Model routing configuration not found: {path}")
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+    _validate_model_config(config)
+    return config
+
+
+def _validate_model_config(config: dict) -> None:
+    """Validate required fields in model config."""
+    if "models" not in config:
+        raise ValueError("Model config missing 'models' section")
+    if "routing" not in config:
+        raise ValueError("Model config missing 'routing' section")
+    for tier in ("fast_small", "capable_large"):
+        if tier not in config["models"]:
+            raise ValueError(f"Model config missing '{tier}' in models section")
+        model = config["models"][tier]
+        for field in ("provider", "model_name", "endpoint"):
+            if field not in model:
+                raise ValueError(f"Model '{tier}' missing required field '{field}'")
+```
+
+**Exit condition:**
+```bash
+cd /home/jary/git/agent-scaffold/packages/api && \
+  uv run python -c "from summit_cap.core.config import settings; print(settings.app_name)" && \
+  uv run python -c "from summit_cap.core.settings import settings; print(settings.keycloak_url)"
+```
+
+---
+
+### Task: T-0-06 -- Create FastAPI App Entry Point, Health Endpoint, and Public Routes
+
+**WU:** WU-0
+**Complexity:** S
+
+#### Implementation Prompt
+
+**Role:** @backend-developer
+
+**Context files:**
+- `/home/jary/git/agent-scaffold/packages/api/src/summit_cap/core/config.py` -- Settings class (from T-0-05)
+- `/home/jary/git/agent-scaffold/packages/api/src/summit_cap/schemas/common.py` -- HealthResponse model
+
+**Requirements:**
+- Create `packages/api/src/summit_cap/main.py` as the FastAPI app entry point with router includes and middleware registration
+- Create `packages/api/src/summit_cap/routes/health.py` with the `/health` endpoint
+- Create `packages/api/src/summit_cap/routes/public.py` with `/api/public/products` and `/api/public/calculate-affordability` endpoints
+- Create `packages/api/src/summit_cap/schemas/common.py` with all shared Pydantic models (UserRole, UserContext, etc.)
+- Create `packages/api/src/summit_cap/schemas/calculator.py` with affordability request/response models
+- These files are required by WU-7 integration tests, WU-8a/WU-8b frontend, and WU-9 full-stack verification
+
+**Steps:**
+1. Create `packages/api/src/summit_cap/schemas/common.py` with all Pydantic models from TD hub (UserRole, ApplicationStage, AuditEventType, DataScope, UserContext, HealthResponse, ErrorResponse)
+2. Create `packages/api/src/summit_cap/schemas/calculator.py` with AffordabilityRequest and AffordabilityResponse models from TD hub
+3. Create `packages/api/src/summit_cap/routes/health.py` with health check endpoint that reports status of PostgreSQL, Keycloak, and LangFuse
+4. Create `packages/api/src/summit_cap/routes/public.py` with static product data and affordability calculator logic
+5. Create `packages/api/src/summit_cap/main.py` that creates the FastAPI app, includes all routers, and registers middleware
+6. Write smoke test in `packages/api/tests/test_health.py`
+
+**Contracts:**
+
+```python
+# packages/api/src/summit_cap/routes/health.py
+# This project was developed with assistance from AI tools.
+
+import logging
+
+import httpx
+from fastapi import APIRouter
+from sqlalchemy import text
+
+from summit_cap.core.config import settings
+from summit_cap.schemas.common import HealthResponse
+from summit_cap_db.database import lending_engine
+
+logger = logging.getLogger("summit_cap.routes.health")
+router = APIRouter()
+
+
+@router.get("/health", response_model=HealthResponse)
+async def health_check() -> HealthResponse:
+    """Check health of all dependencies."""
+    services: dict[str, str] = {}
+
+    # PostgreSQL
+    try:
+        async with lending_engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        services["postgres"] = "up"
+    except Exception:
+        services["postgres"] = "down"
+
+    # Keycloak
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(
+                f"{settings.keycloak_url}/realms/{settings.keycloak_realm}"
+            )
+            services["keycloak"] = "up" if resp.status_code == 200 else "down"
+    except Exception:
+        services["keycloak"] = "down"
+
+    # LangFuse
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(
+                f"{settings.langfuse_host}/api/public/health",
+            )
+            services["langfuse"] = "up" if resp.status_code == 200 else "down"
+    except Exception:
+        services["langfuse"] = "down"
+
+    all_up = all(v == "up" for v in services.values())
+
+    return HealthResponse(
+        status="healthy" if all_up else "degraded",
+        version=settings.app_version,
+        services=services,
+    )
+```
+
+```python
+# packages/api/src/summit_cap/routes/public.py
+# This project was developed with assistance from AI tools.
+"""Public routes -- no authentication required."""
+
+import math
+
+from fastapi import APIRouter
+
+from summit_cap.schemas.calculator import AffordabilityRequest, AffordabilityResponse
+
+router = APIRouter()
+
+PRODUCTS = [
+    {"id": "30yr-fixed", "name": "30-Year Fixed-Rate", "description": "The most popular mortgage option with a fixed interest rate for the full 30-year term.", "min_down_payment_pct": 3, "typical_rate": 6.5},
+    {"id": "15yr-fixed", "name": "15-Year Fixed-Rate", "description": "Build equity faster with a shorter term and typically lower interest rate.", "min_down_payment_pct": 3, "typical_rate": 5.75},
+    {"id": "arm", "name": "Adjustable-Rate (ARM)", "description": "Lower initial rate that adjusts periodically after an introductory period.", "min_down_payment_pct": 5, "typical_rate": 5.5},
+    {"id": "jumbo", "name": "Jumbo Loan", "description": "For loan amounts exceeding conventional conforming limits.", "min_down_payment_pct": 10, "typical_rate": 6.75},
+    {"id": "fha", "name": "FHA Loan", "description": "Government-backed loan with flexible qualification requirements.", "min_down_payment_pct": 3.5, "typical_rate": 6.25},
+    {"id": "va", "name": "VA Loan", "description": "Available to eligible veterans and active-duty military with no down payment required.", "min_down_payment_pct": 0, "typical_rate": 6.0},
+]
+
+
+@router.get("/products")
+async def get_products() -> list[dict]:
+    """Return mortgage product information. No authentication required."""
+    return PRODUCTS
+
+
+@router.post("/calculate-affordability", response_model=AffordabilityResponse)
+async def calculate_affordability(request: AffordabilityRequest) -> AffordabilityResponse:
+    """Calculate estimated borrowing capacity."""
+    gross_monthly_income = request.gross_annual_income / 12
+    max_monthly_housing = gross_monthly_income * 0.43 - request.monthly_debts
+
+    if max_monthly_housing <= 0:
+        return AffordabilityResponse(
+            max_loan_amount=0, estimated_monthly_payment=0,
+            estimated_purchase_price=request.down_payment, dti_ratio=100.0,
+            dti_warning="Your debt-to-income ratio exceeds 43%.",
+            pmi_warning=None,
+        )
+
+    monthly_rate = request.interest_rate / 100 / 12
+    num_payments = request.loan_term_years * 12
+    if monthly_rate > 0:
+        payment_factor = (monthly_rate * (1 + monthly_rate) ** num_payments) / ((1 + monthly_rate) ** num_payments - 1)
+    else:
+        payment_factor = 1 / num_payments
+    max_loan = max_monthly_housing / payment_factor
+    estimated_monthly = max_loan * payment_factor
+    purchase_price = max_loan + request.down_payment
+    dti = ((estimated_monthly + request.monthly_debts) / gross_monthly_income) * 100
+
+    dti_warning = None
+    if dti > 43:
+        dti_warning = "Your debt-to-income ratio exceeds 43%. You may need to reduce debts or increase income to qualify."
+    pmi_warning = None
+    if request.down_payment < purchase_price * 0.03:
+        pmi_warning = "Your down payment is less than 3% of the purchase price. Private mortgage insurance (PMI) may be required."
+
+    return AffordabilityResponse(
+        max_loan_amount=round(max_loan, 2),
+        estimated_monthly_payment=round(estimated_monthly, 2),
+        estimated_purchase_price=round(purchase_price, 2),
+        dti_ratio=round(dti, 2),
+        dti_warning=dti_warning,
+        pmi_warning=pmi_warning,
+    )
+```
+
+```python
+# packages/api/src/summit_cap/main.py
+# This project was developed with assistance from AI tools.
+"""FastAPI application entry point."""
+
+import logging
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from summit_cap.core.config import settings
+from summit_cap.routes import health, public
+
+logging.basicConfig(level=logging.DEBUG if settings.debug else logging.INFO)
+logger = logging.getLogger("summit_cap")
+
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.app_version,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Public routes (no auth required)
+app.include_router(health.router, tags=["health"])
+app.include_router(public.router, prefix="/api/public", tags=["public"])
+
+# Authenticated routes added by WU-2/WU-3/WU-4:
+# app.include_router(hmda.router, prefix="/api/hmda", tags=["hmda"])
+# app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
+
+# PII masking middleware added by WU-4/S-1-F14-03:
+# app.add_middleware(PIIMaskingMiddleware)
+```
+
+Schemas (`common.py`, `calculator.py`) must match TD hub contracts exactly -- see TD hub Section "Pydantic Models".
+
+**Exit condition:**
+```bash
+cd /home/jary/git/agent-scaffold/packages/api && \
+  uv run python -c "from summit_cap.main import app; print(app.title)" && \
+  uv run pytest tests/test_health.py -v
+```
+
+---
+
 ## WU-5: LangFuse Integration + Model Routing
 
 ### Description
@@ -572,6 +887,7 @@ This WU covers LangFuse integration and model routing configuration. It does NOT
 5. In function body: wrap `LangfuseCallbackHandler(...)` instantiation in try-except
 6. On success: return handler. On exception: log warning, return `None`
 7. Create `packages/api/tests/test_observability.py` with tests: `test_create_handler_success`, `test_create_handler_unavailable` (mock exception), `test_session_id_passed`
+8. (Merged from S-1-F18-02) Create `packages/api/tests/integration/test_langfuse_ui.py` with a minimal LangChain chain test harness that invokes a mock model with the LangFuse callback, verifying that the trace is recorded (query LangFuse API for the `session_id`). Add test documentation: "Manual verification: open http://localhost:3001, navigate to traces, confirm session_id is visible." Since Phase 1 has no LangGraph agents, this uses a mock chain to validate the callback wiring.
 
 **Contracts:**
 
@@ -596,82 +912,6 @@ def create_langfuse_handler(
 cd /home/jary/git/agent-scaffold/packages/api && \
   uv run pytest tests/test_observability.py -v
 ```
-
----
-
-### Story: S-1-F18-02 -- LangFuse dashboard displays agent traces
-
-**WU:** WU-5
-**Feature:** F18 -- AI Observability Dashboard
-**Complexity:** S
-
-#### Acceptance Criteria
-
-**Given** an agent invocation has been traced
-**When** I open the LangFuse dashboard and navigate to traces
-**Then** I see a list of recent traces with `session_id`, user_id (if available), timestamp, and total duration
-
-**Given** I select a specific trace
-**When** the trace detail view loads
-**Then** I see a tree structure showing each LangGraph node, tool call, and LLM call with nested children
-
-**Given** I expand a tool call node in the trace
-**When** I view the details
-**Then** I see the tool name, input parameters (JSON), output result (JSON), and execution time
-
-**Given** I expand an LLM call node in the trace
-**When** I view the details
-**Then** I see the prompt text, completion text, token counts, model name, and latency
-
-**Given** a trace includes an error (e.g., tool invocation failure)
-**When** I view the trace
-**Then** the error is highlighted, and the error message and stack trace are visible
-
-**Given** I filter traces by `session_id`
-**When** I apply the filter
-**Then** I see all traces for that conversation session, ordered chronologically
-
-**Given** I filter traces by model name
-**When** I apply the filter
-**Then** I see only traces that used the specified model (useful for debugging model routing)
-
-#### Files
-
-No new files -- this story verifies LangFuse UI functionality (provided by LangFuse service).
-
-#### Implementation Prompt
-
-**Role:** @test-engineer
-
-**Context files:**
-- `packages/api/src/summit_cap/core/observability.py` -- LangFuse handler factory (from S-1-F18-01)
-- LangFuse documentation (external)
-
-**Requirements:**
-- This is a verification story, not an implementation story
-- Verify that LangFuse web UI displays traces correctly when agents use the handler
-- Since Phase 1 has no LangGraph agents yet, create a minimal test harness that invokes a mock LangChain chain with the LangFuse callback
-- Verify that the trace appears in LangFuse UI at `http://localhost:3001`
-
-**Steps:**
-1. Create `packages/api/tests/integration/test_langfuse_ui.py`
-2. Define a minimal LangChain chain (e.g., a simple LLM call with a mock model)
-3. Invoke the chain with `create_langfuse_handler()` callback
-4. Verify that the trace is recorded (query LangFuse API for the `session_id`)
-5. Add test documentation: "Manual verification: open http://localhost:3001, navigate to traces, confirm session_id is visible"
-
-**Contracts:**
-- LangFuse callback API: `LangfuseCallbackHandler` is compatible with LangChain callbacks
-- LangFuse web UI: accessible at `http://localhost:3001` when full stack is running
-
-**Exit condition:**
-```bash
-cd /home/jary/git/agent-scaffold/packages/api && \
-  uv run pytest tests/integration/test_langfuse_ui.py -v
-```
-
-**Post-implementation verification (manual, not part of exit condition):**
-Open http://localhost:3001, navigate to traces, verify session_id filter displays agent trace data.
 
 ---
 
@@ -825,6 +1065,8 @@ cd /home/jary/git/agent-scaffold/packages/api && \
    - `test_complex_query` ("Draft underwriting conditions..." -> "complex")
    - `test_word_count_threshold` (11-word query -> "complex")
    - `test_fail_safe` (mock exception -> "complex")
+   - (Merged from S-1-F21-02) `test_route_simple_query` -- calls `ModelRouter().route("What is my status?")`, asserts `result["model_name"] == "meta-llama/Llama-3.2-3B-Instruct"` and `result["tier"] == "simple"`
+   - (Merged from S-1-F21-03) `test_route_complex_query` -- calls `ModelRouter().route("Perform a detailed risk assessment with compliance analysis")`, asserts `result["model_name"] == "meta-llama/Llama-3.1-70B-Instruct"` and `result["tier"] == "complex"`
 
 **Contracts:**
 
@@ -895,130 +1137,6 @@ class ModelRouter:
 cd /home/jary/git/agent-scaffold/packages/api && \
   uv run pytest tests/test_model_routing.py -v && \
   uv run python -c "from summit_cap.inference.router import ModelRouter; r = ModelRouter(); assert r.classify('What is my status?') == 'simple'; assert r.classify('Perform a detailed risk assessment with compliance analysis') == 'complex'"
-```
-
----
-
-### Story: S-1-F21-02 -- Simple queries route to fast/small model
-
-**WU:** WU-5
-**Feature:** F21 -- Model Routing (Complexity-Based)
-**Complexity:** S
-
-#### Acceptance Criteria
-
-**Given** the model router classifies a query as "simple"
-**When** the agent invocation begins
-**Then** the agent is configured to use the "fast/small" model as defined in `config/models.yaml`
-
-**Given** a "fast/small" model is invoked
-**When** the agent completes execution
-**Then** the LangFuse trace records the model name, token counts, and latency
-
-**Given** a "fast/small" model is invoked
-**When** the query is a factual lookup (e.g., "What is my application status?")
-**Then** the model returns a correct response with low latency (< 2s for local inference, < 500ms for remote inference)
-
-**Given** the "fast/small" model is unavailable (e.g., endpoint down)
-**When** the router attempts to route a simple query
-**Then** the router falls back to the "capable/large" model, logs the fallback, and proceeds
-
-**Given** a simple query is routed to the fast/small model
-**When** the model fails to answer correctly (hallucination, refusal)
-**Then** the agent retries with the capable/large model (optional retry logic for production; PoC may skip)
-
-#### Files
-
-No new files -- this story verifies model routing behavior (tested in S-1-F21-01).
-
-#### Implementation Prompt
-
-**Role:** @test-engineer
-
-**Context files:**
-- `packages/api/src/summit_cap/inference/router.py` -- ModelRouter (from S-1-F21-01)
-- `config/models.yaml` -- Model config (from S-1-F21-01)
-
-**Requirements:**
-- Verify that `ModelRouter.route()` returns the fast_small model config for simple queries
-- Unit test: `test_route_simple_query` calls `route("What is my status?")` and asserts `model_name == "meta-llama/Llama-3.2-3B-Instruct"`
-- Document: "Phase 1 has no agents; model routing is verified via unit tests. Full integration with agents occurs in Phase 2."
-
-**Steps:**
-1. Add test to `packages/api/tests/test_model_routing.py`: `test_route_simple_query`
-2. Call `ModelRouter().route("What is my status?")`
-3. Assert `result["model_name"] == "meta-llama/Llama-3.2-3B-Instruct"`
-4. Assert `result["tier"] == "simple"`
-
-**Contracts:**
-- `ModelRouter.route(query)` returns dict with keys: `provider`, `model_name`, `endpoint`, `tier`
-
-**Exit condition:**
-```bash
-cd /home/jary/git/agent-scaffold/packages/api && \
-  uv run pytest tests/test_model_routing.py::test_route_simple_query -v
-```
-
----
-
-### Story: S-1-F21-03 -- Complex queries route to capable/large model
-
-**WU:** WU-5
-**Feature:** F21 -- Model Routing (Complexity-Based)
-**Complexity:** S
-
-#### Acceptance Criteria
-
-**Given** the model router classifies a query as "complex"
-**When** the agent invocation begins
-**Then** the agent is configured to use the "capable/large" model as defined in `config/models.yaml`
-
-**Given** a "capable/large" model is invoked
-**When** the query requires multi-step reasoning (e.g., "Perform a risk assessment and recommend conditions")
-**Then** the model executes the necessary tool orchestration and returns a correct, detailed response
-
-**Given** a "capable/large" model is invoked
-**When** the query involves compliance analysis (e.g., "Check ECOA compliance for this application")
-**Then** the model invokes the compliance KB search tool, retrieves relevant regulations, and synthesizes a response
-
-**Given** the "capable/large" model is unavailable
-**When** the router attempts to route a complex query
-**Then** the router logs an error and returns "AI service unavailable" (no fallback to the fast/small model, which is insufficient for complex queries)
-
-**Given** a complex query is routed to the capable/large model
-**When** the model completes execution
-**Then** the LangFuse trace records the model name, token counts, latency, and tool calls
-
-#### Files
-
-No new files -- this story verifies model routing behavior (tested in S-1-F21-01).
-
-#### Implementation Prompt
-
-**Role:** @test-engineer
-
-**Context files:**
-- `packages/api/src/summit_cap/inference/router.py` -- ModelRouter (from S-1-F21-01)
-- `config/models.yaml` -- Model config (from S-1-F21-01)
-
-**Requirements:**
-- Verify that `ModelRouter.route()` returns the capable_large model config for complex queries
-- Unit test: `test_route_complex_query` calls `route("Perform a risk assessment...")` and asserts `model_name == "meta-llama/Llama-3.1-70B-Instruct"`
-- Document: "Phase 1 has no agents; model routing is verified via unit tests. Full integration with agents occurs in Phase 2."
-
-**Steps:**
-1. Add test to `packages/api/tests/test_model_routing.py`: `test_route_complex_query`
-2. Call `ModelRouter().route("Perform a detailed risk assessment with compliance analysis")`
-3. Assert `result["model_name"] == "meta-llama/Llama-3.1-70B-Instruct"`
-4. Assert `result["tier"] == "complex"`
-
-**Contracts:**
-- `ModelRouter.route(query)` returns dict with keys: `provider`, `model_name`, `endpoint`, `tier`
-
-**Exit condition:**
-```bash
-cd /home/jary/git/agent-scaffold/packages/api && \
-  uv run pytest tests/test_model_routing.py::test_route_complex_query -v
 ```
 
 ---
@@ -1240,7 +1358,7 @@ services:
     volumes:
       - ./config/keycloak/summit-cap-realm.json:/opt/keycloak/data/import/summit-cap-realm.json:ro
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3 && cat <&3 | grep -q '200'"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health/live || exit 1"]
       interval: 10s
       timeout: 10s
       retries: 15
@@ -1614,7 +1732,7 @@ cd /home/jary/git/agent-scaffold && \
 
 ## Summary
 
-This chunk defines **WU-0** (4 infrastructure tasks), **WU-5** (7 stories for LangFuse + Model Routing), and **WU-9** (4 stories for Docker Compose). Total: **15 work items** covering infrastructure, observability, model routing, and full-stack orchestration.
+This chunk defines **WU-0** (6 infrastructure tasks, including T-0-05 config/settings and T-0-06 main.py/routes), **WU-5** (4 stories for LangFuse + Model Routing -- S-1-F18-02, S-1-F21-02, S-1-F21-03 merged into parent stories), and **WU-9** (4 stories for Docker Compose). Total: **14 work items** covering infrastructure, observability, model routing, and full-stack orchestration.
 
 **Exit condition for chunk:**
 ```bash
@@ -1633,7 +1751,7 @@ cd /home/jary/git/agent-scaffold && \
 **Cross-WU dependencies:**
 - WU-0 is a prerequisite for all other WUs (provides monorepo structure)
 - WU-5 depends on WU-0 (requires `packages/api` scaffold)
-- WU-9 depends on all WU-0 through WU-8 (full-stack integration)
+- WU-9 depends on all WU-0 through WU-8b (full-stack integration)
 
 **TD inconsistencies carried forward:**
 - TD-I-03: Demographic filter (WU-3) is standalone utility, tested in WU-7
