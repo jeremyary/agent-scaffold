@@ -485,7 +485,24 @@ Phase 11: Work Breakdown (per phase)
     - Machine-verifiable verification commands per task
     - Self-contained — all relevant context inlined, no "see document X"
     - Dependency mapping
+    - Each task includes an Implementation Prompt section (see below)
     The TD's Context Package maps directly into WU shared context.
+    IMPLEMENTATION PROMPTS: Every task includes a ready-to-use prompt
+      that the orchestrator can hand directly to an implementing agent.
+      The prompt bundles all context the agent needs so it can execute
+      without re-reading upstream artifacts. Structure:
+        Role: which agent type (e.g., @backend-developer)
+        Context files: exact paths to read before starting (TD contracts,
+          existing source files, test fixtures). Max 5 files.
+        Requirements: the acceptance criteria this task must satisfy,
+          inlined from the requirements doc (not "see S-2-F3-01")
+        Steps: numbered implementation steps
+        Contracts: relevant interface contracts from the TD, inlined
+        Exit condition: the verification command(s) to run
+      The prompt must be copy-pasteable — no placeholders, no references
+      to "the TD" or "the requirements doc" without inlining the relevant
+      content. The implementing agent should never need to search for
+      context.
     SCOPE: No product decisions, no architecture changes,
       no interface contract changes.
     DOWNSTREAM VERIFICATION: Flag any TD inconsistencies
@@ -512,6 +529,7 @@ Phase 12: Work Breakdown Review (per phase)
     (3) All exit conditions are machine-verifiable commands
     (4) Stories comply with chunking heuristics (3-5 files, single concern)
     (5) No methodology assumptions (no sprints, no velocity, no effort/time estimates — complexity sizing via story points and T-shirt sizes is allowed)
+    (6) Implementation prompts are self-contained (correct agent role, context files inlined, acceptance criteria inlined, no dangling references)
   CONDITIONAL RE-REVIEW: Same rule as other phases — only re-engage
     if changes involved new design decisions not already triaged.
   ORCHESTRATOR ASSESSMENT: While the tech lead reviews, the main session

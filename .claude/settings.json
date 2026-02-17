@@ -31,6 +31,15 @@
 
       "WebFetch(domain:w3.org)",
 
+      "WebFetch(domain:*.langchain.com)",
+      "WebFetch(domain:langchain-ai.github.io)",
+      "WebFetch(domain:langfuse.com)",
+      "WebFetch(domain:llama-stack.readthedocs.io)",
+      "WebFetch(domain:llama.meta.com)",
+      "WebFetch(domain:docs.pydantic.dev)",
+      "WebFetch(domain:fastapi.tiangolo.com)",
+      "WebFetch(domain:platform.openai.com)",
+
       "Bash(git status)",
       "Bash(git status *)",
       "Bash(git log *)",

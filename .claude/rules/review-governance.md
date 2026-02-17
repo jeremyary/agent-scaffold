@@ -62,6 +62,7 @@ For features with **3+ implementation tasks**, all planning artifacts must be re
 | **Exit conditions are machine-verifiable** | Every story has a runnable command that returns pass/fail. No "implementation is complete", no "review by X agent", no manual verification. See `agent-workflow.md`. |
 | **Chunking heuristics respected** | Stories target 3-5 files, single concern. Stories exceeding these limits should be flagged for splitting. |
 | **No methodology or effort estimation assumptions** | No sprints, velocity, capacity planning, or effort/time estimates (hours, person-days). Work breakdowns organize by dependency order and parallelism. Sprint planning requires a defined team. Effort estimation requires knowledge of who is doing the work. Agents must not fabricate either. Relative complexity sizing (story points, T-shirt sizes) is allowed -- it measures difficulty, not duration. |
+| **Implementation prompts are self-contained** | Every task includes a ready-to-use prompt with: assigned agent role, context files (exact paths, max 5), acceptance criteria (inlined, not referenced), numbered steps, relevant interface contracts (inlined from TD), and verification command(s). The prompt must be copy-pasteable to an implementing agent with zero additional context assembly. Flag any prompt that says "see document X" without inlining the relevant content. |
 
 ### When to Skip Plan Review
 

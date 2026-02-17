@@ -1,36 +1,55 @@
-# Project Name
-<!-- Run /setup to configure this project. Placeholder sections waste context tokens. -->
+# AI Banking Quickstart
 
-> **One-line description of what this project does and who it serves.**
+> **A Red Hat Quickstart demonstrating agentic AI with role-based access control in a financial services context, built for Summit Spotlight showcase and production-grade extensibility.**
 
 ## Project Context
-<!-- Run /setup to configure. -->
 
 | Attribute | Value |
 |-----------|-------|
-| Maturity | |
-| Domain | |
-| Primary Users | |
-| Compliance | |
+| Maturity | Proof-of-Concept (architected for production growth) |
+| Domain | Financial Services |
+| Primary Users | Red Hat Summit attendees, Quickstart adopters, AI BU stakeholders |
+| Compliance | None (PoC) |
 
 ## Goals
-<!-- Run /setup to configure. -->
+
+1. Demonstrate agentic AI patterns (guardrails, RBAC, model routing) on OpenShift AI
+2. Serve as a production-extensible Red Hat Quickstart foundation
+3. Deliver a compelling Red Hat Summit Spotlight showcase within ~3 months
+4. Show multi-persona experiences (public user, customer, employee) with tiered access controls
+5. Ship with pre-seeded data that simulates an established, active pipeline
 
 ## Non-Goals
-<!-- Run /setup to configure. -->
+
+- Real banking system integrations (ServiceNow, Salesforce, etc.)
+- Production security hardening beyond demo-appropriate RBAC
+- Real customer data handling or PII processing
+- Mobile or native client support
 
 ## Constraints
-<!-- Run /setup to configure. -->
+
+- ~3 month delivery timeline targeting Red Hat Summit Spotlight
+- Must run on OpenShift AI for production model hosting
+- Must accommodate local or OpenAI API-compatible model endpoints for development
+- Dual-purpose: must serve as both a Quickstart foundation and a showcase demo
+- Requires alignment with AI BU team on final use case direction
+- Use case still under evaluation: mortgage loan process vs. general banking (video concept)
 
 ## Stakeholder Preferences
-<!-- Accumulates over time as agents learn from interactions. Run /setup for initial values. -->
 
 | Preference Area | Observed Pattern |
 |-----------------|-----------------|
+| Planning granularity | Values extremely broken down plans |
+| Technology choices | Prefers LangGraph, LangFuse, LlamaStack ecosystem |
+| Data realism | Wants pre-seeded data to simulate established system activity |
+| Development flexibility | Requires local/OpenAI API-compatible endpoint support alongside OpenShift AI |
+| OpenShift AI integration | Use OpenShift AI where possible and showcase different aspects where it makes sense; don't go extremely far out of the way, but attempt to find natural integration points |
+| Authentication | Wants real auth via production-grade identity provider (Keycloak suggested); not simulated |
+| UX philosophy | Prefers agentic conversational flows over traditional form-based UI |
 
 ## Maturity Expectations
 
-Maturity level governs **implementation quality**, not **workflow phases**. A PoC still follows the full plan-review-build-verify sequence when SDD criteria are met. See `.claude/rules/maturity-expectations.md` for the full matrix.
+Maturity level is **Proof-of-Concept** — smoke tests, console error handling, local dev infra. This governs implementation quality, not workflow phases. A PoC still follows the full plan-review-build-verify sequence when SDD criteria are met. See `.claude/rules/maturity-expectations.md` for the PoC expectations table.
 
 ## Red Hat AI Compliance
 
@@ -46,7 +65,20 @@ All AI-assisted work in this project must comply with Red Hat's internal AI poli
 See `docs/ai-compliance-checklist.md` for the developer quick-reference checklist.
 
 ## Key Decisions
-<!-- Run /setup to configure. -->
+
+- **Language:** Python 3.11+
+- **AI/Agent Framework:** LangGraph (agentic orchestration)
+- **Observability:** LangFuse (LLM tracing and analytics)
+- **LLM Stack:** LlamaStack (model serving abstraction)
+- **Model Hosting:** OpenShift AI (production); local or OpenAI API-compatible endpoints (development)
+- **Web Framework:** FastAPI
+- **Data Validation:** Pydantic 2.x
+- **Platform:** OpenShift / Kubernetes
+- **Package Manager:** uv
+- **Linting / Formatting:** Ruff
+- **Testing:** pytest
+- **Container:** Podman / Docker
+- **Data Strategy:** Pre-seeded demo data simulating established pipeline activity
 
 ---
 
@@ -71,11 +103,8 @@ This project uses a multi-agent system with specialized Claude Code agents. The 
 | Review code quality | **Code Reviewer** | `@code-reviewer` |
 | Write or fix tests | **Test Engineer** | `@test-engineer` |
 | Audit security | **Security Engineer** | `@security-engineer` |
-| Optimize performance | **Performance Engineer** | `@performance-engineer` |
 | Set up CI/CD or infra | **DevOps Engineer** | `@devops-engineer` |
-| Define SLOs & incident response | **SRE Engineer** | `@sre-engineer` |
 | Debug a problem | **Debug Specialist** | `@debug-specialist` |
-| Write documentation | **Technical Writer** | `@technical-writer` |
 
 ### How It Works
 
@@ -90,7 +119,7 @@ This project uses a multi-agent system with specialized Claude Code agents. The 
 ### Always-loaded rules (all sessions)
 
 @.claude/rules/ai-compliance.md
-@.claude/rules/code-style.md
+@.claude/rules/python-style.md
 @.claude/rules/git-workflow.md
 @.claude/rules/testing.md
 @.claude/rules/security.md
@@ -109,4 +138,13 @@ This project uses a multi-agent system with specialized Claude Code agents. The 
 <!-- - .claude/rules/maturity-expectations.md (no path scope — loaded on demand) -->
 
 ## Project Commands
-<!-- Run /setup to configure. -->
+
+```bash
+# TBD — commands will be defined during architecture phase
+# Expected pattern:
+# make setup              # Install all dependencies
+# make test               # Run test suite
+# make lint               # Run ruff check + format
+# make dev                # Start local development server
+# make seed               # Load pre-seeded demo data
+```

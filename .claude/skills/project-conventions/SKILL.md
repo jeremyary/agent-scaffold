@@ -9,52 +9,46 @@ Customize the sections below to match your project. All agents reference these c
 
 ## Technology Stack
 
-<!-- Update these to match your project. The defaults below reflect a typical full-stack setup. -->
-
 | Layer | Technology | Version |
 |-------|-----------|---------|
-| Backend Language | Python | 3.11+ |
-| Backend Framework | FastAPI | — |
-| Frontend Language | TypeScript | 5.x |
-| Frontend Framework | React | 19.x |
-| Frontend Build | Vite | 6.x |
-| Frontend Routing | TanStack Router | — |
-| Frontend State | TanStack Query | — |
-| Frontend Styling | Tailwind CSS + shadcn/ui | — |
-| Database | PostgreSQL | — |
-| ORM | SQLAlchemy 2.0 (async) | — |
-| Migrations | Alembic | — |
-| Backend Testing | pytest | — |
-| Frontend Testing | Vitest + React Testing Library | — |
-| E2E Testing | Playwright | — |
-| Backend Package Manager | uv | — |
-| Frontend Package Manager | pnpm | — |
-| Build System | Turborepo | — |
-| CI/CD | GitHub Actions | — |
+| Language | Python | 3.11+ |
+| AI/Agent Framework | LangGraph | — |
+| Observability | LangFuse | — |
+| LLM Stack | LlamaStack | — |
+| Model Hosting (prod) | OpenShift AI | — |
+| Model Hosting (dev) | Local / OpenAI API-compatible endpoints | — |
+| Web Framework | FastAPI | — |
+| Data Validation | Pydantic | 2.x |
+| Testing | pytest | — |
+| Linting / Formatting | Ruff | — |
+| Package Manager | uv | — |
 | Container | Podman / Docker | — |
-| Cloud | OpenShift / Kubernetes | — |
+| Platform | OpenShift / Kubernetes | — |
 
 ## Project Structure
 
-<!-- Update to match your project's directory layout. The default below is a Turborepo monorepo. -->
+<!-- This is a starting-point layout. Refine during architecture phase. -->
 
 ```
-project/
-├── packages/
-│   ├── ui/                   # React frontend (pnpm)
-│   ├── api/                  # FastAPI backend (uv/Python)
-│   ├── db/                   # Database models & migrations (uv/Python)
-│   └── configs/              # Shared ESLint, Prettier, Ruff configs
+ai-banking-quickstart/
+├── src/
+│   ├── agents/              # LangGraph agent definitions and graphs
+│   ├── api/                 # FastAPI backend
+│   ├── models/              # Pydantic data models
+│   ├── tools/               # Agent tools (calculators, data lookups, etc.)
+│   ├── guardrails/          # Input/output guardrails and RBAC logic
+│   └── config/              # Configuration and endpoint settings
+├── data/
+│   └── seed/                # Pre-seeded demo data (simulates established activity)
+├── tests/                   # Test suite
 ├── deploy/
-│   └── helm/                 # Helm charts for OpenShift/Kubernetes
-├── plans/                    # SDD planning artifacts (product plan, architecture, requirements)
-│   └── reviews/              # Agent review documents
-├── docs/
-│   ├── api/                  # API documentation
-│   └── sre/                  # SLOs, runbooks, incident reviews
-├── compose.yml               # Local development with containers
-├── turbo.json                # Turborepo pipeline configuration
-└── Makefile                  # Common development commands
+│   └── openshift/           # OpenShift deployment manifests
+├── plans/                   # SDD planning artifacts
+│   └── reviews/             # Agent review documents
+├── docs/                    # Documentation
+├── pyproject.toml           # Python project config (uv)
+├── compose.yml              # Local development
+└── Makefile                 # Common development commands
 ```
 
 ## Planning Artifacts (SDD Workflow)
@@ -86,40 +80,22 @@ plans/reviews/technical-design-phase-1-review-orchestrator.md
 
 ## Environment Configuration
 
-<!-- List required environment variables -->
-
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `APP_ENV` | Yes | `development`, `staging`, `production` |
-| `PORT` | No | Server port (default: 8000) |
-| `DATABASE_URL` | Yes | Database connection string |
+| `MODEL_ENDPOINT` | Yes | OpenShift AI or OpenAI API-compatible endpoint URL |
+| `MODEL_NAME` | No | Model name for inference (default varies by environment) |
+| `LANGFUSE_HOST` | No | LangFuse server URL (default: local) |
+| `LANGFUSE_PUBLIC_KEY` | No | LangFuse public key |
+| `LANGFUSE_SECRET_KEY` | Yes | LangFuse secret key |
 | `LOG_LEVEL` | No | Logging level (default: `info`) |
-| `SECRET_KEY` | Yes | Application secret key |
-| `CORS_ORIGINS` | No | Allowed CORS origins (default: `http://localhost:5173`) |
-
-## Inter-Package Dependencies
-
-<!-- Customize for your project's package dependency graph. -->
-
-```
-ui ──────► api (HTTP)
-           │
-           ▼
-          db (Python import)
-```
-
-- The `ui` package calls the `api` via HTTP (configured via environment variable)
-- The `api` package imports models from `db` as a Python dependency
-- The `db` package is standalone and manages database connections/models
+| `PORT` | No | Server port (default: 8000) |
 
 ## Cross-References
 
 Detailed conventions are defined in the rules files — do not duplicate here:
 
-- **Naming:** `code-style.md`
-- **Error handling:** `error-handling.md`
+- **Naming & style:** `python-style.md`
 - **Git workflow:** `git-workflow.md`
-- **API design:** `api-conventions.md`
-- **Frontend patterns:** `ui-development.md` (path-scoped to `packages/ui/`)
-- **Database patterns:** `database-development.md` (path-scoped to `packages/db/`)
-- **Backend patterns:** `api-development.md` (path-scoped to `packages/api/`)
+- **Security baseline:** `security.md`
+- **Testing standards:** `testing.md`
