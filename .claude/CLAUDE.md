@@ -72,7 +72,7 @@ implement → [code-reviewer, security-engineer] (parallel) → proceed only if 
 ```
 If reviewers flag Critical issues, loop back to implementation.
 
-For SDD plan review gates (Phases 2, 5, 8, 10), the orchestrator also participates as a parallel reviewer for cross-cutting issues — see `review-governance.md` § Orchestrator Review.
+For SDD plan review gates (Phases 2, 5, 8), the orchestrator also participates as a parallel reviewer for cross-cutting issues — see `review-governance.md` § Orchestrator Review.
 
 ### Iterative Loop
 Profile → implement → verify cycle, repeated until targets are met.
@@ -103,10 +103,10 @@ Update `plans/sdd-state.md` at every phase transition — phase completion, revi
 
 | Tier | Model | Agents | Use When |
 |---|---|---|---|
-| **High** | opus | Product Manager, Architect, Tech Lead, Code Reviewer | Product strategy, architecture, technical design, code review — errors in planning and review cascade through everything |
+| **High** | opus | Product Manager, Architect, Tech Lead, Code Reviewer | Product strategy, architecture, planning, code review — errors in planning and review cascade through everything |
 | **Standard** | sonnet | All others | Implementation, analysis, project management, documentation — quality sufficient for the task |
 
-Opus is reserved for decisions and reviews with high blast radius: product direction, architecture, technical design (plan quality), and code review (review rigor). All implementation, analysis, and project management work uses sonnet to optimize cost.
+Opus is reserved for decisions and reviews with high blast radius: product direction, architecture, planning, and code review (review rigor). All implementation, analysis, and project management work uses sonnet to optimize cost.
 
 ## Agent Memory (`memory: project`)
 
