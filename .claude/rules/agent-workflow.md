@@ -49,7 +49,7 @@ Load only what the task requires:
 1. **Task description** — the primary input
 2. **Relevant rules** — project conventions that apply to the files being modified
 3. **Specific files being modified** — read them before editing
-4. **Interface contracts** — if the task references a Technical Design Document, load the relevant contracts
+4. **Interface contracts** — if the task references architecture or requirements documents, load the relevant contracts
 
 That's it. Don't speculatively load files that "might be related."
 
@@ -66,8 +66,6 @@ Before reading a file, articulate why it's relevant to the current task:
 ### Context Budget
 
 Budget approximately **5 source files** per task. This is a soft limit — occasionally you'll need 6 or 7, but if you're regularly exceeding it, the tasks are too large.
-
-When working within a **Work Unit**, shared context files (loaded for the first task) remain in context for subsequent tasks. Only count task-specific files against the budget for the second task onward — the WU shared context is already loaded.
 
 Context budget does NOT include:
 - Rule files (these are short and always relevant)
@@ -115,8 +113,23 @@ Structure work so each session completes a meaningful unit:
 - Product plan + its review
 - Architecture + its review
 - Requirements + its review
-- Phase N TD + its review
-- Phase N WB + its review
-- Phase N implementation (subset of stories)
+- Requirements phasing
+- Phase N implementation (subset of PRs)
+- Inter-phase codebase review
 
 Avoid starting an artifact review in the same session that will need to apply triage changes -- this often pushes past context limits.
+
+## PR-Based Implementation
+
+During implementation phases, work is organized as a sequence of human-reviewed PRs:
+
+1. **Plan PRs** — Read the phase requirements and plan a sequence of PRs. Each PR should be appropriately sized (~400 lines, see PR Size Guidance in review-governance.md).
+2. **Create task list** — Track the PR plan as a task list so progress survives context clears and compaction.
+3. **Implement each PR:**
+   - Branch from main
+   - Implement the PR scope
+   - Run the pre-PR test review (see review-governance.md § Pre-PR Test Review)
+   - Commit, push, and open PR for human review
+   - **STOP and wait** for human approval before merging
+4. **Repeat** until all PRs for the phase are merged.
+5. **Inter-phase review** — Run comprehensive codebase review before starting the next phase (see review-governance.md § Inter-Phase Codebase Review).

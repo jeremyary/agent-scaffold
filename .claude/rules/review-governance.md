@@ -6,7 +6,7 @@ This rule establishes review discipline for AI-native development. It prevents r
 
 > Correcting a plan takes minutes; refactoring bad code takes days.
 
-For features with **3+ implementation tasks**, all planning artifacts must be reviewed before downstream work begins: Product Plan, Architecture, Requirements, Technical Design, and Work Breakdown. Each has a review checklist below. These are the highest-leverage reviews in the entire workflow — catching a spec error is always cheaper than refactoring the implementation.
+For features with **3+ implementation tasks**, all planning artifacts must be reviewed before downstream work begins: Product Plan, Architecture, and Requirements. Each has a review checklist below. These are the highest-leverage reviews in the entire workflow — catching a spec error is always cheaper than refactoring the implementation.
 
 ### Product Plan Review Checklist
 
@@ -41,27 +41,7 @@ For features with **3+ implementation tasks**, all planning artifacts must be re
 | **NFRs are measurable** | Non-functional requirements have concrete thresholds ("page load < 2s"), not vague qualities ("fast", "secure"). |
 | **Consistent with architecture boundaries** | Stories don't assume component interactions or data flows that contradict the architecture document. |
 | **No architecture decisions embedded** | Requirements describe WHAT the system does, not HOW. No technology choices, component assignments, or data model decisions. |
-| **No task breakdown or implementation approach** | Requirements don't size work, assign agents, or prescribe implementation steps. That scope belongs to Technical Design and Work Breakdown. |
-
-### Technical Design Review Checklist
-
-| Check | What to Look For |
-|-------|-----------------|
-| **Contracts are concrete** | Actual JSON shapes, actual type definitions, actual file paths — not "use a clean pattern" |
-| **Data flow covers error paths** | Happy path AND what happens when things fail at each boundary |
-| **Exit conditions are machine-verifiable** | Every task has a command that returns pass/fail (see `agent-workflow.md`) |
-| **File structure maps to actual codebase** | Proposed paths match existing project layout — not an idealized structure |
-| **No TBDs in binding contracts** | If something is undefined, it must be flagged as an open question, not left as "TBD" |
-
-### Work Breakdown Review Checklist
-
-| Check | What to Look For |
-|-------|-----------------|
-| **Story-to-WU mapping is 1:1** | Every work unit from the TD maps to exactly one story. No scope drift in story descriptions -- they should be faithful to TD intent, not reinterpreted. |
-| **Dependencies are technically accurate** | Story dependencies match actual technical dependencies from the TD's dependency graph. Phase ordering is NOT the same as technical dependency -- flag over-strict chains that block parallelism unnecessarily. |
-| **Exit conditions are machine-verifiable** | Every story has a runnable command that returns pass/fail. No "implementation is complete", no "review by X agent", no manual verification. See `agent-workflow.md`. |
-| **Chunking heuristics respected** | Stories target 3-5 files, single concern. Stories exceeding these limits should be flagged for splitting. |
-| **No methodology or effort estimation assumptions** | No sprints, velocity, capacity planning, or effort/time estimates (hours, person-days). Work breakdowns organize by dependency order and parallelism. Sprint planning requires a defined team. Effort estimation requires knowledge of who is doing the work. Agents must not fabricate either. Relative complexity sizing (story points, T-shirt sizes) is allowed -- it measures difficulty, not duration. |
+| **No task breakdown or implementation approach** | Requirements don't size work, assign agents, or prescribe implementation steps. That scope belongs to implementation phasing. |
 
 ### When to Skip Plan Review
 
@@ -79,14 +59,12 @@ The creating agent must not be the sole reviewer of its own planning artifacts. 
 | Product Plan | Product Manager | Architect, Security Engineer |
 | Architecture | Architect | Code Reviewer, Security Engineer |
 | Requirements | Requirements Analyst | Product Manager, Architect |
-| Technical Design | Tech Lead | Code Reviewer, Security Engineer |
-| Work Breakdown | Project Manager | Tech Lead |
 
 This ensures every artifact is validated by an agent whose expertise covers the creator's blind spots. The PM lacks implementation depth to validate its own dependency chains and exit conditions. The Architect lacks security depth to validate its own threat surface. Skipping review for a planning artifact because "it doesn't introduce new interfaces" misses the point -- every planning artifact makes decisions that downstream agents must live with.
 
 ## Orchestrator Review
 
-At each SDD plan review gate (Phases 2, 5, 8, 10), the main session performs its own review **in parallel** with the specialist agents. The orchestrator acts as a safety net for cross-cutting issues that fall between specialist scopes.
+At each SDD plan review gate (Phases 2, 5, 8), the main session performs its own review **in parallel** with the specialist agents. The orchestrator acts as a safety net for cross-cutting issues that fall between specialist scopes.
 
 ### Focus Areas
 
@@ -216,3 +194,58 @@ Launch the appropriate agent to apply all approved changes in a single pass. Thi
 ### 5. Spot-Check and Commit
 
 Verify key changes with targeted searches (grep for removed patterns, check critical edits). Then commit, push, and create PR.
+
+## Stakeholder Persona Review
+
+An optional addition to Product Plan Review (Phase 2) and Requirements Review (Phase 8). The orchestrator assembles a panel of stakeholder persona agents representing the application's key user types (e.g., end users, administrators, operators, domain experts).
+
+### How It Works
+
+1. Identify the relevant personas from the product plan's user definitions
+2. Launch each persona as a review agent in parallel with the standard reviewers
+3. Each persona reviews from their perspective — would this product/these requirements actually serve their needs?
+4. Persona reviews are included in the consolidation alongside specialist reviews
+
+### When to Use
+
+- **Product Plan Review (Phase 2):** Recommended. Personas validate that the product vision addresses real user needs before architecture begins.
+- **Requirements Review (Phase 8):** Optional but valuable. Personas validate that acceptance criteria match real user expectations and that edge cases reflect actual usage patterns.
+
+Persona reviews follow the same consolidation and triage process as specialist reviews — they are not automatically authoritative but provide a complementary perspective.
+
+## Inter-Phase Codebase Review
+
+Between implementation phases (see `workflow-patterns` SDD Phase 11), run a comprehensive multi-agent codebase review. This catches cross-cutting issues that accumulate during a phase before they compound into the next phase.
+
+### Review Panel
+
+Launch all relevant specialist agents in parallel. Each reviews the full codebase from their perspective:
+
+- `@api-designer`, `@architect`, `@backend-developer`, `@code-reviewer`
+- `@database-engineer`, `@debug-specialist`, `@frontend-developer`
+- `@performance-engineer`, `@security-engineer`, `@tech-lead`, `@test-engineer`
+
+Select the subset relevant to the project's technology stack. The orchestrator also reviews for cross-cutting gaps that fall between specialist scopes.
+
+### Output
+
+- Each agent writes findings to `plans/reviews/pre-phase-N-review/review-<agent-name>.md`
+- Agents do **not** need to record positive observations — focus on actionable findings
+- Use `/consolidate-reviews` to merge all findings into a triage table
+- User triages and decides what to address
+- All approved fixes are applied in a single PR before proceeding to the next phase
+
+### Test Comprehensiveness Check
+
+As part of the inter-phase review, verify that tests are comprehensive, non-ceremonious, and adequately covering the code. Fix any gaps before moving on. This is separate from the specialist reviews — it ensures the test suite itself is healthy, not just the application code.
+
+## Pre-PR Test Review
+
+Before opening every PR during implementation (Phase 10), the implementing agent must review the test suite for that PR's scope:
+
+1. **Meaningful coverage** — tests exercise the actual behavior, not just call functions for the sake of coverage numbers
+2. **Non-ceremonious** — no boilerplate tests that assert trivially true conditions or mirror implementation details
+3. **Adequate scope** — include unit, functional, and integration tests as appropriate for the change
+4. **All tests pass** — run the full test suite before committing
+
+This is a gate, not a suggestion. Do not open a PR without completing this review.
